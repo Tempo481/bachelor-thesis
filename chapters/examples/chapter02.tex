@@ -1,41 +1,57 @@
-\chapter{Grundlagen und verwandte Arbeiten}
+\chapter{Technische Grundlagen}
 \label{ch:background}
-Non vices medical da. Se qui peano distinguer demonstrate, personas internet in nos. Con ma presenta instruction initialmente, non le toto gymnasios, clave effortio primarimente su del.\footnote{Uno il nomine integre, lo tote tempore anglo-romanic per, ma sed practic philologos historiettas.} Nullam facilisis, massa ut faucibus vulputate, enim velit luctus nulla, a elementum ipsum metus eu sem. Sed a auctor quam. Cras venenatis ullamcorper velit, nec elementum lacus elementum pellentesque.
+In diesem Kapitel werden alle nötigen technischen Grundlagen zusammengetragen. Da es sich um ein OAuth2 System handelt, wird diese Spezifikation erläutert. Zudem werden auf die Tokens eingegangen, die die Ressource Server jeweils validieren müssen. Diese sind \ac{JSON} Web Token. Dann werden noch die Metriken zum Messen der Performance erläutert, das Programm zum Messen dieser Werte genannt sowie das Framework zur Implementierung der Ressource Server erklärt. 
 
 %
 % Section: Der erste Abschnitt
 %
-\section{Der erste Abschnitt des Kapitels}
+\section{Grundlegender Begriffe der IT-Sicherheit}
 \label{sec:background:first_section}
-Sia ma sine svedese americas. Asia \citeauthor{bentley:1999} \citep{bentley:1999} representantes un nos, un altere membros qui. De web nostre historia angloromanic. Medical representantes al uso, con lo unic vocabulos, tu peano essentialmente qui. Lo malo laborava anteriormente uso.
+Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelmäßig verwendet werden.
 
 \begin{description}
-  \item[Description-Label Test:] Illo secundo continentes sia il, sia russo distinguer se. Contos resultato preparation que se, uno national historiettas lo, ma sed etiam parolas latente. Ma unic quales sia. Pan in patre altere summario, le pro latino resultato.
-  \item[basate americano sia:] Lo vista ample programma pro, uno europee addresses ma, abstracte intention al pan. Nos duce infra publicava le. Es que historia encyclopedia, sed terra celos avantiate in. Su pro effortio appellate, o.
-  \item[Cras venenatis:] Purus et posuere lacinia, nisl sapien dapibus metus, a ornare enim odio in ipsum. Quisque imperdiet nibh metus, in fringilla tellus. Duis varius dui eget orci commodo ac sollicitudin est placerat. Cras varius tincidunt arcu, quis imperdiet nibh rhoncus vel. Sed non justo orci, non accumsan felis. Maecenas condimentum convallis. 
+  \item[Authentifizierung:] Bei einer Authentifizierung beweist ein Nutzer seine Identität, indem er dem gegenüberliegenden Server Informationen übermittelt, über die nur der Nutzer verfügen kann wie beispielsweise ein Nutzername und Passwort oder ein Token.
+  \item[Autorisierung:] Eine Autorisierung findet grundsätzlich nach der Authentifizierung statt. Hier überprüft das System nach der Authentifizierung des Nutzers, ob der Nutzer über die notwendigen Rechte verfügt eine Aktion auszuführen. 
+  \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erstellen kann, gewährleistet werden [5].
+  \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten [5]. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt das sie der Urheber ist.
+  \item[Validierung] Man kann von einer Validierung sprechen, wenn oben genannte Aspekte, nämlich die Authentifizierung, Autorisierung, Integrität sowie Authentizität, überprüft werden.
 \end{description}
-Tu uno veni americano sanctificate. Pan e union linguistic \citeauthor{cormen:2001} \citep{cormen:2001} simplificate, traducite linguistic del le, del un apprende denomination.
-
-\subsection{Ein Unterabschnitt}
-\label{subsec:background:first_section:first_subsection}
-Uno pote summario methodicamente al, uso debe nomina hereditage ma. Iala rapide ha del, ma nos esser parlar. Maximo dictionario sed al. Aenean posuere, enim in ultricies facilisis, ligula lacus eleifend eros, accumsan commodo metus justo placerat justo. Donec sit amet mauris dolor, at imperdiet lacus. In laoreet pretium condimentum. Proin ut varius diam. Fusce ipsum ipsum, elementum id porttitor at, pharetra congue nisi.
-
-\subsection{Ein weiterer Unterabschnitt}
-\label{subsec:background:first_section:second_subsection}
-Deler utilitate methodicamente con se. Technic scriber uso in, via appellate instruite sanctificate da, sed le texto inter encyclopedia. Ha iste americas que, qui ma tempore capital. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Proin vitae urna id metus vestibulum lobortis. Duis rhoncus pulvinar massa, eget venenatis justo dapibus sed. 
 
 %
 % Section: Der Zweite Abschnitt
 %
-\section{Ein zweiter Abschnitt}
+\section{OAuth2}
 \label{sec:background:second_section}
-Phasellus ut ipsum nulla, vitae venenatis augue. Suspendisse potenti. Mauris suscipit justo a dolor laoreet lacinia. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam commodo commodo dui, nec auctor mi malesuada et. Aenean tortor erat, semper eu ullamcorper non, dignissim sed lectus. Praesent et pretium leo. 
+OAuth2 ist eine Spezifikation, die ursprünglich entwickelt wurde, um Dritten Zugriff auf die Daten eines sogenannten Ressource Owners zu ermöglichen, ohne dass dieser Ressource Owner dem Dritten, in der Spezifikation Client genannt, sein Nutzername und Passwort übermitteln muss [6].  Dies wird dadurch ermöglicht, dass dem Client von einem Autorisationsserver ein Token übermittelt wird und mit diesem Token kann der Client Daten des Ressource Owners abfragen oder Aktionen im Namen des Ressource Owners durchführen. Diese Daten des Ressource Owners werden auf dem sogenannten Ressource Server gehostet.
+Im Laufe der Zeit wurde diese Spezifikation erweitert, um weitere Anwendungsfälle abzudecken, wie die Spezifikation OpenID Connect, welche Single-Sign-On ermöglicht. 
 
-\subsection{Ein Unterabschnitt}
+\subsection{Rollen in OAuth2}
 \label{subsec:background:second_section:first_subsection}
-Vivamus at massa ut turpis dignissim mattis. Vivamus odio metus, venenatis vitae malesuada et, dignissim sed nunc. Mauris a nisl id massa viverra mattis in ultrices odio. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Curabitur quis metus ac sem venenatis dignissim nec.
+Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind.
 
-\subsubsection{Ein Unter-Unterabschnitt}
+\begin{description}
+  \item[Ressource Owner:] Der Ressource Owner ist dazu in der Lage, Dritten Zugriff auf seine Daten zu geben oder Aktionen in seinem Namen durchzuführen [7]. Falls der Ressource Owner eine Person ist, nennt man ihn den End-Nutzer.
+  \item[Ressource Server:] Der Ressource Server hostet die geschützten Ressourcen des Ressource Owners und ist in der Lage Anfragen zu diesen Ressourcen zu beantworten, falls ein valider Token, ein sogenannter Access Token, in der Anfrage zur Ressource vorliegt [7].
+  \item[Client:] Der Client ist diejenige Komponente, die die Ressource des Ressource Owner's von dem Ressource Servers erlangen möchte und dafür einen Access Token benötigt [7]. 
+  \item[Authorization Server:] Der Authorization Server verteilt Access Token falls sich der Ressource Owner erfolgreich authentifiziert und gegebenenfalls den Client autorisiert hat, Aktionen durchzuführen. 
+\end{description}
+
+\subsection{Erhalt von Token}
+\label{subsec:background:second_section:second_subsection}
+
+Gemäß der Spezifikation gibt es fünf verschiedene Wege, wie ein Client von einem Authorization Server einen Token erhalten kann [8]. Im Folgenden werden nur lediglich zwei beschrieben, da die anderen drei für diese Arbeit keine Relevanz haben. 
+
+\subsubsection{Authorization Code Grant}
 \label{ssubsec:background:second_section:first_subsection:first_subsubsection}
-Sed vel ante vel quam commodo cursus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Duis non turpis eget quam rutrum scelerisque. Duis nec quam metus. Curabitur purus dui, sagittis vel mattis a, elementum vitae risus. Pellentesque a tellus lacus, id gravida lectus.
+Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser verwendet, von dem Client auf den Authorization Server weitergeleitet, um den Ressource Owner zu bitten, sich bei dem Authorization Server zu authentifizieren, um dann dem Client zu autorisieren auf eine geschützte Ressource des Ressource Servers zuzugreifen [9]. 
 
+\subsubsection{User Password Credential Grant}
+\label{ssubsec:background:second_section:first_subsection:second_subsubsection}
+Diese Art des Token-Erhalts ist ähnlich zu dem Authorization Code Grant, nur dass hier kein Webbrowser notwendig ist, den der End-Nutzer bedient. Stattdessen werden die Authentifizierungsdetails des End-Nutzers, also Nutzername und Passwort, in dem Body der Token-Anfrage übertragen [12]. Im Allgemeinen gilt diese Methode als nicht sicher, allerdings wird sie zu Testzwecken eingesetzt und so auch hier, damit Apache JMeter automatisch einen Token von dem Authorization Server erhalten kann.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/oauth_auth_code_flow.png}
+  \caption{Dies ist eine einfache Grafik}
+  \label{fig:chapter02:Bild1}
+ \end{figure}

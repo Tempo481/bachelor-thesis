@@ -4,19 +4,9 @@
 \begin{otherlanguage}{ngerman}
 	\pdfbookmark[0]{Zusammenfassung}{Zusammenfassung}
 	\chapter*{Zusammenfassung}
-	Kurze Zusammenfassung des Inhaltes in deutscher Sprache von ca. einer Seite länge. Dabei sollte vor allem auf die folgenden Punkte eingegangen werden:
-	%
-	\begin{itemize}
-	  \item Motivation: Wieso ist diese Arbeit entstanden? Warum ist das Thema der Arbeit (für die Allgemeinheit) interessant? Dabei sollte die Motivation von der konkreten Aufgabenstellung, z.B. durch eine Firma, weitestgehend abstrahiert werden. 
-          \item Inhalt: Was ist Inhalt der Arbeit? Was genau wird in der Arbeit behandelt? Hier sollte kurz auf Methodik und Arbeitsweise eingegangen werden.
-          \item Ergebnisse: Was sind die Ergebnisse der Arbeit? Ein kurzer Überblick über die wichtigsten Ergebnisse als Teaser, um die Arbeit vollständig zu lesen.
-	\end{itemize}
-	\medskip
+	Mit Open Policy Agent (OPA) ist es möglich die Zugriffskontrolle von einem Server zu entkoppeln. Wenn ein Client eine Anfrage an einen Server sendet, evaluiert also dieser Server nicht selbst eine Zugriffsentscheidung, sondern OPA als externes Programm. Hier entsteht zusätzliche Kommunikation zwischen Server und OPA. In OAuth2 Systemen geschieht die Evaluierung von Zugriffsentscheidungen anhand von Token, die der Client an den Server sendet. In bisherigen Performancetests wurde die Latenz bei der Kommunikation zwischen Server und OPA nicht in Betrachtung gezogen, sowie keine Zugriffsentscheidungen anhand von Token getroffen \citep{opaperformance:2021:06}.\smallskip
 
-	\noindent
-	Eine großartige Anleitung von Kent Beck, wie man gute Abstracts schreibt, finden Sie hier:
-	\begin{center}
-                \url{https://plg.uwaterloo.ca/~migod/research/beckOOPSLA.html}
-        \end{center}
+	Um zu untersuchen, inwiefern sich eine Entkopplung der Zugriffskontrolle mit OPA auf die Performance auswirkt, wurden zwei Testserver implementiert. In dem einen Server wird die Zugriffskontrolle mit OPA entkoppelt, in dem anderen evaluiert der Server Zugriffsentscheidungen selbst. Um die Performance zu untersuchen, wurde Apache JMeter verwendet. Dieses Tool generiert Anfragen mit validem Token an die Server und misst die Latenz der Antworten. Bei zehn gleichzeitigen Nutzern stellte es sich heraus, dass die Latenzen bei dem Server mit OPA durchschnittlich dreimal so hoch ausfielen im Vergleich zu dem Server ohne OPA. Zudem skaliert der Server mit OPA schlechter, denn bei ansteigender Last auf bis zu 100 Nutzer stiegen die Latenzen linear, während bei dem Server ohne OPA diese konstant niedrig blieben. Es konnte also ein signifikanter Performancenachteil nachgewiesen werden. 
+	
 
 \end{otherlanguage}
