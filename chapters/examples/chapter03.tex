@@ -484,7 +484,7 @@ Bei dem Stresstest geht es darum, dass eine möglichst hohe Last auf den Server 
 In \autoref{fig:chapter03:ThreadGroup-Stress} ist die verwendete Konfiguration zu sehen. Es werden insgesamt 1000 Threads gestartet wobei alle 1000 Threads erst nach 120 Sekunden gestartet sind. Der Test dauert insgesamt 900 Sekunden, das heißt 15 Minuten. Während dieser Zeit sendet jeder Thread kontinuierlich Anfragen an den Server. Dieser Test ist also deutlich ressourcenintensiver als der Last-und-Skalierbarkeitstest. Verlässlich können pro Maschine in Apache JMeter, ca. 1000-2000 Threads gestartet werden, was allerdings abhängig ist von der jeweiligen Hardware des Systems, auf dem Apache JMeter ausgeführt wird [30]. Dieser Test wird ohne die GUI von Apache JMeter ausgeführt, da diese speziell bei ressourcenintensiven Stresstests die Testergebnisse verfälschen kann. Die verwendete Systemhardware von Client und Server werden im Kapitel Systemhardware beschrieben. 
 
 \subsection{Messung und Protokollierung von Messdaten}
-Um die Messdaten der Tests aus den vorrangegangenen Kapiteln zu protokollieren und in geeigneter Weise zu visualisieren, wurden Apache JMeter Listener verwendet, die Messdaten in CSV-Dateien schreiben. Um diese Daten visuell darzustellen, wurde der HTML Report von Apache JMeter verwendet. Als Listener wurde jeweils Summary Report verwendet. Dieser misst und protokolliert unter anderem die folgenden Daten: 
+Um die Messdaten der Tests aus den vorrangegangenen Kapiteln zu protokollieren und in geeigneter Weise zu visualisieren, wurden Apache JMeter Listener verwendet, die Messdaten in Comma-separated values (CSV)-Dateien schreiben. Um diese Daten visuell darzustellen, wurde der HTML Report von Apache JMeter verwendet. Als Listener wurde jeweils Summary Report verwendet. Dieser misst und protokolliert unter anderem die folgenden Daten: 
 \begin{itemize}
   \item Response Time
   \item http-Status Code der Antwort des Servers
@@ -496,3 +496,58 @@ Um die Messdaten der Tests aus den vorrangegangenen Kapiteln zu protokollieren u
 \smallskip
 
 Für die Bestimmung des Application Performance Index wurden folgende Werte gewählt:
+
+\begin{table}[h]
+  \myfloatalign
+  \begin{tabularx}{\textwidth}{|l|l|X|} \toprule
+      \tableheadline{Level} & \tableheadline{Multiplier} & \tableheadline{Time T} \\ \midrule
+      Zufrieden & <= T & <= 500 Millisekunden  \\
+      \midrule
+      Toleriert & >T, <= 3T & [0,5 Sekunden, 1,5 Sekunden]  \\
+      \midrule
+      Frustriert & > 3T & > 1,5 Sekunden  \\
+      \bottomrule
+  \end{tabularx}
+  \caption[Application Performance Index]{Application Performance Index.}
+  \label{tab:ApplicationPerformanceIndex2}
+\end{table}
+
+Das bedeutet, dass Nutzer bis zu einer Response Time von 500 Millisekunden zufrieden sind. Response Times bis 1500 Millisekunden tolerieren Nutzer und bei Response Times ab 1500 Millisekunden sind Nutzer frustriert. Der Multiplier ist hier also 3T. Aus diesen Werten wird dann also der Performance Index berechnet.
+
+\subsection{Systemhardware und Testumfeld}
+Es wird die verwendete Systemhardware für Client und Server, die in allen drei Tests verwendet wurde, aufgelistet. Dies ist erwähnenswert, da die Messwerte von der Leistungsfähigkeit der Hardware abhängen. Da allerdings ein Vergleich zwischen zwei Systemen gezogen wird, können auch allgemeingültige Erkenntnisse aus den Ergebnissen der Tests gezogen werden. Ein weiterer wichtige Punkt ist der, dass beide Rechner, also Client und Server, sich in demselben Netzwerk befinden und über denselben Router über Ethernet mit dem Internet verbunden sind. 
+Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird Windows-Subsystem für Linux 2 (WSL 2) verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden [31]. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
+
+\begin{table}[h]
+  \myfloatalign
+  \begin{tabularx}{\textwidth}{|l|X|} \toprule
+      \tableheadline{Komponente} & \tableheadline{Spezifikation} \\ \midrule
+      CPU & Intel(R) Core(TM) i5-8265U CPU @ 1.60GHz \\
+      \midrule
+      Arbeitsspeicher & 16 Gigabyte \\
+      \midrule
+      Betriebssystem & Microsoft Windows 10 Pro, 64 Bit Version	10.0.19042 Build 19042 \\
+      \bottomrule
+  \end{tabularx}
+  \caption[System des Clients]{System des Clients.}
+  \label{tab:SystemdesClients}
+\end{table}
+
+In \autoref{tab:SystemdesClients} ist das System des Clients dargestellt. Auf diesem System wird Apache JMeter ausgeführt, es sendet also jeweils die http-Anfragen an den Server. 
+
+\begin{table}[h]
+  \myfloatalign
+  \begin{tabularx}{\textwidth}{|l|X|} \toprule
+      \tableheadline{Komponente} & \tableheadline{Spezifikation} \\ \midrule
+      CPU & Intel(R) Core(TM) i7-7700HQ CPU @ 2.80GHz \\
+      \midrule
+      Arbeitsspeicher & 16 Gigabyte \\
+      \midrule
+      Betriebssystem & Microsoft Windows 10 Education, 64 Bit Version	10.0.19042 Build 19042 \\
+      \bottomrule
+  \end{tabularx}
+  \caption[System des Servers]{System des Servers.}
+  \label{tab:SystemdesServers}
+\end{table}
+
+In \autoref{tab:SystemdesServers} ist das System des Servers dargestellt. Hier laufen also die jeweiligen Ressource Server, die die Anfragen von Apache JMeter beantworten.

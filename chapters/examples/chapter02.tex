@@ -177,7 +177,7 @@ JSON Web Token zu einem ID-Token wird [19].
 \end{table}
 
 Zudem sind sogenannte Standard Claims spezifiziert, die Informationen über den 
-authentifizierten End-Nutzer liefern und in den Payload eingetragen werden können [19]. Die  
+authentifizierten End-Nutzer liefern und in den Payload eingetragen werden können [19].  
 Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert. 
 
 \subsection{Hybrid Flow}
@@ -285,7 +285,7 @@ Zugriffsentscheidung wird folgendermaßen evaluiert:
 Falls eine http-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
 Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service gesendet:
 
-\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
+\begin{lstlisting}[language=C++,frame=tb,caption={Input-Daten für Open Policy Agent},label=lst:Input-DatenfürOpenPolicyAgent]
   {
     "method": "PUT",
     "owner": "bob@hooli.com",
@@ -299,7 +299,7 @@ Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service ge
 
 Dann würde der OPA-Service die folgende Zugriffsentscheidung evaluieren:
 
-\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
+\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsentscheidung in Rego},label=lst:ZugriffsentscheidunginRego]
   {
     "allow": false
   }
@@ -390,7 +390,7 @@ dann ergeben sich folgende Werte:
       Frustriert & > 4T & > 4,8 Sekunden  \\
       \bottomrule
   \end{tabularx}
-  \caption[Standard Claims]{Standard Claims.}
+  \caption[Beispiell Application Performance Index]{Beispiel Application Performance Index.}
   \label{tab:ApplicationPerformanceIndex}
 \end{table}
 
