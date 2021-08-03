@@ -1,12 +1,12 @@
 \chapter{Technische Grundlagen}
-\label{ch:background}
+\label{sec:TechnischeGrundlagen}
 In diesem Kapitel werden alle nötigen technischen Grundlagen zusammengetragen. Da es sich um ein OAuth2 System handelt, wird diese Spezifikation erläutert. Zudem werden auf die Tokens eingegangen, die die Ressource Server jeweils validieren müssen. Diese sind \ac{JSON} Web Token. Dann werden noch die Metriken zum Messen der Performance erläutert, das Programm zum Messen dieser Werte genannt sowie das Framework zur Implementierung der Ressource Server erklärt. 
 
 %
 % Section: Der erste Abschnitt
 %
 \section{Grundlegender Begriffe der IT-Sicherheit}
-\label{sec:background:first_section}
+\label{sec:GrundlegenderBegriffederIT-Sicherheit}
 Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelmäßig verwendet werden.
 
 \begin{description}
@@ -21,12 +21,12 @@ Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelm�
 % Section: Der Zweite Abschnitt
 %
 \section{OAuth2}
-\label{sec:background:second_section}
+\label{sec:OAuth2}
 OAuth2 ist eine Spezifikation, die ursprünglich entwickelt wurde, um Dritten Zugriff auf die Daten eines sogenannten Ressource Owners zu ermöglichen, ohne dass dieser Ressource Owner dem Dritten, in der Spezifikation Client genannt, sein Nutzername und Passwort übermitteln muss [6].  Dies wird dadurch ermöglicht, dass dem Client von einem Autorisationsserver ein Token übermittelt wird und mit diesem Token kann der Client Daten des Ressource Owners abfragen oder Aktionen im Namen des Ressource Owners durchführen. Diese Daten des Ressource Owners werden auf dem sogenannten Ressource Server gehostet.
 Im Laufe der Zeit wurde diese Spezifikation erweitert, um weitere Anwendungsfälle abzudecken, wie die Spezifikation OpenID Connect, welche Single-Sign-On ermöglicht. 
 
 \subsection{Rollen in OAuth2}
-\label{subsec:background:second_section:first_subsection}
+\label{subsec:OAuth2:RolleninOAuth2}
 Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind.
 
 \begin{description}
@@ -37,12 +37,12 @@ Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind.
 \end{description}
 
 \subsection{Erhalt von Token}
-\label{subsec:background:second_section:second_subsection}
+\label{subsec:OAuth2:ErhaltvonToken}
 
 Gemäß der Spezifikation gibt es fünf verschiedene Wege, wie ein Client von einem Authorization Server einen Token erhalten kann [8]. Im Folgenden werden nur lediglich zwei beschrieben, da die anderen drei für diese Arbeit keine Relevanz haben. 
 
 \subsubsection{Authorization Code Grant}
-\label{ssubsec:background:second_section:first_subsection:first_subsubsection}
+\label{ssubsec:OAuth2:ErhaltvonToken:AuthorizationCodeGrant}
 Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser verwendet, von dem Client auf den Authorization Server weitergeleitet, um den Ressource Owner zu bitten, sich bei dem Authorization Server zu authentifizieren, um dann dem Client zu autorisieren auf eine geschützte Ressource des Ressource Servers zuzugreifen [9]. 
 
 \begin{figure}[htbp]
@@ -56,42 +56,43 @@ In Abbildung 2.1 ist der Authorization Code Grant Flow als Sequenzdiagramm abgeb
 Grob kann man es sich in der Praxis so vorstellen, dass ein Nutzer eine Webapplikation (=Client) bedient und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation, die der Client ist, leitet also den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, Daten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
 
 \subsubsection{User Password Credential Grant}
-\label{ssubsec:background:second_section:first_subsection:second_subsubsection}
+\label{ssubsec:OAuth2:ErhaltvonToken:UserPasswordCredentialGrant}
 Diese Art des Token-Erhalts ist ähnlich zu dem Authorization Code Grant, nur dass hier kein Webbrowser notwendig ist, den der End-Nutzer bedient. Stattdessen werden die Authentifizierungsdetails des End-Nutzers, also Nutzername und Passwort, in dem Body der Token-Anfrage übertragen [12]. Im Allgemeinen gilt diese Methode als nicht sicher, allerdings wird sie zu Testzwecken eingesetzt und so auch hier, damit Apache JMeter automatisch einen Token von dem Authorization Server erhalten kann.
 
 \section{JSON Web Token}
-\label{sec:background:third_section}
+\label{sec:JSONWebToken}
 Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zugriff auf http-Schnittstellen des Ressource Servers zu erhalten, sind diese Token bei den heutigen Implementierungen von Autorisationsservern sogenannte \ac{JSON} Web Token, so auch bei dem Autorisationsserver von Microsoft, Azure Active Directory, sowie Keycloak [13] [14]. 
 JSON Web Token ist eine Spezifikation für Token, die beschreibt wie die Tokens aufgebaut sind und welche Inhalte sie haben [15].
 Signierte JSON Web Token sind in drei Teile unterteilt: Header, Payload und die Signatur. Die Gesamtstruktur ist in JSON dargestellt, das heißt es gibt jeweils Schlüssel-Wert-Paare in JSON. Zur Übertragung werden die JSON Web Token base64-kodiert und hierbei werden jeweils die drei Teile, also Header, Payload und Signatur, durch einen Punkt (‚.‘) voneinander getrennt. 
 In dem Header und Payload stehen sogenannte Claims. Ein Claim ist ein Schlüssel-Wert-Paar. Diese liefern Informationen über den Token wie zum Beispiel „exp“, kurz für „Expiration Time“, der angibt, bis wann der Token gültig ist. Einen Token, der schon abgelaufen ist, sollte der Ressource Server nicht akzeptieren. Die Namen der Schlüssel der Claims sind standardisiert [15]. 
 
-\begin{lstlisting}
-    {
-      alg: "RS256",
-      typ: "JWT",
-      kid: "KaD7XcL-5_0lEdjztl8fCqrR2R-uCf1BtCyngSfI7mg"
-    }.
-    {
-      exp: 1625764809,
-      iat: 1625763009,
-      jti: "7df07f70-5c50-41fd-b757-2e3faa8c50e4",
-      iss: "http://localhost:9080/auth/realms/sample",
-      aud: "account",
-      sub: "de16edd9-a654-4769-b71c-3faf34583890",
-      typ: "Bearer",
-      azp: "test-app",
-      session_state: "a19e1f5f-4080-488f-b193-a943925d62fc",
-      acr: "1",
-    }.
-    [signature]    
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Beispiel JSON Web Token},label=lst:BeispielJSONWebToken]
+  {
+    alg: "RS256",
+    typ: "JWT",
+    kid: "KaD7XcL-5_0lEdjztl8fCqrR2R-uCf1BtCyngSfI7mg"
+  }.
+  {
+    exp: 1625764809,
+    iat: 1625763009,
+    jti: "7df07f70-5c50-41fd-b757-2e3faa8c50e4",
+    iss: "http://localhost:9080/auth/realms/sample",
+    aud: "account",
+    sub: "de16edd9-a654-4769-b71c-3faf34583890",
+    typ: "Bearer",
+    azp: "test-app",
+    session_state: "a19e1f5f-4080-488f-b193-a943925d62fc",
+    acr: "1",
+  }.
+  [signature]   
 \end{lstlisting}
 
-Obenstehend ist ein rudimentärer dekodierter Token dargestellt. In dem Kapitel ID Token
+Obenstehend ist ein rudimentärer dekodierter JSON Web Token dargestellt. In dem \autoref{subsec:OpenIDConnect:IDToken}
 wird erläutert, welche Bedeutung die einzelnen Claims haben.
 
 \subsection{JSON Web Token Signatur}
-\label{subsec:background:second_section:first_subsection}
+\label{sec:JSONWebToken:JSONWebTokenSignatur}
 
 JSON Web Tokens sind in der Regel mit dem asymmetrischen Verfahren Rivest–Shamir–
 Adleman (RSA) signiert [16]. Das bedeutet, dass mittels eines privaten Schlüssels, über den
@@ -102,18 +103,18 @@ Signatur nicht mehr übereinstimmt. Dadurch sind die Authentizität und die Inte
 Tokens sichergestellt.
 
 \subsection{JSON Web Token Key}
-\label{subsec:background:second_section:first_subsection}
+\label{sec:JSONWebToken:JSONWebTokenKey}
 Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der im JSONFormat dargestellte öffentliche Schlüssel [17]. 
 
 \subsection{Base64 Kodierung}
-\label{subsec:background:second_section:first_subsection}
+\label{sec:JSONWebToken:Base64Kodierung}
 JSON Web Token werden, wenn sie übertragen werden, in Base64 kodiert [16]. Base64 ist
 keine Verschlüsselung und auch keine Datenkomprimierung, sondern dient vor allem dem
 Zweck, dass Daten in ausschließlich ANSI-Zeichen kodiert übertragen werden, also das
 irreguläre Zeichen wie Umlaute nicht mehr vorkommen, um Probleme vorzubeugen [18]. 
 
 \section{OpenID Connect}
-\label{sec:background:third_section}
+\label{sec:OpenIDConnect}
 OpenID Connect ist eine Authentifizierungsschicht, die auf der OAuth2 Spezifikation
 aufbaut [19].
 Ursprünglich wurde OAuth2 nur dazu angewandt, dass Clients im Namen des Ressource
@@ -124,26 +125,327 @@ Claims steckt, dass den Client, der den Token erhalten hat, nachdem sich ein End
 dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses EndNutzers zu verifizieren.
 Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token. 
 
-\subsection{ID Token }
-\label{subsec:background:second_section:first_subsection}
-Ein JSON Web Token ist ein ID Token, wenn eine Reihe von Claims in dem Payload des
-Tokens gesetzt ist. Die Folgenden Claims müssen in dem Payload gesetzt sein, damit ein
-JSON Web Token zu einem ID-Token wird [19]: 
+\subsection{ID Token}
+\label{subsec:OpenIDConnect:IDToken}
+ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben. Diese sind in \autoref{tab:idtoken} gelistet.
 
 \begin{table}[h]
   \myfloatalign
-  \begin{tabularx}{\textwidth}{Xll} \toprule
-      \tableheadline{labitur bonorum pri no} & \tableheadline{que vista}
-      & \tableheadline{human} \\ \midrule
-      fastidii ea ius & germano &  demonstratea \\
-      suscipit instructior & titulo & personas \\
-      %postulant quo & westeuropee & sanctificatec \\
+  \begin{tabularx}{\textwidth}{|l|X|} \toprule
+      \tableheadline{Claim} & \tableheadline{Beschreibung} \\ \midrule
+      iss & Die Issuer-URL. Dies ist die URL des Authorization Server, der den Token 
+      erstellt hat („Herausgeber“). \\
       \midrule
-      quaestio philosophia & facto & demonstrated \\
-      %autem vulputate ex & parola & romanic \\
-      %usu mucius iisque & studio & sanctificatef \\
+      sub & Das Subject. Dies ist ein eindeutiger Identifier des Nutzers, der sich 
+      authentifiziert hat. \\
+      \midrule
+      aud & Die Audience. Das ist der Empfänger des Tokens, also in der Regel die 
+      Client-ID. \\
+      \midrule
+      exp & Expiration Time. Das ist der Zeitpunkt, zu dem der Token abgelaufen ist. \\
+      \midrule
+      iat & Issued at. Das ist der Zeitpunkt, zu dem der Token herausgegeben wurde. \\
       \bottomrule
   \end{tabularx}
-  \caption[Autem usu id]{Autem usu id.}
-  \label{tab:moreexample}
+  \caption[ID Token]{ID Token.}
+  \label{tab:idtoken}
+
+  \bigskip
+In \autoref{tab:idtoken} sind die Claims zu sehen, die in dem Payload gesetzt sein müssen, damit ein
+JSON Web Token zu einem ID-Token wird [19].
 \end{table}
+
+\begin{table}[h]
+  \myfloatalign
+  \begin{tabularx}{\textwidth}{|l|l|X|} \toprule
+      \tableheadline{Member} & \tableheadline{Type} & \tableheadline{Beschreibung} \\ \midrule
+      sub & String & Die eindeutige ID des End-Nutzers.  \\
+      \midrule
+      name & String & Vor-und-Nachname.  \\
+      \midrule
+      given\_name & String & Vorname.  \\
+      \midrule
+      family\_name & String & Nachname.  \\
+      \midrule
+      nickname & String & Der Nickname. Das kann beispielsweise der Vorname sein.  \\
+      \midrule
+      email & String & Die E-Mail-Adresse.  \\
+      \bottomrule
+  \end{tabularx}
+  \caption[Standard Claims]{Standard Claims.}
+  \label{tab:standardclaims}
+\end{table}
+
+Zudem sind sogenannte Standard Claims spezifiziert, die Informationen über den 
+authentifizierten End-Nutzer liefern und in den Payload eingetragen werden können [19]. Die  
+Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert. 
+
+\subsection{Hybrid Flow}
+\label{subsec:OpenIDConnect:HybridFlow}
+Der Hybrid Flow ist der „Flow“ der beschreibt, wie der Client in OpenID Connect einen
+Token erhalten kann. Es ist fast identisch mit dem Authorization Code Grant in OAuth2, nur 
+das hier neben einem Access Token der Client auch einen ID-Token von dem Authorization 
+Server erhält [19]. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf.
+\begin{enumerate}
+  \item Der Client bereitet eine Authorization Request vor.
+  \item Der Client sendet die Authorization Request zu dem Authorization Server.
+  \item Der Authorization Server authentifiziert den End-Nutzer. 
+  \item Der Authorization Server holt sich die Autorisation/Einwilligung des End-Nutzers ein. 
+  \item Der Authorization Server leitet den End-Nutzer zurück zu dem Client mit 
+  einen Authorization Code.
+  \item Der Client sendet eine Request mit dem Authorization Code an den Token-Endpunkt des Authorization Server, um Token zu erhalten. 
+  \item Der Client erhält einen ID-Token und Access Token von dem Token-Endpunkt des Authorization Server.
+  \item Der Client validiert den ID-Token und erhält den Subject Identifier des End-Nutzers.    
+\end{enumerate}
+
+\section{OAuth2 Endpunkte des Autorisationsservers}
+\label{sec:OAuth2EndpunktedesAutorisationsservers}
+
+Der Autorisationsserver ist über eine Reihe von Endpunkte für den Client ansprechbar. Über den Token 
+Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Client 
+übermitteln. Im Folgenden werden die relevanten Endpunkte erläutert.
+
+\subsection{Authorization Endpunkt}
+\label{sec:OAuth2EndpunktedesAutorisationsservers:AuthorizationEndpunkt}
+Dies ist der Endpunkt, an den der Client den End-Nutzer weiterleitet. Hier muss sich der 
+End-Nutzer authentifizieren und gegeben falls den Client autorisieren, dass er einen Token erhalten darf [7].
+
+\subsection{Token Endpunkt}
+\label{sec:OAuth2EndpunktedesAutorisationsservers:TokenEndpunkt}
+Dies ist der Endpunkt des Autorisationsservers an den ein Client, falls er die notwendigen 
+Informationen wie beispielsweise den Authorization Code besitzt, einen Token erhalten 
+kann [7].
+
+\subsection{Token Endpunkt}
+\label{sec:OAuth2EndpunktedesAutorisationsservers:JSONWebKeySet(JWKS)Endpunkt}
+Dies ist der Endpunkt, in dem alle öffentlichen Schlüssel für die Signatur des JSON Web 
+Token abgefragt werden können [20]. Der Ressource Server nutzt diesen Endpunkt, um sich 
+den passenden öffentlichen Schlüssel der Signatur des Tokens zu holen und damit die 
+Signatur zu validieren und die Authentizität und Integrität des Tokens sicherzustellen.
+
+\section{Zugriffskontrolle}
+\label{sec:Zugriffskontrolle}
+Bei der Zugriffskontrolle geht es darum, den Zugriff auf Schnittstellen einzuschränken, da 
+man in der Praxis oftmals die Anforderung hat, dass beispielsweise nur bestimmte 
+Personen mit bestimmten Privilegien etwaige Daten von einem Ressource Server abfragen 
+oder Aktionen durchführen dürfen.
+Es gibt verschiedene Vorgehensweisen eine Zugriffskontrolle zu realisieren. In unserem Fall 
+wird Role Based Access Control (RBAC) verwendet. 
+
+\subsection{Role Based Access Control (RBAC)}
+\label{sec:Zugriffskontrolle:RoleBasedAccessControl(RBAC)}
+Role Based Access Control, zu Deutsch rollenbasierte Zugriffskontrolle, ist eine ANSI-NORM 
+und sie beschreibt die Verknüpfung von Rollen, die man Nutzern zuweist, mit 
+Zugriffsprivilegien [21]. Gemäß der Norm gibt es eine Reihe Definitionen:
+
+\begin{description}
+  \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie RBAC
+  umgesetzt werden kann.
+  \item[objects:] Das ist das Objekt, auf das man den Zugriff beschränken will. Das kann
+  beispielsweise ein Datenbankeintrag, ein Drucker oder eine http-Schnittstelle sein.
+  \item[operations:] Eine Operation ist ein ausführbares Programm, was dem Nutzer Funktionen
+  bereitstellt.
+  \item[permissions:] Das ist die Zustimmung, eine Aktion auf eine durch RBAC geschützte 
+  Ressource durchzuführen.
+  \item[Role:] Eine Rolle ist eine Jobfunktion innerhalb einer Organisation, die Autorität und 
+  Verantwortlichkeiten eines Nutzers und der zugewiesenen Rolle assoziiert.
+  \item[User:] Ein Nutzer ist definiert als eine Person, allerdings kann prinzipiell ein Nutzer auch ein 
+  Objekt wie beispielsweise eine Maschine sein.
+\end{description}
+
+\section{Open Policy Agent}
+\label{sec:OpenPolicyAgent}
+Open Policy Agent (OPA) ist eine quelloffene Policy Engine, die Zugriffskontrolle von 
+Applikationen als Microservice entkoppelt [22]. 
+Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwendet. 
+Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego. 
+Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen eine 
+programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden kann 
+oder nicht und entsprechend sendet der OPA-Service an das anfragende Programm eine 
+Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy 
+Agent zu entkoppeln, diese lediglich eine Unterstützung für http und JSON mitbringen 
+müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
+  package application.authz
+
+  # Only owner can update the pet's information
+  # Ownership information is provided as part of OPA's input
+  default allow = false
+  allow {
+      input.method == "PUT"
+      some petid
+      input.path = ["pets", petid]
+      input.user == input.owner
+  }
+\end{lstlisting}
+
+In dem oben gezeigten Beispiel wird eine solche Zugriffskontrolle realisiert. Die 
+Zugriffsentscheidung wird folgendermaßen evaluiert:
+Falls eine http-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
+Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service gesendet:
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
+  {
+    "method": "PUT",
+    "owner": "bob@hooli.com",
+    "path": [
+        "pets",
+        "pet113-987"
+    ],
+    "user": "alice@hooli.com"
+  }
+\end{lstlisting}
+
+Dann würde der OPA-Service die folgende Zugriffsentscheidung evaluieren:
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
+  {
+    "allow": false
+  }
+\end{lstlisting}
+
+Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in Abbildung 4 Input-Daten für Open Policy Agent der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
+
+\section{Apache Tomcat}
+Apache Tomcat ist ein Webserver, der Spezifikationen der Java EE Plattform implementiert
+[23]. Dieser Webserver kann http-Anfragen abhören und diese entgegennehmen und 
+beantworten. Die relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
+und Filter. 
+
+\section{Spring}
+Spring ist ein quelloffenes Java-Framework, das die Implementierung von Anwendungen 
+vereinfacht. Es teilt sich in eine Reihe von Teilprojekte auf. 
+
+\subsection{Spring Boot}
+Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-Boot Applikationen wird ein Apache Tomcat Webserver eingebettet. Tomcat ermöglicht es, http-Anfragen anzunehmen und diese durch Mappings in der Applikation zu beantworten [23].
+
+\subsection{Spring Security}
+Spring Security ist ein Teilprojekt des Spring-Frameworks. Spring Security bietet 
+Unterstützung für OAuth2 und unter anderem auch für OAuth2 Ressource Server. 
+Man kann also mittels Spring Security einen OAuth2 Ressource Server implementieren, der 
+Zugriff auf http-Schnittstellen nur ermöglicht, wenn ein valider JSON Web Token in dem 
+Authorization Header der http-Anfrage gesendet wird. 
+
+\section{Keycloak}
+Keycloak ist eine Implementierung des Autorisationsserver und OpenID Provider der 
+OAuth2 und OpenID Connect-Spezifikation. Das bedeutet, dass Clients von Keycloak Access 
+Token sowie ID Token erhalten können.\smallskip
+
+Daneben ist Keycloak auch ein Identity Provider, das heißt es ermöglicht es hinterlegten 
+Nutzern sich zu authentifizieren. Damit ist also dann der Authorization Code Grant und 
+Hybrid Flow der OpenID Connect und OAuth2 Spezifikation möglich, denn es kann sich ein 
+Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermittelt 
+werden kann.
+
+\section{Apache JMeter und Metriken}
+Mit Apache JMeter ist es unter anderem möglich die Schnittstellen eines http-Servers auf 
+Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
+kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
+protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann.
+Da zum Testen der Performanz verschiedene Metriken betrachtet werden, werden diese 
+Metriken nachfolgend definiert. 
+
+\begin{description}
+  \item[Elapsed Time / Response Time:] Gemäß der Definition von Apache JMeter ist die Elapsed Time, auch Response Time 
+  genannt, die Zeit vom bevor dem Senden der http-Anfrage an den Server bis nach dem 
+  Eintreffen des in der Regel letzten Bytes der Antwort des Servers [24]. 
+  \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit vom bevor dem Senden der 
+  http-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
+  Antwort des Servers [24]. 
+  \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anfragen 
+  und Zeiteinheit [24]. Also in anderen Worten, die Anzahl von http-Anfragen per 
+  Sekunde/Minute/etc. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
+  Anfrage berechnet mit der folgenden Formel:
+
+  \begin{equation}
+    Datendurchsatz = \frac{Anzahl\;der\;Anfragen}{Gesamtzeit} 
+   \end{equation}
+
+  \item[Connect Time:] Die Connect Time ist die Zeit, die in Anspruch genommen wird, eine Verbindung mit dem 
+  Server aufzunehmen, d.h. im Falle von der Nutzung von TCP ist das der Three-Way-Handshake [24]. 
+\end{description}
+
+\section{Application Performance Index}
+Der Application Performance Index (Apdex) ist ein Standard, der die Nutzerzufriedenheit 
+hinsichtlich der Response Time in Webapplikationen misst [25]. Es wird ein Wert T 
+festgelegt, der die Response Time angibt, bis zu der der Nutzer zufrieden ist. Dann gibt es 
+einen zweiten Wert, der ein Vielfaches von T ist und angibt, bis zu welcher Länge der 
+Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist der Nutzer 
+frustriert. Aus diesen Werten errechnet sich dann ein Ergebnis für den Application 
+Performance Index, wobei hier 1.0 der beste Wert ist und der Nutzer hier vollständig 
+zufrieden ist.\smallskip
+
+Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, 
+dann ergeben sich folgende Werte:
+
+\begin{table}[h]
+  \myfloatalign
+  \begin{tabularx}{\textwidth}{|l|l|X|} \toprule
+      \tableheadline{Level} & \tableheadline{Multiplier} & \tableheadline{Time T} \\ \midrule
+      Zufrieden & <= T & <= 1,2 Sekunden  \\
+      \midrule
+      Toleriert & >T, <= 4T & [1,2 Sekunden, 4,8 Sekunden]  \\
+      \midrule
+      Frustriert & > 4T & > 4,8 Sekunden  \\
+      \bottomrule
+  \end{tabularx}
+  \caption[Standard Claims]{Standard Claims.}
+  \label{tab:ApplicationPerformanceIndex}
+\end{table}
+
+Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer 
+vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
+und bei Response Times größer als 4,8 ist der Nutzer frustriert. Am Beispiel 
+Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine http-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum 
+Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
+vollständig dargestellt ist.\smallskip
+Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich 
+dann der Application Performance Index.
+
+\begin{equation}
+  Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples} 
+\end{equation}
+
+In Abbildung ist die Formel zur Berechnung des Apdex-Scores dargestellt. Satisfied Count ist 
+hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
+Count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
+haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn 
+also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Score, 
+der 1,0 beträgt. 
+
+\section{Postman}
+Postman ist ein API-Client, mit dem unter anderem http-Anfragen gesendet und Antworten 
+des Servers erhalten werden können [25]. Außerdem bietet Postman Unterstützung für 
+OAuth2 an, das heißt es ist mittels Postman möglich, den Authorization Code Grant und
+Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. 
+
+\section{Docker-Container}
+In einem Docker-Container können Programme plattformunabhängig ausgeführt werden. 
+Der Docker-Container stellt alles bereit, was das auszuführende Programm benötigt, also 
+unter anderem: Den Code, die Ausführungsumgebung wie beispielsweise die Java Runtime 
+Environment (JRE) und das Betriebssystem [26]. 
+
+\section{Zusammenfassung}
+Es wurden also die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
+Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre http-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der http-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies also der Authorization Server. In OpenID Connect Vokabular würde man 
+bei Keycloak von einem OpenID Provider sprechen. In dem ID Token, der von dem 
+Authorization Server übermittelt wird, werden Attribute des Nutzers in den Payload 
+gemappt, unter anderem auch die Rollenzugehörigkeit. Die Spring-Boot Applikationen 
+validieren den Token jeweils, in dem sie die Signatur des Tokens überprüfen. Dies 
+geschieht, indem der Public Key über den JSON Web Key Set Endpunkt des Authorization 
+Server geholt und damit aus dem Header und Payload die Signatur berechnet und auf 
+Gleichheit überprüft wird. Daneben werden die Standardclaims überprüft. Bei Erfolg 
+entspricht dies einer Authentifizierung des Nutzers.\smallskip
+
+Beide Ressource Server haben als Zugriffskontrolle Role Based Access Control 
+implementiert, das heißt in dem Token muss die Rolle ROLE\_USER vorhanden sein, damit 
+Zugriff auf die http-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
+unterschiedliche Weise realisiert. In dem einen wird die Zugriffskontrolle in dem Server 
+selbst realisiert, in dem Anderem wird diese entkoppelt durch den Open Policy Agent. 
+Dieser wird als eigenständiges Programm in einem Docker-Container ausgeführt und die 
+Kommunikation zwischen Ressource Server und OPA-Service geschieht auf localhost-zu-localhost Basis. 
+Um die Performance zu testen, wird Apache JMeter verwendet. JMeter erzeugt Last auf die 
+beiden Server, das heißt es sendet http-Anfragen mit validem Token an die Ressource 
+Server und misst die Latenzen der Antworten. Neben der Latenz wird auch die Response 
+Time und Connect Time gemessen und der Datendurchsatz berechnet.
