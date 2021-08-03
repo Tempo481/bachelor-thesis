@@ -32,7 +32,7 @@ hat.
   \includegraphics[width=1.0\textwidth]{gfx/keycloak-sample-user.PNG}
   \caption{Keycloak Sample User}
   \label{fig:chapter03:keycloak-sample-user}
- \end{figure}
+\end{figure}
 
 In \autoref{fig:chapter03:keycloak-sample-user} Keycloak Sample User ist der erstellte Nutzer in Keycloak zu sehen. Neben 
 den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die Rolle ROLE\_USER.\bigskip
@@ -42,7 +42,7 @@ den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die 
   \includegraphics[width=0.5\textwidth]{gfx/keycloak-sample-user-role.PNG}
   \caption{Keycloak Sample User Role}
   \label{fig:chapter03:keycloak-sample-user-role}
- \end{figure}
+\end{figure}
 
 Dies ist in Keycloak möglich und damit lässt sich in den Applikationen dann eine 
 rollenbasierte Zugriffskontrolle realisieren, siehe Zugriffskontrolle. In \autoref{fig:chapter03:keycloak-sample-user-role} sind die zugewiesenen Rollen zu sehen. default-roles-sample ist eine durch Keycloak automatisch 
@@ -61,3 +61,283 @@ zu erhalten. Für den Authorization Code Grant ist mindestens eine Client-ID not
 diesem Fall wurde ein sogenannten confidential client in Keycloak registriert. Dieser muss 
 sich mit seinen Daten, also Client-ID und Client Secret, bei Keycloak authentifizieren, um 
 Token zu erhalten.
+
+\section{Erhalt eines Tokens mit Postman}
+Um Token durch den Hybrid Flow zu erhalten, wird ein Client und ein Nutzer benötigt, der 
+sich für den Client authentifiziert und den Authorization Server, der den Token ausstellt. 
+Der erstellte Nutzer wurde im vorhergehenden Kapitel in Keycloak, dem Authorization 
+Server, gezeigt. Der Nutzer muss einen Browser Agenten bedienen, damit der Client über 
+den Hybrid Flow Token erhalten kann. Als Client wurde der API-Client Postman verwendet, 
+der eingebauten Support für OAuth2 besitzt und mittels eines Browsers den Hybrid Flow 
+ausführen und damit Postman, also der Client, Token erhalten kann. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/postman-get-token3.PNG}
+  \caption{Authorization Code Grant mit Postman}
+  \label{fig:chapter03:postman-get-token3}
+ \end{figure}
+
+In \autoref{fig:chapter03:postman-get-token3} ist das Menü in Postman zu sehen. Um einen Token in Postman mit dem 
+eingebauten OAuth2 Support von Postman zu erhalten, mussten einige Daten angegeben
+werden, damit Postman den Authorization Code Grant beziehungsweise Hybrid Flow 
+ausführen kann. 
+Wie in \autoref{subsec:OAuth2:ErhaltvonToken} beschrieben, gibt es mehrere Wege wie ein Client einen Token 
+erhalten kann. Hier musste als Grant Type Authorization Code angegeben werden. 
+Dann musste die Auth URL, also der Authorization Endpunkt des Authorization Server 
+angeben werden. Hier wird der Browser des End-Nutzers hingeleitet, wo sich dann der End-Nutzer authentifizieren muss. 
+Die Access Token URL ist diejenige URL, von der Postman in Austausch von einem 
+Authorization Code einen Token erhalten kann. Den Authorization Code erhält Postman, 
+nachdem sich der End-Nutzer bei Keycloak authentifiziert hat. 
+Diese Endpunkte sind in Keycloak in der Admin-Konsole unter Real Settings vorzufinden. 
+Als Client ID und Client Secret wurden die Werte eingetragen, die bei der Registrierung des 
+Clients im vorherigen Kapitel erhalten wurden. 
+Als Scope wurde openid angegeben, damit die notwendigen Nutzerattribute von dem End-Nutzer, der sich bei Keycloak authentifiziert in den ID Token gemappt werden, da diese 
+Attribute ja benötigt werden, um eine Zugriffskontrolle zu realisieren. 
+Wenn diese Anfrage in Postman abgeschickt wurde, öffnet sich der Browser und man 
+erreicht die Auth-URL von Keycloak, in der aufgefordert wird, dass sich der End-Nutzer 
+authentifiziert. Hier muss sich nun der End-Nutzer authentifizieren, der in Keycloak als Authorization Server 
+und Identity Provider erstellt wurde. Die Auth URL ist nachfolgend dargestellt. 
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Authorization Request},label=lst:AuthorizationRequest]
+  http://localhost:9080/auth/realms/sample/protocol/openid-connect/auth?
+  response_type=code
+  &state=
+  &client_id=sample-app
+  &scope=openid
+  &redirect_uri=https%3A%2F%2Foauth.pstmn.io%2Fv1%2Fcallback
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:AuthorizationRequest} ist die http-POST-Request dargestellt, mit der dann Postman, nachdem sich der End-Nutzer 
+authentifiziert hat, einen Authorization Code erhält, den Postman dann durch einen Token 
+von Keycloak austauschen kann. Die Paramater, die hier an Keycloak übertragen werden, 
+sind diejenigen die auch in \autoref{ssubsec:OAuth2:ErhaltvonToken:AuthorizationCodeGrant} beschrieben sind, nämlich:
+
+\begin{itemize}
+  \item Response\_type
+  \item State
+  \item Client\_Id
+  \item Scope
+  \item Redirect\_uri
+\end{itemize}
+
+Nachdem sich nun der End-Nutzer authentifiziert hat, erhält Postman einen Token. Die 
+Token-Anfrage, bei der der Authorization Code durch einen Token ausgetauscht wird, 
+geschieht automatisch und wird hier nicht beschrieben.
+
+\begin{lstlisting}[frame=tb,caption={Base64-kodierter JSON Web Token},label=lst:Base64-kodierterJSONWebToken]
+  eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJhUV83TjRENmN5MEVnVnVlR2ZrSWRobG5Ud1FoYi1IVDJlM21wWWFHV0o4In0.
+
+  eyJleHAiOjE2MjY2NDE0MzQsImlhdCI6MTYyNjYzOTYzNCwiYXV0aF90aW1lIjoxNjI2NjM5NjMzLCJqdGkiOiJiZjA3MDQwNS03NDY5LTQ1NTQtOWViOC1mNTcwMjNhMGY0ZDMiLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjkwODAvYXV0aC9yZWFsbXMvc2FtcGxlIiwiYXVkIjoiYWNjb3VudCIsInN1YiI6ImJmNDlmODdmLTY2ZDktNDNjZS1hNzRmLTgyMzNkY2ZmODNhYiIsInR5cCI6IkJlYXJlciIsImF6cCI6InNhbXBsZS1hcHAiLCJzZXNzaW9uX3N0YXRlIjoiNzFiMzJhZjgtNTQ0OS00OTMzLWJlZmUtZDQzODAwNzdkYzI1IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXNhbXBsZSIsIlJPTEVfVVNFUiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6Im9wZW5pZCBlbWFpbCBwcm9maWxlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJyb2xlcyI6WyJkZWZhdWx0LXJvbGVzLXNhbXBsZSIsIlJPTEVfVVNFUiIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXSwibmFtZSI6IkZpcnN0TmFtZU9mVXNlciBMYXN0TmFtZU9mVXNlciIsImF0dHJpYnV0ZTEiOiJVc2VyQXR0cmlidXRlMSIsImdyb3VwcyI6WyIvVXNlcnMiXSwicHJlZmVycmVkX3VzZXJuYW1lIjoidXNlciIsImdpdmVuX25hbWUiOiJGaXJzdE5hbWVPZlVzZXIiLCJmYW1pbHlfbmFtZSI6Ikxhc3ROYW1lT2ZVc2VyIiwiZW1haWwiOiJ1c2VyQG1haWwuY29tIn0.
+
+  b9BWNcf6ZaG-3sgX86YLu58vyk-HiZkDbLEdp5PgHEuZ6Q9omqjRsZCv4poQZtiqWrHSbprjiwfLadfPwz8sK9UOCrDs2KGd9Ev1nZrnI8JbhS3yfixkKTDyOOCja6KGAoYzfAnc4UVwfgP7xevBrWAnbpWGfVSStAPWBSlk0ICCHw8Kwkrly95tggsZLpuKFi7Mr0wrKlbB9-KjKYSoQhvZ6pQCFFJ83SjZ-sj_v7tkHXX79wf-exIgy2k64JBXViT66JKg9t33wnFEHtnnLG-nvoqGirPeRTZT0T_skmHNTg-p9zIxN3uYPMfKJ0o1yRUjvDD4LG1WYWKUahu82Q
+\end{lstlisting}
+
+In \autoref{lst:Base64-kodierterJSONWebToken} ist der Base64 kodierte Token zu sehen. Wie man sieht, ist er in drei Teile 
+unterteilt: Dem Header, dem Payload und der Signatur. Um ihn zu dekodieren und den 
+Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf https://jwt.io/ ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
+
+\begin{lstlisting}[frame=tb,caption={Dekodierter JSON Web Token},label=lst:DekodierterJSONWebToken]
+{
+    "alg": "RS256",
+    "typ": "JWT",
+    "kid": "ht0BHd8h1Q_CPuOLMj2TjiBJd6ukIROuxFmimbECbsk"
+}.
+{
+    "exp": 1626691594,
+    "iat": 1626689794,
+    "auth_time": 1626689528,
+    "jti": "dacddb77-6de4-4464-b623-b766a8624cda",
+    "iss": "http://localhost:9080/auth/realms/sample",
+    "aud": "account",
+    "sub": "8cf89140-e8d6-4850-b416-3cceda982ec2",
+    "typ": "Bearer",
+    "azp": "sample-app",
+    "session_state": "c8e12b53-1203-4d8e-a27c-ea54f3f86d60",
+    "acr": "0",
+    "realm_access": {
+      "roles": [
+        "default-roles-sample",
+        "ROLE_USER",
+        "offline_access",
+        "uma_authorization"
+      ]
+    },
+    "resource_access": {
+      "account": {
+        "roles": [
+          "manage-account",
+          "manage-account-links",
+          "view-profile"
+        ]
+      }
+    },
+    "scope": "openid email profile",
+    "email_verified": false,
+    "roles": [
+      "default-roles-sample",
+      "ROLE_USER",
+      "offline_access",
+      "uma_authorization"
+    ],
+    "name": "FirstNameOfUser LastNameOfUser",
+    "attribute1": "UserAttribute1",
+    "groups": [
+      "/Users"
+    ],
+    "preferred_username": "user",
+    "given_name": "FirstNameOfUser",
+    "family_name": "LastNameOfUser",
+    "email": "user@mail.com"
+}.
+[Signature]
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:DekodierterJSONWebToken} ist der dekodierte JSON Web Token dargestellt, den Keycloak erstellt und an Postman gesendet hat, nachdem sich der End-Nutzer der in Kapitel Keycloak als Authorization Server und Identity Provider erstellt wurde, authentifiziert hat. Wie zu sehen ist, sind die Nutzerattribute, also die Standardclaims, in diesen Token gemappt. Das heißt der Vor-und-Nachname, die E-Mail-Adresse, der Nickname sowie das Claim sub. 
+Zudem ist die Gruppenzugehörigkeit zu sehen, denn User ist ja in der Gruppe Users. Außerdem ist unter dem Schlüssel roles auch die Rolle ROLE\_USER vorzufinden. Diese Rolle wurde dem End-Nutzer in Keycloak zugewiesen und nach dieser Rolle wird dann bei der Schnittstelle im Ressource Server die Zugriffe kontrolliert, das heißt in dem Token muss diese Rolle gemappt sein, ansonsten sollte kein Zugriff erlaubt werden. Die restlichen Rollen, die in diesem Token zu sehen sind wie beispielsweise default-roles-sample, wurden automatisch von Keycloak erstellt und werden hier nicht weiter erläutert. 
+Außerdem sind die Claims vorzufinden, die in einem ID Token Pflicht sind wie beispielsweise exp, der angibt, wann der Token abläuft. Erklärungen zu diesen Claims sind im Kapitel ID Token zu finden. Diese werden hier nicht weiter erläutert. 
+Im Header ist unter anderem das Claim alg: RS256 vorzufinden, das angibt, dass der Token durch RSA mit 256 Bit großen Schlüssel asymmetrisch signiert ist. Was hierbei wichtig ist, dass durch diese Signatur, die in Abbildung 13 lediglich aus Platzgründen mit [Signature] gekennzeichnet ist, die Authentizität und Integrität des Tokens sichergestellt ist. Der Ressource Sever kann sich den passenden öffentlichen Schlüssel von Keycloak holen und damit dann die Authentizität und Integrität des Tokens validieren. 
+Nun wurde also durch den Authorization Code Grant ein Token von dem Authorization Server Keycloak erhalten mit dem es möglich ist, auf die http-Schnittstellen eines Ressource Servers zuzugreifen. Diese Ressource Server werden im nachfolgenden Kapitel beschrieben. 
+
+\section{Ressource Server}
+Beide Ressource Server sind in Java mithilfe des Spring-Frameworks implementiert. Die Ressource Server sind Spring-Boot Anwendungen, das bedeutet, dass ein Apache Tomcat Webserver in der Applikation eingebettet ist und automatisch gestartet wird. Die Ressource Server können also http-Anfragen von Clients entgegennehmen und diese beantworten.\smallskip
+
+Die verwendete Spring-Boot Version ist 2.4.8 mit Apache Tomcat 9.0.48, welcher über den Port 8080 erreichbar ist. Alle Versionen der verwendeten Technologien wie die Datenbank und der Object-Relational Mapper Hibernate können aus der Spring-Boot Version hergeleitet werden und werden deshalb im weiteren Verlauf nicht genannt.\smallskip
+
+Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln ob der Client, berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist und per http für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.
+Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die http-, JSON-, Base64-Kodierung-sowie-RSA unterstützt. 
+
+\subsection{Schnittstelle}
+\label{subsec:Schnittstelle}
+Beide Ressource Server haben eine http-GET-Schnittstelle implementiert, welche Daten aus einer SQL-Datenbank holt und sie dem anfragenden Client sendet. Dies ist genau die Schnittstelle, die nicht für alle frei zugänglich ist, sondern nur Nutzern zur Verfügung steht, die einen validen JSON Web Token haben und der Rolle ROLE\_USER zugehörig sind. 
+
+\begin{lstlisting}[language=Java,frame=tb,caption={http-Schnittstelle der Ressource Server},label=lst:http-Schnittstelleder Server]
+  /**
+  * {@code GET  /documents} : get all the documents.
+  *
+  * @return the {@link ResponseEntity} with status {@code 200 (OK)} 
+  * and the list of documents in body.
+  */
+  @GetMapping("/documents")
+  public List<Document> getAllDocuments() {
+     log.debug("REST request to get all Documents");
+     return documentService.findAll();
+  }
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:http-Schnittstelleder Server} ist diese Schnittstelle dargestellt. Sie wird auf „/documents“ gemappt, das bedeutet, dass falls der Ressource Server auf dem localhost gestartet wird, und der Client sich ebenso auf dem localhost befindet, er diese Schnittstelle über den Pfad „localhost:8080/documents“ ansprechen kann. 8080 ist hierbei der Port, auf dem Apache Tomcat http-Anfragen abhört.
+Diese Schnittstelle wurde in eine für Spring-Anwendungen typischen objektorientierten Architektur implementiert.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{gfx/projekstruktur-spring.png}
+  \caption{Projekstruktur Spring Applikation}
+  \label{fig:chapter03:projekstruktur-spring}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:projekstruktur-spring} ist die Projektstruktur dargestellt und die typische in Spring-Anwendungen vorzufindende geschichtete Architektur. Es gibt die Packages *.config, *.controller, *.entity, *.repository und *.service.\smallskip
+
+In dem *.controller-Package befindet sich die DocumentController-Klasse, die in Abbildung 13 zu sehen ist. Diese ruft eine Funktion der DocumentService-Klasse aus dem *.service-Package auf, welche alle Daten aus dem DocumentRepository in dem Package *.repository abruft. Dieses Repository ist ein JPARepository. JPA steht für Jakarta Persistence API, welche eine Spezifikation für die Schnittstelle zwischen Java-Anwendungen und SQL-Datenbanken ist. Als Implementierung dieser Spezifikation wird in dem Projekt der object-relational Mapper (ORM) Hibernate verwendet. 
+Das JPARepository implementiert unter anderem die Funktion .findAll(), welche alle Daten aus der Document-Table aus der verbundenen SQL-Datenbank holt. Diese Funktion wird in der DocumentService-Klasse aufgerufen.
+In dem Package *.entity befindet sich die Klasse Document, welche die durch Hibernate annotierte Entität darstellt. Diese repräsentiert die Table Document in der SQL-Datenbank. 
+Als Datenbank wird H2 Database Engine verwendet. Sample-Daten werden in diese Datenbank bei dem Start der Anwendung automatisch durch das SQL-insert-Skript geladen. Dieses Skript ist in dem Projekt unter src/main/resources/data.sql zu finden. 
+Diese http-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients also alle Document-Daten in JSON aus der SQL-Datenbank zu. Das eine SQL-Datenbank mit der Applikation verbunden wurde, dient der Simulierung von realistischen Testbedingungen, da in der Regel http-GET-Schnittstellen Daten aus einer Datenbank holen und sie den anfragenden Clients zusenden. Zudem wurde keine Cache Konfiguration von Hibernate verwendet, damit jede Anfrage von Clients gleichbehandelt wird und keine Inkonsistenzen bei den Latenzen entstehen. 
+
+\subsection{Spring Security OAuth2}
+Um die Server und die Schnittstelle als OAuth2 Ressource Server zu konfigurieren, wurde Spring Security verwendet, welches ein Teilprojekt des Spring Frameworks ist. 
+Um Zugriffe auf Schnittstellen nur Anfragen, die einen validen JSON Web Token haben zu erlauben, implementiert Spring Security eine SecurityFilterChain. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/bearerauthenticationentrypoint.png}
+  \caption{Bearer Token Authentication}
+  \label{fig:chapter03:bearerauthenticationentrypoint}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:bearerauthenticationentrypoint} ist die Funktionsweise der SecurityFilterChain abgebildet. In diesem Fall sendet ein Client eine Anfrage auf den durch OAuth2 geschützten Pfad /private der Spring Web Application. Falls die Anfrage nicht beantwortet werden darf, weil der Token des Clients invalide oder überhaupt kein Token vorhanden ist, wird eine AccessDeniedException geworfen und der Client wird aufgefordert sich zu authentifizieren. Ein valider Token, den der Client an den Server sendet, entspricht konzeptionell einer Authentifikation. 
+Damit die Ressource Server die Tokens validieren können, musste der JSON Web Key Set Endpunkt des Authorization Server in der Spring-Boot-Applikation angegeben werden. Dadurch kann die Applikation sich die öffentlichen Schlüssel der RSA-Signatur von diesem Endpunkt holen und damit die RSA-Signatur validieren, indem aus dem durch Base64 kodierten Header und Payload des JSON Web Tokens die Signatur berechnet und auf Gleichheit überprüft wird. Da der Ressource Server auf derselben Host-Maschine wie Keycloak, der Authorization Server, läuft, ist der Endpunkt in diesem Fall also:
+
+\begin{lstlisting}
+  http://localhost:9080/auth/realms/sample/protocol/openid-connect/certs
+\end{lstlisting}
+\smallskip
+
+Zudem werden die folgenden Claims des JSON Web Tokens validiert:
+\begin{itemize}
+  \item exp
+  \item nbf
+  \item iss
+\end{itemize}
+
+Der exp-Claim (Expiration Time) ist derjenige Claim der angibt, bis wann der Token gültig ist.
+Der nbf-Claim (Not Before) gibt den Zeitpunkt an, ab wann der Token akzeptiert werden darf.
+Der iss-Claim (Issuer) gibt die URI des Authorization Server an. Sie sollte dem Authorization Server entsprechen, von dem auch die öffentlichen Schlüssel für die RSA-Signatur geholt werden. 
+In beiden Ressource Servern wird eine erfolgreiche Authentifizierung, also ein valider JSON Web Token, der von Keycloak erstellt wurde, erwartet. Die Autorisierung aber, also die Prüfung, ob der authentifizierte Nutzer die benötigten Rechte verfügt, um Zugriff auf die Schnittstelle zu erhalten, wird in den zwei Ressource Servern auf zwei unterschiedliche Weisen realisiert und in den nachfolgenden zwei Kapiteln beschrieben.
+
+\subsection{Spring Security Ressource Server mit interner Zugriffskontrolle}
+
+Um eine rollenbasierter Zugriffskontrolle in dem Ressource Server selbst zu realisieren, wurde JwtAuthenticationConverter verwendet, das Teil von Spring Security ist.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/jwtauthenticationprovider.png}
+  \caption{JWT Authentication Provider}
+  \label{fig:chapter03:jwtauthenticationprovider}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:jwtauthenticationprovider} ist der Ablauf dargestellt, um eine rollenbasierte Zugriffskontrolle in dem Server, also der Spring-Boot Applikation, mit dem JwtAuthenticationConverter zu realisieren. Im Wesentlichen wird hier der JSON Web Token durch den JWTAuthenticationProvider von einem JwtDecoder dekodiert, verifiziert und validiert und von dem JwtAuthenticationConverter werden Autoritäten in eine Collection gemappt. Als JwtDecoder wird die Nimbus Bibliothek verwendet [27].
+Der JwtAuthenticationConverter wurde so konfiguriert, dass es Rollen aus dem JSON Web Token, der in Abbildung 13 dargestellt ist, in sogenannte GrantedAuthorities mappt. Diese sind Objekte, die Privilegien von Nutzern widerspiegeln wie beispielsweise Rollen [28]. 
+
+\begin{lstlisting}[language=Java,frame=tb,caption={JwtAuthenticationConverter},label=lst:JwtAuthenticationConverter]
+  @Bean
+  public JwtAuthenticationConverter jwtAuthenticationConverter() {
+      JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter 
+          = new JwtGrantedAuthoritiesConverter();
+      grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");
+      grantedAuthoritiesConverter.setAuthorityPrefix("");        
+  
+      JwtAuthenticationConverter jwtAuthenticationConverter 
+          = new JwtAuthenticationConverter();
+      jwtAuthenticationConverter.
+          setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+      return jwtAuthenticationConverter;
+  }    
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:JwtAuthenticationConverter} ist die verwendete Konfiguration dargestellt. Es wird also in dem JSON Web Token, der von dem Client gesendet wurde, nach dem Claim roles in dem Payload des Tokens gesucht und die Werte, die darin enthalten sind in GrantedAuthorities konvertiert. In dem Claim roles steht unter anderem auch die Rolle des Nutzers, der sich bei Keycloak authentifiziert hat, und zwar ROLE\_USER. Siehe Abbildung 13 Keycloak Access Token.
+Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich zu machen, die die Autorität ROLE\_USER besitzen, wurde HttpSecurity verwendet, das Teil von Spring Security ist. 
+
+\begin{lstlisting}[language=Java,frame=tb,caption={HttpSecurity},label=lst:HttpSecurity]
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+      http
+          .authorizeRequests(authorize -> authorize
+              .mvcMatchers("/api/documents").hasAuthority("ROLE_USER")
+              .anyRequest().permitAll()
+          )   
+          .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
+  } 
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:HttpSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /api/documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
+
+\subsection{Spring Security Ressource Server mit externer Zugriffskontrolle}
+Um die Zugriffskontrolle von dem zweiten Ressource Server zu entkoppeln, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist und es erlaubt Zugriffsentscheidungen externen Programmen zu überlassen. 
+Als externes Programm um diese Zugriffsentscheidungen zu fällen, wurde Open Policy Agent in der Version 0.30.2 verwendet, das in einem Docker-Container ausgeführt wird und auf dem gleichen Host wie der Ressource Server läuft. 
+
+\subsubsection{Rollenbasierte Zugriffskontrolle mit Open Policy Agent}
+Zunächst wird die Systemarchitektur dargestellt, die das Zusammenspiel zwischen dem Authorization Server, Keycloak, dem Ressource Server, der Spring-Boot Applikation und dem Open Policy Agent erklärt. 
+
+
+
+
+
+

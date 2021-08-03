@@ -50,7 +50,7 @@ Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser 
   \includegraphics[width=1.0\textwidth]{gfx/oauth_auth_code_flow.png}
   \caption{Authorization Code Grant}
   \label{fig:chapter02:oauth_auth_code_flow}
- \end{figure}
+\end{figure}
 
 In Abbildung 2.1 ist der Authorization Code Grant Flow als Sequenzdiagramm abgebildet. Es ist offensichtlich, dass es Beziehungen zwischen allen vier Rollen gibt, nämlich dem Ressource Owner, dem Client, in diesem Fall als „Web App“ gekennzeichnet, dem Authorization Server, Okta, und dem Ressource Server. 
 Grob kann man es sich in der Praxis so vorstellen, dass ein Nutzer eine Webapplikation (=Client) bedient und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation, die der Client ist, leitet also den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, Daten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
@@ -339,7 +339,7 @@ Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermi
 werden kann.
 
 \section{Apache JMeter und Metriken}
-Mit Apache JMeter ist es unter anderem möglich die Schnittstellen eines http-Servers auf 
+Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines http-Servers auf 
 Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
 kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
 protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann.
