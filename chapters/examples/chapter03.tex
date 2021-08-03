@@ -336,8 +336,163 @@ Als externes Programm um diese Zugriffsentscheidungen zu fällen, wurde Open Pol
 \subsubsection{Rollenbasierte Zugriffskontrolle mit Open Policy Agent}
 Zunächst wird die Systemarchitektur dargestellt, die das Zusammenspiel zwischen dem Authorization Server, Keycloak, dem Ressource Server, der Spring-Boot Applikation und dem Open Policy Agent erklärt. 
 
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{gfx/data-jwt.png}
+  \caption{Open Policy Agent und OAuth2}
+  \label{fig:chapter03:data-jwt}
+\end{figure}
+\bigskip
 
+In \autoref{fig:chapter03:data-jwt} ist die Systemarchitektur dargestellt. Zunächst authentifiziert sich der End-Nutzer bei dem Authorization Server. Hier ist als Beispiel Okta dargestellt, in diesem System wird allerdings Keycloak verwendet. Nachdem sich der End-Nutzer authentifiziert hat, erhält der Client einen JSON Web Token.
+Mit diesem JSON Web Token sendet der Client eine Anfrage an die OPA-enabled Software. Dies ist der Ressource Server, also die Spring-Boot Applikation. 
+Um eine Zugriffsentscheidung zu evaluieren, muss die OPA-enabled Software nun also die angefragte Schnittstelle inklusive Input-Daten an Open Policy Agent senden. Diese Input-Daten sind die JSON Web Token, in welchem unter anderem auch Nutzerattribute vorhanden sind, anhand dessen Open Police Agent mithilfe programmierter Zugriffsrichtlinien in Rego, eine Zugriffsentscheidung trifft und diese der OPA-enabled Software mitteilt, woraufhin der Client dann eine Antwort auf seine Anfrage erhält basierend auf der Zugriffsentscheidung von Open Policy Agent. 
 
+\begin{lstlisting}[frame=tb,caption={Rollenbasierte Zugriffsrichtlinie in Rego},label=lst:RollenbasierteZugriffsrichtlinieinRego]
+  package http.authz
 
+  default allow = false
+  
+  allow {
+      input.method == "GET"
+      input.path == ["documents"]
+      token.payload.roles[_] == "ROLE_USER"
+  }
+  
+  allow {
+      input.method == "GET"
+      input.path == ["h2-console"]
+  }
+  
+  # Helper to get the token payload.
+  token = {"payload": payload} {
+      [header, payload, signature] := io.jwt.decode(input.auth.token.tokenValue)  
+  }
+\end{lstlisting}
+\bigskip
 
+In \autoref{lst:RollenbasierteZugriffsrichtlinieinRego} ist die verwendete programmierte rollenbasierte Zugriffskontrolle in Rego, der Programmiersprache von Open Policy Agent, um Zugriffsrichtlinien zu definieren, dargestellt. 
+Es wird zunächst der JSON Web Token, den Open Policy Agent von dem Ressource Server erhält, dekodiert, da JSON Web Token in Base64 kodiert sind. Neben dem Token wird Open Policy Agent auch die angefragte http-Schnittstelle mitgeteilt. 
+In der ersten allow Methode, wird definiert, dass auf eine GET-Anfrage auf den Pfad documents, nur Zugriff erhalten werden darf, falls in dem Payload des JSON Web Token der Claim roles vorhanden ist und in diesem Claim der Wert ROLE\_USER vorhanden ist. Falls dem so ist, wird dem Ressource Server mitgeteilt, dass der Client autorisiert ist, eine Antwort auf seine Anfrage zu erhalten. 
+Die zweite allow-Methode wird hier nicht weiter erläutert. Anfragen, die nicht der Schnittstelle documents oder h2-console entsprechen, werden grundsätzlich abgelehnt. 
 
+\subsubsection{Spring Security AccessDecisionManager}
+Um Ressource Server Open Policy Agent die Zugriffsentscheidungen zu überlassen, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/filtersecurityinterceptor.png}
+  \caption{AccessDecisionManager in Spring Security}
+  \label{fig:chapter03:filtersecurityinterceptor}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:filtersecurityinterceptor} ist die Funktionsweise dargestellt. Zunächst durchläuft die ankommende Anfrage des Clients die SecurityFilterChain. Im Fall einer erfolgreichen Authentifikation, was im Falle von OAuth2 einer erfolgreichen Validierung des JSON Web Tokens entspricht, trifft der AccessDecisionManager eine Zugriffsentscheidung. 
+In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine http-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde man in den allermeisten Anwendungsszenarien auch im Produktiveinsatz machen, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
+
+\begin{itemize}
+  \item Der Pfad auf den der Client zugreifen möchte
+  \item Die http-Methode, mit der der Client auf diesen Pfad zugreifen möchte (GET, PUT, POST etc.)
+  \item Die Input-Daten, also der in Base64-kodierte JSON Web Token, welcher in dem SecurityContextHolder-Objekt gespeichert wird
+\end{itemize}
+
+Daraufhin wird dem Ressource Server dann von dem AccessDecisionManager, also Open Policy Agent, eine Zugriffsentscheidung per http mitgeteilt. Anhand dieser Entscheidung erlaubt oder verweigert der Ressource Server dem Client den Zugriff auf die Schnittstelle. 
+Es wurde nun also beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle beschrieben. 
+
+\subsection{Performancetests mit Apache JMeter}
+Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch mit Verwendung von Threads, Nutzer zu simulieren, die http-Anfragen an einen Server senden. In diesen http-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen. Wenn ein Login mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei diesen Performancetests werden also eingeloggte Nutzer simuliert. \smallskip
+
+Es wurden drei Testpläne erstellt, die verschiedene Aspekte der Server testen, wobei alle drei unter dem Überpunkt der Performance gehören. Die drei Testpläne werden als Lasttest, Skarlierbarkeitstest und Stresstest bezeichnet. 
+
+\begin{description}
+  \item[Lasttest:] Bei dem Lasttest wird der Server mit üblicher Last getestet und die Latenz gemessen. 
+  \item[Skalierbarkeitstest:] Bei dem Skalierbarkeitstest wird ansteigende Last auf dem Server generiert, wobei hierbei untersucht werden sollen, inwiefern sich Antwortzeiten des Servers bei hinzukommender Last ändern. 
+  \item[Stresstest:] Bei dem Stresstest wird eine unüblich hohe Last auf den Server generiert, um die Grenzen des Servers feststellen zu können. Zudem wird hier auch die CPU-Auslastung und Arbeitsspeicherbelegung betrachtet. 
+\end{description}
+
+Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von http-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremen sollten. Die verwendete Systemhardware von Client und Server, ist im Kapitel 3.4.5 zu sehen.
+
+\subsubsection{Lasttest}
+In dem Lasttest wurde eine übliche Last auf den Server generiert und mittels sogenannten Listener die Ergebnisse gemessen und protokolliert. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/Thread Group-Last.png}
+  \caption{Thread Group-Last}
+  \label{fig:chapter03:ThreadGroup-Last}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:ThreadGroup-Last} ist die verwendete Konfiguration dargestellt. Es werden zehn Threads gestartet, die jeweils gleichzeitig http-Anfragen an den Server senden. Als Ramp-up period wurde fünf Sekunden gesetzt. Das bedeutet, es dauert fünf Sekunden, bis alle zehn Threads gestartet sind. Als Duration ist 900 Sekunden eingestellt worden, das bedeutet das der Test 15 Minuten dauert. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/Test Plan-Last.png}
+  \caption{Test Plan-Last}
+  \label{fig:chapter03:TestPlan-Last}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:TestPlan-Last} ist eine Gesamtübersicht des Testplans dargestellt. In Thread Group wurde die Konfiguration vorgenommen, die in Abbildung 22 dargestellt ist. Hier wurden zwei Listener konfiguriert, nämlich Summary Report und jp@gc – Performance Metrics Collector. Summary Report ist für das Protokollieren der Messdaten zuständig. Hier werden unter anderem die Latenz, Response Time und Connect Time protokolliert. Der Performance Metrics Collector ist für das Messen von CPU-Auslastung und RAM-Belegung zuständig.
+In dem http Header Manager wird der http-Header der http-Anfrage, die jeweils an den Server gesendet werden soll, konfiguriert. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/HTTP Header Manager.png}
+  \caption{HTTP Header Manager}
+  \label{fig:chapter03:HTTPHeaderManager}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:HTTPHeaderManager} ist der verwendete http Header Manager zu sehen. Hier wurde lediglich der JSON Web Token in dem Schlüssel Authorization des http-Headers hinterlegt. Der Erhalt des Tokens wurde in Kapitel 3.2 beschrieben. Als Prefix wird Bearer angegeben, um dem empfangenden System zu signalisieren, dass in dem Authorization-Feld des http-Headers ein Bearer Token steht, also ein durch OAuth2 Code Grant erlangter Token [8].
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/HTTP Request.png}
+  \caption{HTTP Request}
+  \label{fig:chapter03:HTTPRequest}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:HTTPRequest} ist die http-Anfrage zu sehen, die jeweils an den Server gesendet wird. Hier wurde die Anfragemethode auf GET eingestellt und der Pfad auf documents gesetzt, denn die Schnittstelle des Ressource Server ist wie in Kapitel 3.3.1 erläutert eine http-GET-Schnittstelle. Als IP-Adresse des Servers ist hier localhost mit dem Port 8080 angegeben, allerdings wird hier eigentlich die IP-Adresse des Servers angegeben. Die spezifische IP-Adresse hat hier allerdings keine weitere Relevanz. Bei den Tests wird Client, also Apache JMeter, und Server auf zwei Rechnern gestartet, damit die Testergebnisse nicht verfälscht werden. 
+
+\subsection{Skalierbarkeitstest}
+Bei dem Skalierbarkeitstest geht es darum, eine ansteigende Last zu generieren, um herauszufinden inwiefern sich die Latenzen verändern. Je mehr Last erzeugt wird, desto höher werden tendenziell die Latenzen. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/Thread Group-Skalierung.png}
+  \caption{Thread Group-Skalierung}
+  \label{fig:chapter03:ThreadGroup-Skalierung}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:ThreadGroup-Skalierung} ist die verwendete Konfiguration zu sehen. Es werden 100 Threads gestartet, wobei hier die Ramp-up period 300 beträgt, dass bedeutet das erst nach 300 Sekunden alle 100 Threads gestartet wurden. Es werden also pro Sekunde 300/100 = 3 Threads gestartet. Die Gesamtdauer des Tests beträgt 300 Sekunden, also 15 Minuten. 
+Was dadurch ermöglicht wird, ist das bis zum Ende des Tests eine ansteigende Last auf den Server entsteht. Dadurch lässt sich dann betrachten, inwiefern sich die Latenzen beziehungsweise Response Times der Anfragen bei ansteigender Last verhalten. 
+
+\subsection{Stresstest}
+Bei dem Stresstest geht es darum, dass eine möglichst hohe Last auf den Server erzeugt wird, um die Grenzen des Systems auszuloten. Dies ist wichtig, da man in der Regel wissen will, wie viele Nutzer ein System gleichzeitig bedienen kann, bis das System entweder unerreichbar wird oder die Latenzen der Antworten unakzeptabel hoch sind, damit man dem zum geeigneten Zeitpunkt durch horizontale Skalierung entgegenwirken kann. Zudem können durch diesen Test, Schwachstellen der jeweiligen Implementierungen wie beispielsweise Memory Leaks, erkannt werden. 
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/Thread Group-Stress.png}
+  \caption{Thread Group-Stress}
+  \label{fig:chapter03:ThreadGroup-Stress}
+\end{figure}
+\bigskip
+
+In \autoref{fig:chapter03:ThreadGroup-Stress} ist die verwendete Konfiguration zu sehen. Es werden insgesamt 1000 Threads gestartet wobei alle 1000 Threads erst nach 120 Sekunden gestartet sind. Der Test dauert insgesamt 900 Sekunden, das heißt 15 Minuten. Während dieser Zeit sendet jeder Thread kontinuierlich Anfragen an den Server. Dieser Test ist also deutlich ressourcenintensiver als der Last-und-Skalierbarkeitstest. Verlässlich können pro Maschine in Apache JMeter, ca. 1000-2000 Threads gestartet werden, was allerdings abhängig ist von der jeweiligen Hardware des Systems, auf dem Apache JMeter ausgeführt wird [30]. Dieser Test wird ohne die GUI von Apache JMeter ausgeführt, da diese speziell bei ressourcenintensiven Stresstests die Testergebnisse verfälschen kann. Die verwendete Systemhardware von Client und Server werden im Kapitel Systemhardware beschrieben. 
+
+\subsection{Messung und Protokollierung von Messdaten}
+Um die Messdaten der Tests aus den vorrangegangenen Kapiteln zu protokollieren und in geeigneter Weise zu visualisieren, wurden Apache JMeter Listener verwendet, die Messdaten in CSV-Dateien schreiben. Um diese Daten visuell darzustellen, wurde der HTML Report von Apache JMeter verwendet. Als Listener wurde jeweils Summary Report verwendet. Dieser misst und protokolliert unter anderem die folgenden Daten: 
+\begin{itemize}
+  \item Response Time
+  \item http-Status Code der Antwort des Servers
+  \item Latenz
+  \item Connect Time
+  \item Gesendete Bytes
+  \item Erhaltene Bytes
+\end{itemize}
+\smallskip
+
+Für die Bestimmung des Application Performance Index wurden folgende Werte gewählt:
