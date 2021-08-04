@@ -12,8 +12,8 @@ Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelm�
 \begin{description}
   \item[Authentifizierung:] Bei einer Authentifizierung beweist ein Nutzer seine Identität, indem er dem gegenüberliegenden Server Informationen übermittelt, über die nur der Nutzer verfügen kann wie beispielsweise ein Nutzername und Passwort oder ein Token.
   \item[Autorisierung:] Eine Autorisierung findet grundsätzlich nach der Authentifizierung statt. Hier überprüft das System nach der Authentifizierung des Nutzers, ob der Nutzer über die notwendigen Rechte verfügt eine Aktion auszuführen. 
-  \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erstellen kann, gewährleistet werden [5].
-  \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten [5]. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt das sie der Urheber ist.
+  \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erstellen kann, gewährleistet werden \citep{connect2id}.
+  \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten \citep{connect2id}. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt das sie der Urheber ist.
   \item[Validierung] Man kann von einer Validierung sprechen, wenn oben genannte Aspekte, nämlich die Authentifizierung, Autorisierung, Integrität sowie Authentizität, überprüft werden.
 \end{description}
 
@@ -65,7 +65,6 @@ Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zu
 JSON Web Token ist eine Spezifikation für Token, die beschreibt wie die Tokens aufgebaut sind und welche Inhalte sie haben [15].
 Signierte JSON Web Token sind in drei Teile unterteilt: Header, Payload und die Signatur. Die Gesamtstruktur ist in JSON dargestellt, das heißt es gibt jeweils Schlüssel-Wert-Paare in JSON. Zur Übertragung werden die JSON Web Token base64-kodiert und hierbei werden jeweils die drei Teile, also Header, Payload und Signatur, durch einen Punkt (‚.‘) voneinander getrennt. 
 In dem Header und Payload stehen sogenannte Claims. Ein Claim ist ein Schlüssel-Wert-Paar. Diese liefern Informationen über den Token wie zum Beispiel „exp“, kurz für „Expiration Time“, der angibt, bis wann der Token gültig ist. Einen Token, der schon abgelaufen ist, sollte der Ressource Server nicht akzeptieren. Die Namen der Schlüssel der Claims sind standardisiert [15]. 
-
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Beispiel JSON Web Token},label=lst:BeispielJSONWebToken]
   {
@@ -339,6 +338,7 @@ Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermi
 werden kann.
 
 \section{Apache JMeter und Metriken}
+\label{sec:ApacheJMeterundMetriken}
 Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines http-Servers auf 
 Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
 kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
