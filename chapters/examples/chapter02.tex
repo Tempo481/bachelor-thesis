@@ -216,7 +216,7 @@ Dies ist der Endpunkt des Autorisationsservers an den ein Client, falls er die n
 Informationen wie beispielsweise den Authorization Code besitzt, einen Token erhalten 
 kann [7].
 
-\subsection{Token Endpunkt}
+\subsection{JSON Web Key Set Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:JSONWebKeySet(JWKS)Endpunkt}
 Dies ist der Endpunkt, in dem alle öffentlichen Schlüssel für die Signatur des JSON Web 
 Token abgefragt werden können [20]. Der Ressource Server nutzt diesen Endpunkt, um sich 
@@ -232,7 +232,7 @@ oder Aktionen durchführen dürfen.
 Es gibt verschiedene Vorgehensweisen eine Zugriffskontrolle zu realisieren. In unserem Fall 
 wird Role Based Access Control (RBAC) verwendet. 
 
-\subsection{Role Based Access Control (RBAC)}
+\subsection{Role Based Access Control}
 \label{sec:Zugriffskontrolle:RoleBasedAccessControl(RBAC)}
 Role Based Access Control, zu Deutsch rollenbasierte Zugriffskontrolle, ist eine ANSI-NORM 
 und sie beschreibt die Verknüpfung von Rollen, die man Nutzern zuweist, mit 

@@ -319,7 +319,7 @@ Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich 
   protected void configure(HttpSecurity http) throws Exception {
       http
           .authorizeRequests(authorize -> authorize
-              .mvcMatchers("/api/documents").hasAuthority("ROLE_USER")
+              .mvcMatchers("/documents").hasAuthority("ROLE_USER")
               .anyRequest().permitAll()
           )   
           .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt);
@@ -327,7 +327,7 @@ Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich 
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:HttpSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /api/documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
+In \autoref{lst:HttpSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
 
 \subsection{Spring Security Ressource Server mit externer Zugriffskontrolle}
 Um die Zugriffskontrolle von dem zweiten Ressource Server zu entkoppeln, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist und es erlaubt Zugriffsentscheidungen externen Programmen zu überlassen. 
@@ -400,17 +400,19 @@ Daraufhin wird dem Ressource Server dann von dem AccessDecisionManager, also Ope
 Es wurde nun also beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle beschrieben. 
 
 \subsection{Performancetests mit Apache JMeter}
-Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch mit Verwendung von Threads, Nutzer zu simulieren, die http-Anfragen an einen Server senden. In diesen http-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen. Wenn ein Login mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei diesen Performancetests werden also eingeloggte Nutzer simuliert. \smallskip
+Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die http-Anfragen an einen Server senden. In diesen http-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
+
+Wenn ein Single Sign-On mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei diesen Performancetests werden also eingeloggte Nutzer simuliert, die auf Schnittstellen eines Servers zugreifen möchten. Jeder Thread entspricht einem eingeloggten Nutzer.\smallskip
 
 Es wurden drei Testpläne erstellt, die verschiedene Aspekte der Server testen, wobei alle drei unter dem Überpunkt der Performance gehören. Die drei Testpläne werden als Lasttest, Skarlierbarkeitstest und Stresstest bezeichnet. 
 
 \begin{description}
   \item[Lasttest:] Bei dem Lasttest wird der Server mit üblicher Last getestet und die Latenz gemessen. 
-  \item[Skalierbarkeitstest:] Bei dem Skalierbarkeitstest wird ansteigende Last auf dem Server generiert, wobei hierbei untersucht werden sollen, inwiefern sich Antwortzeiten des Servers bei hinzukommender Last ändern. 
-  \item[Stresstest:] Bei dem Stresstest wird eine unüblich hohe Last auf den Server generiert, um die Grenzen des Servers feststellen zu können. Zudem wird hier auch die CPU-Auslastung und Arbeitsspeicherbelegung betrachtet. 
+  \item[Skalierbarkeitstest:] Bei dem Skalierbarkeitstest wird ansteigende Last auf dem Server generiert, wobei hierbei untersucht werden soll, inwiefern sich Antwortzeiten des Servers bei hinzukommender Last ändern. 
+  \item[Stresstest:] Bei dem Stresstest wird eine unüblich hohe Last auf den Server generiert, um die Grenzen des Servers feststellen zu können. 
 \end{description}
 
-Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von http-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremen sollten. Die verwendete Systemhardware von Client und Server, ist im Kapitel 3.4.5 zu sehen.
+Bei jedem Test wird auch die \ac{CPU}-Auslastung und Arbeitsspeicherbelegung betrachtet. Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (Apache JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von http-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremsen sollten. Die verwendete Systemhardware von Client und Server, ist im \autoref{subsec:SystemhardwareundTestumfeld} zu sehen.
 
 \subsubsection{Lasttest}
 In dem Lasttest wurde eine übliche Last auf den Server generiert und mittels sogenannten Listener die Ergebnisse gemessen und protokolliert. 
@@ -515,6 +517,7 @@ Für die Bestimmung des Application Performance Index wurden folgende Werte gew�
 Das bedeutet, dass Nutzer bis zu einer Response Time von 500 Millisekunden zufrieden sind. Response Times bis 1500 Millisekunden tolerieren Nutzer und bei Response Times ab 1500 Millisekunden sind Nutzer frustriert. Der Multiplier ist hier also 3T. Aus diesen Werten wird dann also der Performance Index berechnet.
 
 \subsection{Systemhardware und Testumfeld}
+\label{subsec:SystemhardwareundTestumfeld}
 Es wird die verwendete Systemhardware für Client und Server, die in allen drei Tests verwendet wurde, aufgelistet. Dies ist erwähnenswert, da die Messwerte von der Leistungsfähigkeit der Hardware abhängen. Da allerdings ein Vergleich zwischen zwei Systemen gezogen wird, können auch allgemeingültige Erkenntnisse aus den Ergebnissen der Tests gezogen werden. Ein weiterer wichtige Punkt ist der, dass beide Rechner, also Client und Server, sich in demselben Netzwerk befinden und über denselben Router über Ethernet mit dem Internet verbunden sind. 
 Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird Windows-Subsystem für Linux 2 (WSL 2) verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden [31]. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
 
