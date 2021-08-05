@@ -34,7 +34,7 @@ Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind \citep{oauth2:
   \item[Ressource Owner:] Der Ressource Owner ist dazu in der Lage, Dritten Zugriff auf seine Daten zu geben oder Aktionen in seinem Namen durchzuführen. Falls der Ressource Owner eine Person ist, nennt man ihn den End-Nutzer.
   \item[Ressource Server:] Der Ressource Server hostet die geschützten Ressourcen des Ressource Owners und ist in der Lage Anfragen zu diesen Ressourcen zu beantworten, falls ein valider Token, ein sogenannter Access Token, in der Anfrage zur Ressource vorliegt.
   \item[Client:] Der Client ist diejenige Komponente, die die Ressource des Ressource Owner's von dem Ressource Servers erlangen möchte und dafür einen Access Token benötigt. 
-  \item[Authorization Server:] Der Authorization Server verteilt Access Token falls sich der Ressource Owner erfolgreich authentifiziert und gegebenenfalls den Client autorisiert hat, Aktionen durchzuführen. 
+  \item[Authorization Server:] Der Authorization Server, zu deutsch Autorisationsserver, verteilt Access Token falls sich der Ressource Owner erfolgreich authentifiziert und gegebenenfalls den Client autorisiert hat, Aktionen durchzuführen. 
 \end{description}
 
 \subsection{Erhalt von Token}
@@ -116,7 +116,7 @@ Owners auf Daten auf dem Ressource Server durch den Erhalt eines Tokens von eine
 Authorization Server zugreifen darf.
 OpenID Connect baut darauf eine Authentifizierung auf, indem es in dem JSON Web Token
 Claims steckt, dass den Client, der den Token erhalten hat, nachdem sich ein End-Nutzer bei
-dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses EndNutzers zu verifizieren.
+dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses End-Nutzers zu verifizieren.
 Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token \citep{openidconnect:2014}. 
 
 \subsection{ID Token}
@@ -146,7 +146,7 @@ ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben 
 
   \bigskip
 In \autoref{tab:idtoken} sind die Claims zu sehen, die in dem Payload gesetzt sein müssen, damit ein
-JSON Web Token zu einem ID-Token wird.
+JSON Web Token als ID-Token bezeichnet werden kann.
 \end{table}
 
 \begin{table}[h]
@@ -203,7 +203,7 @@ Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Cl
 \subsection{Authorization Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:AuthorizationEndpunkt}
 Dies ist der Endpunkt, an den der Client den End-Nutzer weiterleitet. Hier muss sich der 
-End-Nutzer authentifizieren und gegeben falls den Client autorisieren, dass er einen Token erhalten darf \citep{oauth2:2012}.
+End-Nutzer authentifizieren und gegeben falls den Client autorisieren, damit der Client einen Token erhält \citep{oauth2:2012}.
 
 \subsection{Token Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:TokenEndpunkt}
@@ -213,7 +213,7 @@ kann \citep{oauth2:2012}.
 
 \subsection{JSON Web Key Set Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:JSONWebKeySet(JWKS)Endpunkt}
-Dies ist der Endpunkt, in dem alle öffentlichen Schlüssel für die Signatur des JSON Web 
+Dies ist der Endpunkt, in dem alle öffentlichen Schlüssel für die \ac{RSA}-Signatur des JSON Web 
 Token abgefragt werden können [20]. Der Ressource Server nutzt diesen Endpunkt, um sich 
 den passenden öffentlichen Schlüssel der Signatur des Tokens zu holen und damit die 
 Signatur zu validieren und die Authentizität und Integrität des Tokens sicherzustellen \citep{jwk:2015}.
@@ -247,10 +247,9 @@ Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwe
 Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego.\smallskip
 
 Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen eine 
-programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden kann 
+programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden darf 
 oder nicht und entsprechend sendet der OPA-Service an das anfragende Programm eine 
-Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy 
-Agent zu entkoppeln, diese lediglich eine Unterstützung für HTTP und JSON mitbringen 
+Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy Agent zu entkoppeln, diese lediglich eine Unterstützung für HTTP und JSON mitbringen 
 müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
@@ -266,11 +265,12 @@ müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
       input.user == input.owner
   }
 \end{lstlisting}
+\smallskip
 
-In dem oben gezeigten Beispiel \citep{opaplayground:2021} wird eine solche Zugriffskontrolle realisiert. Die 
-Zugriffsentscheidung wird folgendermaßen evaluiert:
+In \autoref{lst:ZugriffsrichtlinieinRego} \citep{opaplayground:2021} wird eine solche Zugriffskontrolle realisiert. Diese Zugriffsrichtlinie ist wie folgt zu beschreiben:\smallskip
+
 Falls eine HTTP-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
-Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service gesendet:
+Owner entsprechen.
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Input-Daten für Open Policy Agent},label=lst:Input-DatenfürOpenPolicyAgent]
   {
@@ -285,7 +285,7 @@ Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service ge
 \end{lstlisting}
 \smallskip
 
-Dann würde der OPA-Service die folgende Zugriffsentscheidung evaluieren:
+In \autoref{lst:Input-DatenfürOpenPolicyAgent} sind Input-Daten dargestellt. Wenn Open Policy Agent diese Input-Daten erhält, würde es eine negative Zugriffsentscheidung evaluieren. Die Zugriffsentscheidung ist in \autoref{lst:ZugriffsentscheidunginRego} zu sehen.
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsentscheidung in Rego},label=lst:ZugriffsentscheidunginRego]
   {
@@ -343,9 +343,8 @@ Metriken nachfolgend definiert.
   \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit vom bevor dem Senden der 
   HTTP-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
   Antwort des Servers \citep{jmeterglossary:2021}. 
-  \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anfragen 
-  und Zeiteinheit \citep{jmeterglossary:2021}]. Also in anderen Worten, die Anzahl von HTTP-Anfragen per 
-  Sekunde/Minute/etc. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
+  \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anzahl der Anfragen 
+  und Zeiteinheit \citep{jmeterglossary:2021}]. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
   Anfrage berechnet mit der folgenden Formel:
 
   \begin{equation}
@@ -353,7 +352,7 @@ Metriken nachfolgend definiert.
   \end{equation}
 
   \item[Connect Time:] Die Connect Time ist die Zeit, die in Anspruch genommen wird, eine Verbindung mit dem 
-  Server aufzunehmen, d.h. im Falle von der Nutzung von TCP ist das der Three-Way-Handshake \citep{jmeterglossary:2021}. 
+  Server aufzunehmen, das heißt im Falle von der Nutzung von TCP ist das der Three-Way-Handshake \citep{jmeterglossary:2021}. 
 \end{description}
 
 \section{Application Performance Index}
@@ -363,7 +362,7 @@ festgelegt, der die Response Time angibt, bis zu der der Nutzer zufrieden ist. D
 einen zweiten Wert, der ein Vielfaches von T ist und angibt, bis zu welcher Länge der 
 Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist der Nutzer 
 frustriert. Aus diesen Werten errechnet sich dann ein Ergebnis für den Application 
-Performance Index, wobei hier 1.0 der beste Wert ist und der Nutzer hier vollständig 
+Performance Index, wobei hier 1.0 der beste Wert, sodass der Nutzer vollständig 
 zufrieden ist.\smallskip
 
 Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, 
@@ -384,11 +383,9 @@ dann ergeben sich folgende Werte:
   \label{tab:ApplicationPerformanceIndex}
 \end{table}
 
-Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer 
-vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
-und bei Response Times größer als 4,8 ist der Nutzer frustriert. Am Beispiel 
-Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum 
-Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
+Die Grenzwerte sind in \autoref{tab:ApplicationPerformanceIndex} dargestellt. Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
+und bei Response Times größer als 4,8 Sekunden ist der Nutzer frustriert. Am Beispiel 
+Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
 vollständig dargestellt ist.\smallskip
 Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich 
 dann der Application Performance Index.
@@ -397,9 +394,8 @@ dann der Application Performance Index.
   Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples}
 \end{equation}
 
-In der obenstehenden Gleichung ist die Formel zur Berechnung des Apdex-Scores dargestellt \citep{apdex:2007}. Satisfied Count ist 
-hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
-Count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
+In der obenstehenden Gleichung ist die Formel zur Berechnung des Application Performance Index dargestellt \citep{apdex:2007}. Satisfied Count ist hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
+count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
 haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn 
 also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Score, 
 der 1,0 beträgt.
@@ -431,11 +427,11 @@ entspricht dies einer Authentifizierung des Nutzers.\smallskip
 Beide Ressource Server haben als Zugriffskontrolle \ac{RBAC} 
 implementiert, das heißt in dem Token muss die Rolle ROLE\_USER vorhanden sein, damit 
 Zugriff auf die HTTP-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
-unterschiedliche Weise realisiert. In dem einen wird die Zugriffskontrolle in dem Server 
-selbst realisiert, in dem Anderem wird diese entkoppelt durch den Open Policy Agent. 
+unterschiedliche Weise realisiert. In dem einen wurde die Zugriffskontrolle in dem Server 
+selbst implementiert, in dem Anderem wird diese entkoppelt durch den Open Policy Agent. 
 Dieser wird als eigenständiges Programm in einem Docker-Container ausgeführt und die 
 Kommunikation zwischen Ressource Server und OPA-Service geschieht auf localhost-zu-localhost Basis. 
 Um die Performance zu testen, wird Apache JMeter verwendet. JMeter erzeugt Last auf die 
 beiden Server, das heißt es sendet HTTP-Anfragen mit validem Token an die Ressource 
 Server und misst die Latenzen der Antworten. Neben der Latenz wird auch die Response 
-Time und Connect Time gemessen und der Datendurchsatz berechnet.
+Time und Connect Time gemessen und der Datendurchsatz berechnet. Außerdem werden während aller Tests die CPU-Auslastung und Arbeitsspeicherbelegung betrachtet. 

@@ -6,6 +6,7 @@ System handelt, gibt es alle Rollen, die auch im \autoref{subsec:OAuth2:Rollenin
 wurden. Also Authorization Server, Ressource Server, Client und End-Nutzer. 
 
 \section{Keycloak als Authorization Server und Identity Provider}
+\label{sec:KeycloakalsAuthorizationServerundIdentityProvider}
 
 Keycloak ist eine Implementierung des Authorization Server der OAuth2 und OpenID 
 Connect Spezifikation. Das bedeutet, dass Keycloak unter anderem dafür zuständig ist, den 
@@ -23,7 +24,7 @@ Keycloak angelegt werden. Dies ist wichtig, damit dem Client überhaupt ein Toke
 ausgestellt werden kann durch den Hybrid Flow und damit die Attribute des Nutzers in den 
 Token gemappt werden, denn anhand dieser Attribute wird dann ja im Ressource Server 
 die Zugriffe auf dessen HTTP-Schnittstelle kontrolliert. Die Charakterisierung des Nutzers ist 
-an dieser Stelle wichtig, da die vorhandenen Attribute, die man dem Nutzer zuweist, auch 
+an dieser Stelle wichtig, da die vorhandenen Attribute, die den Nutzern zugewiesen werden, auch 
 in den Token gemappt werden und die Größe des Tokens Einfluss auf die Performance 
 hat.
 
@@ -45,7 +46,7 @@ den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die 
 \end{figure}
 
 Dies ist in Keycloak möglich und damit lässt sich in den Applikationen dann eine 
-rollenbasierte Zugriffskontrolle realisieren, siehe Zugriffskontrolle. In \autoref{fig:chapter03:keycloak-sample-user-role} sind die zugewiesenen Rollen zu sehen. default-roles-sample ist eine durch Keycloak automatisch 
+rollenbasierte Zugriffskontrolle realisieren. In \autoref{fig:chapter03:keycloak-sample-user-role} sind die zugewiesenen Rollen zu sehen. default-roles-sample ist eine durch Keycloak automatisch 
 zugewiesene Rolle und hat hier keine weitere Relevanz. 
 Außerdem wurde diesem Nutzer noch eine Gruppenzugehörigkeit und ein weiteres Attribut 
 hinzugewiesen. Gruppenzugehörigkeiten sind in Firmen oftmals die Bürostandorte, 
@@ -57,7 +58,7 @@ Users und hat als zusätzliches Attribut das statische Schlüssel-Wert-Paar Attr
 Zusätzlich musste in Keycloak ein Client registriert werden. Der Client ist diejenige 
 Komponente im OAuth2 System, die den Token von dem Authorization Server, also 
 Keycloak, erhält und den Token nutzt, um Zugriff auf Schnittstellen des Ressource Servers 
-zu erhalten. Für den Authorization Code Grant ist mindestens eine Client-ID notwendig. In 
+zu erhalten. Für den Hybrid Flow ist mindestens eine Client-ID notwendig. In 
 diesem Fall wurde ein sogenannten confidential client in Keycloak registriert. Dieser muss 
 sich mit seinen Daten, also Client-ID und Client Secret, bei Keycloak authentifizieren, um 
 Token zu erhalten.
@@ -112,7 +113,7 @@ und Identity Provider erstellt wurde. Die Auth URL ist nachfolgend dargestellt.
 In \autoref{lst:AuthorizationRequest} ist die HTTP-POST-Request dargestellt, mit der dann Postman, nachdem sich der End-Nutzer 
 authentifiziert hat, einen Authorization Code erhält, den Postman dann durch einen Token 
 von Keycloak austauschen kann. Die Paramater, die hier an Keycloak übertragen werden, 
-sind diejenigen die auch in \autoref{ssubsec:OAuth2:ErhaltvonToken:AuthorizationCodeGrant} beschrieben sind, nämlich:
+sind diejenigen, die auch in \autoref{subsec:OAuth2:ErhaltvonToken} beschrieben sind, nämlich:
 
 \begin{itemize}
   \item Response\_type
@@ -122,7 +123,7 @@ sind diejenigen die auch in \autoref{ssubsec:OAuth2:ErhaltvonToken:Authorization
   \item Redirect\_uri
 \end{itemize}
 
-Nachdem sich nun der End-Nutzer authentifiziert hat, erhält Postman einen Token. Die 
+Nachdem sich nun der End-Nutzer authentifiziert hat, erhält Postman einen JSON Web Token. Die 
 Token-Anfrage, bei der der Authorization Code durch einen Token ausgetauscht wird, 
 geschieht automatisch und wird hier nicht beschrieben.
 
@@ -137,7 +138,7 @@ geschieht automatisch und wird hier nicht beschrieben.
 
 In \autoref{lst:Base64-kodierterJSONWebToken} ist der Base64 kodierte Token zu sehen. Wie man sieht, ist er in drei Teile 
 unterteilt: Dem Header, dem Payload und der Signatur. Um ihn zu dekodieren und den 
-Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf \url{HTTPs://jwt.io/} ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
+Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf \url{https://jwt.io/} ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
 
 \begin{lstlisting}[frame=tb,caption={Dekodierter JSON Web Token},label=lst:DekodierterJSONWebToken]
 {
@@ -196,7 +197,7 @@ Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf 
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:DekodierterJSONWebToken} ist der dekodierte JSON Web Token dargestellt, den Keycloak erstellt und an Postman gesendet hat, nachdem sich der End-Nutzer der in Kapitel Keycloak als Authorization Server und Identity Provider erstellt wurde, authentifiziert hat. Wie zu sehen ist, sind die Nutzerattribute, also die Standardclaims, in diesen Token gemappt. Das heißt der Vor-und-Nachname, die E-Mail-Adresse, der Nickname sowie das Claim sub. 
+In \autoref{lst:DekodierterJSONWebToken} ist der dekodierte JSON Web Token dargestellt, den Keycloak erstellt und an Postman gesendet hat, nachdem sich der End-Nutzer der in \autoref{sec:KeycloakalsAuthorizationServerundIdentityProvider} erstellt wurde, authentifiziert hat. Wie zu sehen ist, sind die Nutzerattribute, also die Standardclaims, in diesen Token gemappt. Das heißt der Vor-und-Nachname, die E-Mail-Adresse, der Nickname sowie das Claim sub. 
 Zudem ist die Gruppenzugehörigkeit zu sehen, denn User ist ja in der Gruppe Users. Außerdem ist unter dem Schlüssel roles auch die Rolle ROLE\_USER vorzufinden. Diese Rolle wurde dem End-Nutzer in Keycloak zugewiesen und nach dieser Rolle wird dann bei der Schnittstelle im Ressource Server die Zugriffe kontrolliert, das heißt in dem Token muss diese Rolle gemappt sein, ansonsten sollte kein Zugriff erlaubt werden. Die restlichen Rollen, die in diesem Token zu sehen sind wie beispielsweise default-roles-sample, wurden automatisch von Keycloak erstellt und werden hier nicht weiter erläutert.\smallskip
 
 Außerdem sind die Claims vorzufinden, die in einem ID Token Pflicht sind wie beispielsweise exp, der angibt, wann der Token abläuft. Erklärungen zu diesen Claims sind in \autoref{subsec:OpenIDConnect:IDToken} zu finden. Diese werden hier nicht weiter erläutert. 
@@ -206,9 +207,9 @@ Nun wurde also durch den Authorization Code Grant ein Token von dem Authorizatio
 \section{Ressource Server}
 Beide Ressource Server sind in Java mithilfe des Spring-Frameworks implementiert. Die Ressource Server sind Spring-Boot Anwendungen, das bedeutet, dass ein Apache Tomcat Webserver in der Applikation eingebettet ist und automatisch gestartet wird. Die Ressource Server können also HTTP-Anfragen von Clients entgegennehmen und diese beantworten.\smallskip
 
-Die verwendete Spring-Boot Version ist 2.4.8 mit Apache Tomcat 9.0.48, welcher über den Port 8080 erreichbar ist. Alle Versionen der verwendeten Technologien wie die Datenbank und der Object-Relational Mapper Hibernate können aus der Spring-Boot Version hergeleitet werden und werden deshalb im weiteren Verlauf nicht genannt.\smallskip
+Die verwendete Spring-Boot Version ist 2.4.8 mit Apache Tomcat 9.0.48, welcher über den Port 8080 erreichbar ist. Alle Versionen der verwendeten Technologien wie die Datenbank und der Object-Relational Mapper Hibernate können aus der Spring-Boot Version hergeleitet werden und werden deshalb im weiteren Verlauf nicht genannt. Als Java Runtime Envinroment (JRE) wurde Version 11 verwendet.\smallskip
 
-Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln ob der Client, berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist und per HTTP für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.\smallskip
+Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln, ob der Client berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist und per HTTP für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.\smallskip
 
 Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die HTTP-, JSON-, Base64-Kodierung-sowie-RSA unterstützt. 
 
@@ -279,7 +280,7 @@ Zudem werden die folgenden Claims des JSON Web Tokens validiert:
 
 Der exp-Claim (Expiration Time) ist derjenige Claim der angibt, bis wann der Token gültig ist.
 Der nbf-Claim (Not Before) gibt den Zeitpunkt an, ab wann der Token akzeptiert werden darf.
-Der iss-Claim (Issuer) gibt die URI des Authorization Server an. Sie sollte dem Authorization Server entsprechen, von dem auch die öffentlichen Schlüssel für die RSA-Signatur geholt werden. 
+Der iss-Claim (Issuer) gibt die \ac{URI} des Authorization Server an. Sie sollte dem Authorization Server entsprechen, von dem auch die öffentlichen Schlüssel für die RSA-Signatur geholt werden. 
 In beiden Ressource Servern wird eine erfolgreiche Authentifizierung, also ein valider JSON Web Token, der von Keycloak erstellt wurde, erwartet. Die Autorisierung aber, also die Prüfung, ob der authentifizierte Nutzer die benötigten Rechte verfügt, um Zugriff auf die Schnittstelle zu erhalten, wird in den zwei Ressource Servern auf zwei unterschiedliche Weisen realisiert und in den nachfolgenden zwei Kapiteln beschrieben.
 
 \subsection{Spring Security Ressource Server mit interner Zugriffskontrolle}
@@ -294,8 +295,8 @@ Um eine rollenbasierter Zugriffskontrolle in dem Ressource Server selbst zu real
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:jwtauthenticationprovider} ist der Ablauf dargestellt, um eine rollenbasierte Zugriffskontrolle in dem Server, also der Spring-Boot Applikation, mit dem JwtAuthenticationConverter zu realisieren. Im Wesentlichen wird hier der JSON Web Token durch den JWTAuthenticationProvider von einem JwtDecoder dekodiert, verifiziert und validiert und von dem JwtAuthenticationConverter werden Autoritäten in eine Collection gemappt. Als JwtDecoder wird die Nimbus Bibliothek verwendet [27].
-Der JwtAuthenticationConverter wurde so konfiguriert, dass es Rollen aus dem JSON Web Token, der in Abbildung 13 dargestellt ist, in sogenannte GrantedAuthorities mappt. Diese sind Objekte, die Privilegien von Nutzern widerspiegeln wie beispielsweise Rollen [28]. 
+In \autoref{fig:chapter03:jwtauthenticationprovider} ist der Ablauf dargestellt, um eine rollenbasierte Zugriffskontrolle in dem Server, also der Spring-Boot Applikation, mit dem JwtAuthenticationConverter zu realisieren. Im Wesentlichen wird hier der JSON Web Token durch den JWTAuthenticationProvider von einem JwtDecoder dekodiert, verifiziert und validiert und von dem JwtAuthenticationConverter werden Autoritäten in eine Collection gemappt. Als JwtDecoder wird die Nimbus Bibliothek verwendet \citep{springsecuritydoc:2021}.
+Der JwtAuthenticationConverter wurde so konfiguriert, dass es Rollen aus dem JSON Web Token in sogenannte GrantedAuthorities mappt. Diese sind Objekte, die Privilegien von Nutzern widerspiegeln wie beispielsweise Rollen \citep{springsecuritydoc:2021}. 
 
 \begin{lstlisting}[language=Java,frame=tb,caption={JwtAuthenticationConverter},label=lst:JwtAuthenticationConverter]
   @Bean
@@ -380,7 +381,7 @@ In der ersten allow Methode, wird definiert, dass auf eine GET-Anfrage auf den P
 Die zweite allow-Methode wird hier nicht weiter erläutert. Anfragen, die nicht der Schnittstelle documents oder h2-console entsprechen, werden grundsätzlich abgelehnt. 
 
 \subsubsection{Spring Security AccessDecisionManager}
-Um Ressource Server Open Policy Agent die Zugriffsentscheidungen zu überlassen, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist. 
+Um dem Ressource Server, Open Policy Agent die Zugriffsentscheidungen zu überlassen, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist. 
 
 \begin{figure}[htbp]
   \centering
@@ -403,7 +404,7 @@ Daraufhin wird dem Ressource Server dann von dem AccessDecisionManager, also Ope
 Es wurde nun also beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle beschrieben. 
 
 \section{Performancetests mit Apache JMeter}
-Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die HTTP-Anfragen an einen Server senden. In diesen HTTP-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
+Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die HTTP-Anfragen an einen Server senden. In diesen HTTP-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese evaluieren dann jeweils eine Zugriffsentscheidung. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
 
 Wenn ein Single Sign-On mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei diesen Performancetests werden also eingeloggte Nutzer simuliert, die auf Schnittstellen eines Servers zugreifen möchten. Jeder Thread entspricht einem eingeloggten Nutzer.\smallskip
 
@@ -415,7 +416,7 @@ Es wurden drei Testpläne erstellt, die verschiedene Aspekte der Server testen, 
   \item[Stresstest:] Bei dem Stresstest wird eine unüblich hohe Last auf den Server generiert, um die Grenzen des Servers feststellen zu können. 
 \end{description}
 
-Bei jedem Test wird auch die \ac{CPU}-Auslastung und Arbeitsspeicherbelegung betrachtet. Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (Apache JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von HTTP-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremsen sollten. Die verwendete Systemhardware von Client und Server, ist im \autoref{subsec:SystemhardwareundTestumfeld} zu sehen.
+Bei jedem Test wird auch die \ac{CPU}-Auslastung und Arbeitsspeicherbelegung betrachtet. Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (Apache JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von HTTP-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremsen sollten. Die verwendete Systemhardware von Client und Server, ist in \autoref{subsec:SystemhardwareundTestumfeld} zu sehen.
 
 \subsection{Lasttest}
 In dem Lasttest wurde eine übliche Last auf den Server generiert und mittels sogenannten Listener die Ergebnisse gemessen und protokolliert. 
