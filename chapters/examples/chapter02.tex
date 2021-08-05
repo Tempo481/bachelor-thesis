@@ -5,16 +5,17 @@ In diesem Kapitel werden alle nötigen technischen Grundlagen zusammengetragen. 
 %
 % Section: Der erste Abschnitt
 %
-\section{Grundlegender Begriffe der IT-Sicherheit}
+\section{Grundlegende Begriffe der IT-Sicherheit}
 \label{sec:GrundlegenderBegriffederIT-Sicherheit}
 Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelmäßig verwendet werden.
 
 \begin{description}
-  \item[Authentifizierung:] Bei einer Authentifizierung beweist ein Nutzer seine Identität, indem er dem gegenüberliegenden Server Informationen übermittelt, über die nur der Nutzer verfügen kann wie beispielsweise ein Nutzername und Passwort oder ein Token.
-  \item[Autorisierung:] Eine Autorisierung findet grundsätzlich nach der Authentifizierung statt. Hier überprüft das System nach der Authentifizierung des Nutzers, ob der Nutzer über die notwendigen Rechte verfügt eine Aktion auszuführen. 
+  \item[Authentifizierung:] Bei einer Authentifizierung beweist ein Nutzer seine Identität, indem er dem gegenüberliegenden System Informationen übermittelt, über die nur der Nutzer verfügen kann wie beispielsweise ein Nutzername und Passwort oder ein Token \citep{Cankaya2011}.
+  \item[Autorisierung:] Eine Autorisierung findet grundsätzlich nach der Authentifizierung statt. Hier überprüft das System nach der Authentifizierung des Nutzers, ob der Nutzer über die notwendigen Rechte verfügt eine Aktion auszuführen \citep{Authorization2011}. 
   \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erstellen kann, gewährleistet werden \citep{connect2id:2021}.
-  \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten \citep{connect2id:2021}. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt das sie der Urheber ist.
-  \item[Validierung] Man kann von einer Validierung sprechen, wenn oben genannte Aspekte, nämlich die Authentifizierung, Autorisierung, Integrität sowie Authentizität, überprüft werden.
+  \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten \citep{connect2id:2021}. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt, dass sie der Urheber ist.
+  \item[Validierung:] Man kann von einer Validierung sprechen, wenn die Authentizität und Integrität überprüft werden.
+  \item[Zugriffskontrolle:] Zugriffskontrolle ist eine Sicherheitsfunktion, die gemeinsame Ressourcen gegen unautorisierten Zugriff schützt. Der Unterschied zwischen autorisierten und unautorisierten Zugriff wird anhand einer Zugriffskontrollrichtlinie gemacht \citep{Brose2011}. 
 \end{description}
 
 %
@@ -61,7 +62,7 @@ Diese Art des Token-Erhalts ist ähnlich zu dem Authorization Code Grant, nur da
 
 \section{JSON Web Token}
 \label{sec:JSONWebToken}
-Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zugriff auf http-Schnittstellen des Ressource Servers zu erhalten, sind diese Token bei den heutigen Implementierungen von Autorisationsservern sogenannte \ac{JSON} Web Token, so auch bei dem Autorisationsserver von Microsoft, Azure Active Directory, sowie Keycloak [13] [14]. \ac{JSON} ist ein leichtgewichtiges Datenaustauschformat \citep{json:2006}.\smallskip
+Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zugriff auf HTTP-Schnittstellen des Ressource Servers zu erhalten, sind diese Token bei den heutigen Implementierungen von Autorisationsservern sogenannte \ac{JSON} Web Token, so auch bei dem Autorisationsserver von Microsoft, Azure Active Directory, sowie Keycloak [13] [14]. \ac{JSON} ist ein leichtgewichtiges Datenaustauschformat \citep{json:2006}.\smallskip
 
 JSON Web Token ist eine Spezifikation für Token, die beschreibt wie die Tokens aufgebaut sind und welche Inhalte sie haben \citep{jwt:2015}.
 Signierte JSON Web Token sind in drei Teile unterteilt: Header, Payload und die Signatur. Die Gesamtstruktur ist in JSON dargestellt, das heißt es gibt jeweils Schlüssel-Wert-Paare in JSON. Zur Übertragung werden die JSON Web Token base64-kodiert und hierbei werden jeweils die drei Teile, also Header, Payload und Signatur, durch einen Punkt (‚.‘) voneinander getrennt \citep{jwt:2015}. 
@@ -208,44 +209,35 @@ Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Cl
 \subsection{Authorization Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:AuthorizationEndpunkt}
 Dies ist der Endpunkt, an den der Client den End-Nutzer weiterleitet. Hier muss sich der 
-End-Nutzer authentifizieren und gegeben falls den Client autorisieren, dass er einen Token erhalten darf [7].
+End-Nutzer authentifizieren und gegeben falls den Client autorisieren, dass er einen Token erhalten darf \citep{oauth2:2012}.
 
 \subsection{Token Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:TokenEndpunkt}
 Dies ist der Endpunkt des Autorisationsservers an den ein Client, falls er die notwendigen 
 Informationen wie beispielsweise den Authorization Code besitzt, einen Token erhalten 
-kann [7].
+kann \citep{oauth2:2012}.
 
 \subsection{JSON Web Key Set Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:JSONWebKeySet(JWKS)Endpunkt}
 Dies ist der Endpunkt, in dem alle öffentlichen Schlüssel für die Signatur des JSON Web 
 Token abgefragt werden können [20]. Der Ressource Server nutzt diesen Endpunkt, um sich 
 den passenden öffentlichen Schlüssel der Signatur des Tokens zu holen und damit die 
-Signatur zu validieren und die Authentizität und Integrität des Tokens sicherzustellen.
+Signatur zu validieren und die Authentizität und Integrität des Tokens sicherzustellen \citep{jwk:2015}.
 
-\section{Zugriffskontrolle}
-\label{sec:Zugriffskontrolle}
-Bei der Zugriffskontrolle geht es darum, den Zugriff auf Schnittstellen einzuschränken, da 
-man in der Praxis oftmals die Anforderung hat, dass beispielsweise nur bestimmte 
-Personen mit bestimmten Privilegien etwaige Daten von einem Ressource Server abfragen 
-oder Aktionen durchführen dürfen.
-Es gibt verschiedene Vorgehensweisen eine Zugriffskontrolle zu realisieren. In unserem Fall 
-wird Role Based Access Control (RBAC) verwendet. 
-
-\subsection{Role Based Access Control}
+\section{Role Based Access Control}
 \label{sec:Zugriffskontrolle:RoleBasedAccessControl(RBAC)}
-Role Based Access Control, zu Deutsch rollenbasierte Zugriffskontrolle, ist eine ANSI-NORM 
-und sie beschreibt die Verknüpfung von Rollen, die man Nutzern zuweist, mit 
-Zugriffsprivilegien [21]. Gemäß der Norm gibt es eine Reihe Definitionen:
+\ac{RBAC}, zu Deutsch rollenbasierte Zugriffskontrolle, ist eine ANSI-NORM 
+und sie beschreibt die Verknüpfung von Rollen, die Nutzern zugewiesen werden, mit 
+Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. Gemäß der Norm gibt es eine Reihe Definitionen:
 
 \begin{description}
-  \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie RBAC
+  \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie \ac{RBAC}
   umgesetzt werden kann.
   \item[objects:] Das ist das Objekt, auf das man den Zugriff beschränken will. Das kann
   beispielsweise ein Datenbankeintrag, ein Drucker oder eine http-Schnittstelle sein.
   \item[operations:] Eine Operation ist ein ausführbares Programm, was dem Nutzer Funktionen
   bereitstellt.
-  \item[permissions:] Das ist die Zustimmung, eine Aktion auf eine durch RBAC geschützte 
+  \item[permissions:] Das ist die Zustimmung, eine Aktion auf eine durch \ac{RBAC} geschützte 
   Ressource durchzuführen.
   \item[Role:] Eine Rolle ist eine Jobfunktion innerhalb einer Organisation, die Autorität und 
   Verantwortlichkeiten eines Nutzers und der zugewiesenen Rolle assoziiert.
@@ -256,7 +248,7 @@ Zugriffsprivilegien [21]. Gemäß der Norm gibt es eine Reihe Definitionen:
 \section{Open Policy Agent}
 \label{sec:OpenPolicyAgent}
 Open Policy Agent (OPA) ist eine quelloffene Policy Engine, die Zugriffskontrolle von 
-Applikationen als Microservice entkoppelt [22]. 
+Applikationen entkoppelt \citep{opaperformance:2021:07}. Es entkoppelt das Treffen von Zugriffsentscheidungen von der Komponente die Richtlinien durchsetzen muss.
 Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwendet. 
 Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego. 
 Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen eine 
@@ -280,7 +272,7 @@ müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
   }
 \end{lstlisting}
 
-In dem oben gezeigten Beispiel wird eine solche Zugriffskontrolle realisiert. Die 
+In dem oben gezeigten Beispiel \citep{opaplayground:2021} wird eine solche Zugriffskontrolle realisiert. Die 
 Zugriffsentscheidung wird folgendermaßen evaluiert:
 Falls eine http-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
 Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service gesendet:
@@ -309,20 +301,20 @@ Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in Abbildung 4
 
 \section{Apache Tomcat}
 Apache Tomcat ist ein Webserver, der Spezifikationen der Java EE Plattform implementiert
-[23]. Dieser Webserver kann http-Anfragen abhören und diese entgegennehmen und 
+\citep{tomcat:2021}. Dieser Webserver kann http-Anfragen abhören und diese entgegennehmen und 
 beantworten. Die relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
 und Filter. 
 
 \section{Spring}
 Spring ist ein quelloffenes Java-Framework, das die Implementierung von Anwendungen 
-vereinfacht. Es teilt sich in eine Reihe von Teilprojekte auf. 
+vereinfacht \citep{spring:2021}. Es teilt sich in eine Reihe von Teilprojekte auf. 
 
 \subsection{Spring Boot}
-Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-Boot Applikationen wird ein Apache Tomcat Webserver eingebettet. Tomcat ermöglicht es, http-Anfragen anzunehmen und diese durch Mappings in der Applikation zu beantworten [23].
+Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-Boot Applikationen wird ein Apache Tomcat Webserver eingebettet \citep{springboot:2021}. Tomcat ermöglicht es dann, http-Anfragen anzunehmen und diese durch Mappings in der Applikation zu beantworten.
 
 \subsection{Spring Security}
 Spring Security ist ein Teilprojekt des Spring-Frameworks. Spring Security bietet 
-Unterstützung für OAuth2 und unter anderem auch für OAuth2 Ressource Server. 
+Unterstützung für OAuth2 und unter anderem auch für OAuth2 Ressource Server \citep{springsecurity:2021}. 
 Man kann also mittels Spring Security einen OAuth2 Ressource Server implementieren, der 
 Zugriff auf http-Schnittstellen nur ermöglicht, wenn ein valider JSON Web Token in dem 
 Authorization Header der http-Anfrage gesendet wird. 
@@ -336,40 +328,40 @@ Daneben ist Keycloak auch ein Identity Provider, das heißt es ermöglicht es hi
 Nutzern sich zu authentifizieren. Damit ist also dann der Authorization Code Grant und 
 Hybrid Flow der OpenID Connect und OAuth2 Spezifikation möglich, denn es kann sich ein 
 Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermittelt 
-werden kann.
+werden kann \citep{keycloak:2021}.
 
 \section{Apache JMeter und Metriken}
 \label{sec:ApacheJMeterundMetriken}
 Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines http-Servers auf 
 Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
 kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
-protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann.
+protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann \citep{jmeter:2021}.
 Da zum Testen der Performanz verschiedene Metriken betrachtet werden, werden diese 
 Metriken nachfolgend definiert. 
 
 \begin{description}
   \item[Elapsed Time / Response Time:] Gemäß der Definition von Apache JMeter ist die Elapsed Time, auch Response Time 
   genannt, die Zeit vom bevor dem Senden der http-Anfrage an den Server bis nach dem 
-  Eintreffen des in der Regel letzten Bytes der Antwort des Servers [24]. 
+  Eintreffen des in der Regel letzten Bytes der Antwort des Servers \citep{jmeterglossary:2021}. 
   \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit vom bevor dem Senden der 
   http-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
-  Antwort des Servers [24]. 
+  Antwort des Servers \citep{jmeterglossary:2021}. 
   \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anfragen 
-  und Zeiteinheit [24]. Also in anderen Worten, die Anzahl von http-Anfragen per 
+  und Zeiteinheit \citep{jmeterglossary:2021}]. Also in anderen Worten, die Anzahl von http-Anfragen per 
   Sekunde/Minute/etc. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
   Anfrage berechnet mit der folgenden Formel:
 
   \begin{equation}
     Datendurchsatz = \frac{Anzahl\;der\;Anfragen}{Gesamtzeit} 
-   \end{equation}
+  \end{equation}
 
   \item[Connect Time:] Die Connect Time ist die Zeit, die in Anspruch genommen wird, eine Verbindung mit dem 
-  Server aufzunehmen, d.h. im Falle von der Nutzung von TCP ist das der Three-Way-Handshake [24]. 
+  Server aufzunehmen, d.h. im Falle von der Nutzung von TCP ist das der Three-Way-Handshake \citep{jmeterglossary:2021}. 
 \end{description}
 
 \section{Application Performance Index}
-Der Application Performance Index (Apdex) ist ein Standard, der die Nutzerzufriedenheit 
-hinsichtlich der Response Time in Webapplikationen misst [25]. Es wird ein Wert T 
+Der Application Performance Index (Apdex) ist ein offener Standard, der die Nutzerzufriedenheit 
+hinsichtlich der Response Time in Webapplikationen misst \citep{apdex:2007}. Es wird ein Wert T 
 festgelegt, der die Response Time angibt, bis zu der der Nutzer zufrieden ist. Dann gibt es 
 einen zweiten Wert, der ein Vielfaches von T ist und angibt, bis zu welcher Länge der 
 Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist der Nutzer 
@@ -391,7 +383,7 @@ dann ergeben sich folgende Werte:
       Frustriert & > 4T & > 4,8 Sekunden  \\
       \bottomrule
   \end{tabularx}
-  \caption[Beispiell Application Performance Index]{Beispiel Application Performance Index.}
+  \caption[Beispiel von Grenzwerten eines Application Performance Index]{Beispiel von Grenzwerten eines Application Performance Index.}
   \label{tab:ApplicationPerformanceIndex}
 \end{table}
 
@@ -405,27 +397,27 @@ Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechn
 dann der Application Performance Index.
 
 \begin{equation}
-  Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples} 
+  Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples}
 \end{equation}
 
-In Abbildung ist die Formel zur Berechnung des Apdex-Scores dargestellt. Satisfied Count ist 
+In der obenstehenden Gleichung ist die Formel zur Berechnung des Apdex-Scores dargestellt \citep{apdex:2007}. Satisfied Count ist 
 hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
 Count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
 haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn 
 also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Score, 
-der 1,0 beträgt. 
+der 1,0 beträgt.
 
 \section{Postman}
 Postman ist ein API-Client, mit dem unter anderem http-Anfragen gesendet und Antworten 
-des Servers erhalten werden können [25]. Außerdem bietet Postman Unterstützung für 
+des Servers erhalten werden können \citep{postman:2021}. Außerdem bietet Postman Unterstützung für 
 OAuth2 an, das heißt es ist mittels Postman möglich, den Authorization Code Grant und
 Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. 
 
 \section{Docker-Container}
 In einem Docker-Container können Programme plattformunabhängig ausgeführt werden. 
 Der Docker-Container stellt alles bereit, was das auszuführende Programm benötigt, also 
-unter anderem: Den Code, die Ausführungsumgebung wie beispielsweise die Java Runtime 
-Environment (JRE) und das Betriebssystem [26]. 
+unter anderem: Den Code, die Ausführungsumgebung, wie beispielsweise die Java Runtime 
+Environment (JRE), und das Betriebssystem \citep{docker:2021}. 
 
 \section{Zusammenfassung}
 Es wurden also die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
@@ -439,7 +431,7 @@ Server geholt und damit aus dem Header und Payload die Signatur berechnet und au
 Gleichheit überprüft wird. Daneben werden die Standardclaims überprüft. Bei Erfolg 
 entspricht dies einer Authentifizierung des Nutzers.\smallskip
 
-Beide Ressource Server haben als Zugriffskontrolle Role Based Access Control 
+Beide Ressource Server haben als Zugriffskontrolle \ac{RBAC} 
 implementiert, das heißt in dem Token muss die Rolle ROLE\_USER vorhanden sein, damit 
 Zugriff auf die http-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
 unterschiedliche Weise realisiert. In dem einen wird die Zugriffskontrolle in dem Server 
