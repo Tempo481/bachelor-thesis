@@ -1,6 +1,6 @@
 \chapter{Technische Grundlagen}
 \label{sec:TechnischeGrundlagen}
-In diesem Kapitel werden alle nötigen technischen Grundlagen zusammengetragen. Da es sich um ein OAuth2 System handelt, wird diese Spezifikation erläutert. Zudem werden auf die Tokens eingegangen, die die Ressource Server jeweils validieren müssen. Diese sind \ac{JSON} Web Token. Dann werden noch die Metriken zum Messen der Performance erläutert, das Programm zum Messen dieser Werte genannt sowie das Framework zur Implementierung der Ressource Server erklärt. 
+In diesem Kapitel werden alle nötigen technischen Grundlagen zusammengetragen. Da es sich um ein OAuth2 System handelt, wird diese Spezifikation erläutert. Zudem wird auf die Tokens eingegangen, die die Ressource Server jeweils validieren müssen. Diese sind \ac{JSON} Web Token. Dann werden die Metriken zum Messen der Performance erläutert, das Programm zum Messen dieser Werte genannt sowie das Framework zur Implementierung der Ressource Server erklärt. 
 
 %
 % Section: Der erste Abschnitt
@@ -49,7 +49,7 @@ Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/oauth_auth_code_flow.png}
-  \caption{Authorization Code Grant}
+  \caption{Authorization Code Grant \citep{okta:2020}}
   \label{fig:chapter02:oauth_auth_code_flow}
 \end{figure}
 
@@ -62,7 +62,7 @@ Diese Art des Token-Erhalts ist ähnlich zu dem Authorization Code Grant, nur da
 
 \section{JSON Web Token}
 \label{sec:JSONWebToken}
-Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zugriff auf HTTP-Schnittstellen des Ressource Servers zu erhalten, sind diese Token bei den heutigen Implementierungen von Autorisationsservern sogenannte \ac{JSON} Web Token, so auch bei dem Autorisationsserver von Microsoft, Azure Active Directory, sowie Keycloak [13] [14]. \ac{JSON} ist ein leichtgewichtiges Datenaustauschformat \citep{json:2006}.\smallskip
+Wenn ein Client einen Access Token von einem Authorization Server erhält, um Zugriff auf \ac{HTTP}-Schnittstellen des Ressource Servers zu erhalten, sind diese Token bei den heutigen Implementierungen von Autorisationsservern sogenannte \ac{JSON} Web Token, so auch bei dem Autorisationsserver von Microsoft \citep{azuread:2021}, Azure Active Directory, sowie Keycloak \citep{keycloak:2021}. \ac{JSON} ist ein leichtgewichtiges Datenaustauschformat \citep{json:2006}.\smallskip
 
 JSON Web Token ist eine Spezifikation für Token, die beschreibt wie die Tokens aufgebaut sind und welche Inhalte sie haben \citep{jwt:2015}.
 Signierte JSON Web Token sind in drei Teile unterteilt: Header, Payload und die Signatur. Die Gesamtstruktur ist in JSON dargestellt, das heißt es gibt jeweils Schlüssel-Wert-Paare in JSON. Zur Übertragung werden die JSON Web Token base64-kodiert und hierbei werden jeweils die drei Teile, also Header, Payload und Signatur, durch einen Punkt (‚.‘) voneinander getrennt \citep{jwt:2015}. 
@@ -78,7 +78,7 @@ In dem Header und Payload stehen sogenannte Claims. Ein Claim ist ein Schlüssel
     exp: 1625764809,
     iat: 1625763009,
     jti: "7df07f70-5c50-41fd-b757-2e3faa8c50e4",
-    iss: "http://localhost:9080/auth/realms/sample",
+    iss: "HTTP://localhost:9080/auth/realms/sample",
     aud: "account",
     sub: "de16edd9-a654-4769-b71c-3faf34583890",
     typ: "Bearer",
@@ -95,8 +95,7 @@ wird erläutert, welche Bedeutung die einzelnen Claims haben.
 \subsection{JSON Web Token Signatur}
 \label{sec:JSONWebToken:JSONWebTokenSignatur}
 
-JSON Web Tokens sind in der Regel mit dem asymmetrischen Verfahren Rivest–Shamir–
-Adleman (RSA) signiert \citep{jwt:2015}. Das bedeutet, dass mittels eines privaten Schlüssels, über den
+JSON Web Tokens sind in der Regel mit dem asymmetrischen Verfahren \ac{RSA} signiert \citep{jwt:2015}. Das bedeutet, dass mittels eines privaten Schlüssels, über den
 nur der Ersteller des Tokens verfügt, also der Autorisationsserver, die Signatur erzeugt wird.
 Daneben gibt es einen öffentlichen Schlüssel, mit dem die Signatur überprüft werden kann.
 Das heißt es ist nicht möglich, dass der Client den Token verändern kann, da dann die
@@ -124,17 +123,17 @@ Authorization Server zugreifen darf.
 OpenID Connect baut darauf eine Authentifizierung auf, indem es in dem JSON Web Token
 Claims steckt, dass den Client, der den Token erhalten hat, nachdem sich ein End-Nutzer bei
 dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses EndNutzers zu verifizieren.
-Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token. 
+Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token \citep{openidconnect:2014}. 
 
 \subsection{ID Token}
 \label{subsec:OpenIDConnect:IDToken}
-ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben. Diese sind in \autoref{tab:idtoken} gelistet.
+ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben \citep{openidconnect:2014}. Diese sind in \autoref{tab:idtoken} gelistet.
 
 \begin{table}[h]
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|X|} \toprule
       \tableheadline{Claim} & \tableheadline{Beschreibung} \\ \midrule
-      iss & Die Issuer-URL. Dies ist die URL des Authorization Server, der den Token 
+      iss & Die Issuer-URL. Dies ist die \ac{URL} des Authorization Server, der den Token 
       erstellt hat („Herausgeber“). \\
       \midrule
       sub & Das Subject. Dies ist ein eindeutiger Identifier des Nutzers, der sich 
@@ -153,7 +152,7 @@ ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben.
 
   \bigskip
 In \autoref{tab:idtoken} sind die Claims zu sehen, die in dem Payload gesetzt sein müssen, damit ein
-JSON Web Token zu einem ID-Token wird [19].
+JSON Web Token zu einem ID-Token wird.
 \end{table}
 
 \begin{table}[h]
@@ -178,7 +177,7 @@ JSON Web Token zu einem ID-Token wird [19].
 \end{table}
 
 Zudem sind sogenannte Standard Claims spezifiziert, die Informationen über den 
-authentifizierten End-Nutzer liefern und in den Payload eingetragen werden können [19].  
+authentifizierten End-Nutzer liefern und in den Payload eingetragen werden können \citep{openidconnect:2014}.  
 Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert. 
 
 \subsection{Hybrid Flow}
@@ -186,7 +185,8 @@ Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert.
 Der Hybrid Flow ist der „Flow“ der beschreibt, wie der Client in OpenID Connect einen
 Token erhalten kann. Es ist fast identisch mit dem Authorization Code Grant in OAuth2, nur 
 das hier neben einem Access Token der Client auch einen ID-Token von dem Authorization 
-Server erhält [19]. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf.
+Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \citep{openidconnect:2014}.
+
 \begin{enumerate}
   \item Der Client bereitet eine Authorization Request vor.
   \item Der Client sendet die Authorization Request zu dem Authorization Server.
@@ -234,7 +234,7 @@ Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. 
   \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie \ac{RBAC}
   umgesetzt werden kann.
   \item[objects:] Das ist das Objekt, auf das man den Zugriff beschränken will. Das kann
-  beispielsweise ein Datenbankeintrag, ein Drucker oder eine http-Schnittstelle sein.
+  beispielsweise ein Datenbankeintrag, ein Drucker oder eine HTTP-Schnittstelle sein.
   \item[operations:] Eine Operation ist ein ausführbares Programm, was dem Nutzer Funktionen
   bereitstellt.
   \item[permissions:] Das ist die Zustimmung, eine Aktion auf eine durch \ac{RBAC} geschützte 
@@ -255,7 +255,7 @@ Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen ei
 programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden kann 
 oder nicht und entsprechend sendet der OPA-Service an das anfragende Programm eine 
 Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy 
-Agent zu entkoppeln, diese lediglich eine Unterstützung für http und JSON mitbringen 
+Agent zu entkoppeln, diese lediglich eine Unterstützung für HTTP und JSON mitbringen 
 müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
@@ -274,7 +274,7 @@ müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
 
 In dem oben gezeigten Beispiel \citep{opaplayground:2021} wird eine solche Zugriffskontrolle realisiert. Die 
 Zugriffsentscheidung wird folgendermaßen evaluiert:
-Falls eine http-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
+Falls eine HTTP-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
 Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service gesendet:
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Input-Daten für Open Policy Agent},label=lst:Input-DatenfürOpenPolicyAgent]
@@ -301,7 +301,7 @@ Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in Abbildung 4
 
 \section{Apache Tomcat}
 Apache Tomcat ist ein Webserver, der Spezifikationen der Java EE Plattform implementiert
-\citep{tomcat:2021}. Dieser Webserver kann http-Anfragen abhören und diese entgegennehmen und 
+\citep{tomcat:2021}. Dieser Webserver kann HTTP-Anfragen abhören und diese entgegennehmen und 
 beantworten. Die relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
 und Filter. 
 
@@ -310,14 +310,14 @@ Spring ist ein quelloffenes Java-Framework, das die Implementierung von Anwendun
 vereinfacht \citep{spring:2021}. Es teilt sich in eine Reihe von Teilprojekte auf. 
 
 \subsection{Spring Boot}
-Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-Boot Applikationen wird ein Apache Tomcat Webserver eingebettet \citep{springboot:2021}. Tomcat ermöglicht es dann, http-Anfragen anzunehmen und diese durch Mappings in der Applikation zu beantworten.
+Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-Boot Applikationen wird ein Apache Tomcat Webserver eingebettet \citep{springboot:2021}. Tomcat ermöglicht es dann, HTTP-Anfragen anzunehmen und diese durch Mappings in der Applikation zu beantworten.
 
 \subsection{Spring Security}
 Spring Security ist ein Teilprojekt des Spring-Frameworks. Spring Security bietet 
 Unterstützung für OAuth2 und unter anderem auch für OAuth2 Ressource Server \citep{springsecurity:2021}. 
 Man kann also mittels Spring Security einen OAuth2 Ressource Server implementieren, der 
-Zugriff auf http-Schnittstellen nur ermöglicht, wenn ein valider JSON Web Token in dem 
-Authorization Header der http-Anfrage gesendet wird. 
+Zugriff auf HTTP-Schnittstellen nur ermöglicht, wenn ein valider JSON Web Token in dem 
+Authorization Header der HTTP-Anfrage gesendet wird. 
 
 \section{Keycloak}
 Keycloak ist eine Implementierung des Autorisationsserver und OpenID Provider der 
@@ -332,7 +332,7 @@ werden kann \citep{keycloak:2021}.
 
 \section{Apache JMeter und Metriken}
 \label{sec:ApacheJMeterundMetriken}
-Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines http-Servers auf 
+Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines HTTP-Servers auf 
 Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
 kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
 protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann \citep{jmeter:2021}.
@@ -341,13 +341,13 @@ Metriken nachfolgend definiert.
 
 \begin{description}
   \item[Elapsed Time / Response Time:] Gemäß der Definition von Apache JMeter ist die Elapsed Time, auch Response Time 
-  genannt, die Zeit vom bevor dem Senden der http-Anfrage an den Server bis nach dem 
+  genannt, die Zeit vom bevor dem Senden der HTTP-Anfrage an den Server bis nach dem 
   Eintreffen des in der Regel letzten Bytes der Antwort des Servers \citep{jmeterglossary:2021}. 
   \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit vom bevor dem Senden der 
-  http-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
+  HTTP-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
   Antwort des Servers \citep{jmeterglossary:2021}. 
   \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anfragen 
-  und Zeiteinheit \citep{jmeterglossary:2021}]. Also in anderen Worten, die Anzahl von http-Anfragen per 
+  und Zeiteinheit \citep{jmeterglossary:2021}]. Also in anderen Worten, die Anzahl von HTTP-Anfragen per 
   Sekunde/Minute/etc. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
   Anfrage berechnet mit der folgenden Formel:
 
@@ -390,7 +390,7 @@ dann ergeben sich folgende Werte:
 Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer 
 vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
 und bei Response Times größer als 4,8 ist der Nutzer frustriert. Am Beispiel 
-Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine http-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum 
+Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum 
 Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
 vollständig dargestellt ist.\smallskip
 Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich 
@@ -408,7 +408,7 @@ also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekt
 der 1,0 beträgt.
 
 \section{Postman}
-Postman ist ein API-Client, mit dem unter anderem http-Anfragen gesendet und Antworten 
+Postman ist ein API-Client, mit dem unter anderem HTTP-Anfragen gesendet und Antworten 
 des Servers erhalten werden können \citep{postman:2021}. Außerdem bietet Postman Unterstützung für 
 OAuth2 an, das heißt es ist mittels Postman möglich, den Authorization Code Grant und
 Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. 
@@ -421,7 +421,7 @@ Environment (JRE), und das Betriebssystem \citep{docker:2021}.
 
 \section{Zusammenfassung}
 Es wurden also die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
-Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre http-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der http-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies also der Authorization Server. In OpenID Connect Vokabular würde man 
+Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre HTTP-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der HTTP-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies also der Authorization Server. In OpenID Connect Vokabular würde man 
 bei Keycloak von einem OpenID Provider sprechen. In dem ID Token, der von dem 
 Authorization Server übermittelt wird, werden Attribute des Nutzers in den Payload 
 gemappt, unter anderem auch die Rollenzugehörigkeit. Die Spring-Boot Applikationen 
@@ -433,12 +433,12 @@ entspricht dies einer Authentifizierung des Nutzers.\smallskip
 
 Beide Ressource Server haben als Zugriffskontrolle \ac{RBAC} 
 implementiert, das heißt in dem Token muss die Rolle ROLE\_USER vorhanden sein, damit 
-Zugriff auf die http-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
+Zugriff auf die HTTP-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
 unterschiedliche Weise realisiert. In dem einen wird die Zugriffskontrolle in dem Server 
 selbst realisiert, in dem Anderem wird diese entkoppelt durch den Open Policy Agent. 
 Dieser wird als eigenständiges Programm in einem Docker-Container ausgeführt und die 
 Kommunikation zwischen Ressource Server und OPA-Service geschieht auf localhost-zu-localhost Basis. 
 Um die Performance zu testen, wird Apache JMeter verwendet. JMeter erzeugt Last auf die 
-beiden Server, das heißt es sendet http-Anfragen mit validem Token an die Ressource 
+beiden Server, das heißt es sendet HTTP-Anfragen mit validem Token an die Ressource 
 Server und misst die Latenzen der Antworten. Neben der Latenz wird auch die Response 
 Time und Connect Time gemessen und der Datendurchsatz berechnet.

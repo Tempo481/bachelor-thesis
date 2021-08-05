@@ -22,7 +22,7 @@ Damit sich Nutzer bei Keycloak authentifizieren können, musste zunächst ein Nu
 Keycloak angelegt werden. Dies ist wichtig, damit dem Client überhaupt ein Token 
 ausgestellt werden kann durch den Hybrid Flow und damit die Attribute des Nutzers in den 
 Token gemappt werden, denn anhand dieser Attribute wird dann ja im Ressource Server 
-die Zugriffe auf dessen http-Schnittstelle kontrolliert. Die Charakterisierung des Nutzers ist 
+die Zugriffe auf dessen HTTP-Schnittstelle kontrolliert. Die Charakterisierung des Nutzers ist 
 an dieser Stelle wichtig, da die vorhandenen Attribute, die man dem Nutzer zuweist, auch 
 in den Token gemappt werden und die Größe des Tokens Einfluss auf die Performance 
 hat.
@@ -100,16 +100,16 @@ authentifiziert. Hier muss sich nun der End-Nutzer authentifizieren, der in Keyc
 und Identity Provider erstellt wurde. Die Auth URL ist nachfolgend dargestellt. 
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Authorization Request},label=lst:AuthorizationRequest]
-  http://localhost:9080/auth/realms/sample/protocol/openid-connect/auth?
+  HTTP://localhost:9080/auth/realms/sample/protocol/openid-connect/auth?
   response_type=code
   &state=
   &client_id=sample-app
   &scope=openid
-  &redirect_uri=https%3A%2F%2Foauth.pstmn.io%2Fv1%2Fcallback
+  &redirect_uri=HTTPs%3A%2F%2Foauth.pstmn.io%2Fv1%2Fcallback
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:AuthorizationRequest} ist die http-POST-Request dargestellt, mit der dann Postman, nachdem sich der End-Nutzer 
+In \autoref{lst:AuthorizationRequest} ist die HTTP-POST-Request dargestellt, mit der dann Postman, nachdem sich der End-Nutzer 
 authentifiziert hat, einen Authorization Code erhält, den Postman dann durch einen Token 
 von Keycloak austauschen kann. Die Paramater, die hier an Keycloak übertragen werden, 
 sind diejenigen die auch in \autoref{ssubsec:OAuth2:ErhaltvonToken:AuthorizationCodeGrant} beschrieben sind, nämlich:
@@ -136,7 +136,7 @@ geschieht automatisch und wird hier nicht beschrieben.
 
 In \autoref{lst:Base64-kodierterJSONWebToken} ist der Base64 kodierte Token zu sehen. Wie man sieht, ist er in drei Teile 
 unterteilt: Dem Header, dem Payload und der Signatur. Um ihn zu dekodieren und den 
-Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf \url{https://jwt.io/} ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
+Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf \url{HTTPs://jwt.io/} ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
 
 \begin{lstlisting}[frame=tb,caption={Dekodierter JSON Web Token},label=lst:DekodierterJSONWebToken]
 {
@@ -149,7 +149,7 @@ Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf 
     "iat": 1626689794,
     "auth_time": 1626689528,
     "jti": "dacddb77-6de4-4464-b623-b766a8624cda",
-    "iss": "http://localhost:9080/auth/realms/sample",
+    "iss": "HTTP://localhost:9080/auth/realms/sample",
     "aud": "account",
     "sub": "8cf89140-e8d6-4850-b416-3cceda982ec2",
     "typ": "Bearer",
@@ -200,22 +200,22 @@ Zudem ist die Gruppenzugehörigkeit zu sehen, denn User ist ja in der Gruppe Use
 
 Außerdem sind die Claims vorzufinden, die in einem ID Token Pflicht sind wie beispielsweise exp, der angibt, wann der Token abläuft. Erklärungen zu diesen Claims sind in \autoref{subsec:OpenIDConnect:IDToken} zu finden. Diese werden hier nicht weiter erläutert. 
 Im Header ist unter anderem das Claim alg: RS256 vorzufinden, das angibt, dass der Token durch RSA mit 256 Bit großen Schlüssel asymmetrisch signiert ist. Was hierbei wichtig ist, dass durch diese Signatur, die in \autoref{lst:DekodierterJSONWebToken} lediglich aus Platzgründen mit [Signature] gekennzeichnet ist, die Authentizität und Integrität des Tokens sichergestellt ist. Der Ressource Sever kann sich den passenden öffentlichen Schlüssel von Keycloak holen und damit dann die Authentizität und Integrität des Tokens validieren. 
-Nun wurde also durch den Authorization Code Grant ein Token von dem Authorization Server Keycloak erhalten mit dem es möglich ist, auf die http-Schnittstellen eines Ressource Servers zuzugreifen. Diese Ressource Server werden im nachfolgenden Kapitel beschrieben. 
+Nun wurde also durch den Authorization Code Grant ein Token von dem Authorization Server Keycloak erhalten mit dem es möglich ist, auf die HTTP-Schnittstellen eines Ressource Servers zuzugreifen. Diese Ressource Server werden im nachfolgenden Kapitel beschrieben. 
 
 \section{Ressource Server}
-Beide Ressource Server sind in Java mithilfe des Spring-Frameworks implementiert. Die Ressource Server sind Spring-Boot Anwendungen, das bedeutet, dass ein Apache Tomcat Webserver in der Applikation eingebettet ist und automatisch gestartet wird. Die Ressource Server können also http-Anfragen von Clients entgegennehmen und diese beantworten.\smallskip
+Beide Ressource Server sind in Java mithilfe des Spring-Frameworks implementiert. Die Ressource Server sind Spring-Boot Anwendungen, das bedeutet, dass ein Apache Tomcat Webserver in der Applikation eingebettet ist und automatisch gestartet wird. Die Ressource Server können also HTTP-Anfragen von Clients entgegennehmen und diese beantworten.\smallskip
 
 Die verwendete Spring-Boot Version ist 2.4.8 mit Apache Tomcat 9.0.48, welcher über den Port 8080 erreichbar ist. Alle Versionen der verwendeten Technologien wie die Datenbank und der Object-Relational Mapper Hibernate können aus der Spring-Boot Version hergeleitet werden und werden deshalb im weiteren Verlauf nicht genannt.\smallskip
 
-Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln ob der Client, berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist und per http für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.\smallskip
+Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln ob der Client, berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist und per HTTP für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.\smallskip
 
-Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die http-, JSON-, Base64-Kodierung-sowie-RSA unterstützt. 
+Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die HTTP-, JSON-, Base64-Kodierung-sowie-RSA unterstützt. 
 
 \subsection{Schnittstelle}
 \label{subsec:Schnittstelle}
-Beide Ressource Server haben eine http-GET-Schnittstelle implementiert, welche Daten aus einer SQL-Datenbank holt und sie dem anfragenden Client sendet. Dies ist genau die Schnittstelle, die nicht für alle frei zugänglich ist, sondern nur Nutzern zur Verfügung steht, die einen validen JSON Web Token haben und der Rolle ROLE\_USER zugehörig sind. 
+Beide Ressource Server haben eine HTTP-GET-Schnittstelle implementiert, welche Daten aus einer SQL-Datenbank holt und sie dem anfragenden Client sendet. Dies ist genau die Schnittstelle, die nicht für alle frei zugänglich ist, sondern nur Nutzern zur Verfügung steht, die einen validen JSON Web Token haben und der Rolle ROLE\_USER zugehörig sind. 
 
-\begin{lstlisting}[language=Java,frame=tb,caption={http-Schnittstelle der Ressource Server},label=lst:http-Schnittstelleder Server]
+\begin{lstlisting}[language=Java,frame=tb,caption={HTTP-Schnittstelle der Ressource Server},label=lst:HTTP-Schnittstelleder Server]
   /**
   * {@code GET  /documents} : get all the documents.
   *
@@ -230,7 +230,7 @@ Beide Ressource Server haben eine http-GET-Schnittstelle implementiert, welche D
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:http-Schnittstelleder Server} ist diese Schnittstelle dargestellt. Sie wird auf „/documents“ gemappt, das bedeutet, dass falls der Ressource Server auf dem localhost gestartet wird, und der Client sich ebenso auf dem localhost befindet, er diese Schnittstelle über den Pfad „localhost:8080/documents“ ansprechen kann. 8080 ist hierbei der Port, auf dem Apache Tomcat http-Anfragen abhört.
+In \autoref{lst:HTTP-Schnittstelleder Server} ist diese Schnittstelle dargestellt. Sie wird auf „/documents“ gemappt, das bedeutet, dass falls der Ressource Server auf dem localhost gestartet wird, und der Client sich ebenso auf dem localhost befindet, er diese Schnittstelle über den Pfad „localhost:8080/documents“ ansprechen kann. 8080 ist hierbei der Port, auf dem Apache Tomcat HTTP-Anfragen abhört.
 Diese Schnittstelle wurde in eine für Spring-Anwendungen typischen objektorientierten Architektur implementiert.
 
 \begin{figure}[htbp]
@@ -247,7 +247,7 @@ In dem *.controller-Package befindet sich die DocumentController-Klasse, die in 
 Das JPARepository implementiert unter anderem die Funktion .findAll(), welche alle Daten aus der Document-Table aus der verbundenen SQL-Datenbank holt. Diese Funktion wird in der DocumentService-Klasse aufgerufen.
 In dem Package *.entity befindet sich die Klasse Document, welche die durch Hibernate annotierte Entität darstellt. Diese repräsentiert die Table Document in der SQL-Datenbank. 
 Als Datenbank wird H2 Database Engine verwendet. Sample-Daten werden in diese Datenbank bei dem Start der Anwendung automatisch durch das SQL-insert-Skript geladen. Dieses Skript ist in dem Projekt unter src/main/resources/data.sql zu finden. 
-Diese http-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients also alle Document-Daten in JSON aus der SQL-Datenbank zu. Das eine SQL-Datenbank mit der Applikation verbunden wurde, dient der Simulierung von realistischen Testbedingungen, da in der Regel http-GET-Schnittstellen Daten aus einer Datenbank holen und sie den anfragenden Clients zusenden. Zudem wurde keine Cache Konfiguration von Hibernate verwendet, damit jede Anfrage von Clients gleichbehandelt wird und keine Inkonsistenzen bei den Latenzen entstehen. 
+Diese HTTP-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients also alle Document-Daten in JSON aus der SQL-Datenbank zu. Das eine SQL-Datenbank mit der Applikation verbunden wurde, dient der Simulierung von realistischen Testbedingungen, da in der Regel HTTP-GET-Schnittstellen Daten aus einer Datenbank holen und sie den anfragenden Clients zusenden. Zudem wurde keine Cache Konfiguration von Hibernate verwendet, damit jede Anfrage von Clients gleichbehandelt wird und keine Inkonsistenzen bei den Latenzen entstehen. 
 
 \subsection{Spring Security OAuth2}
 Um die Server und die Schnittstelle als OAuth2 Ressource Server zu konfigurieren, wurde Spring Security verwendet, welches ein Teilprojekt des Spring Frameworks ist. 
@@ -265,7 +265,7 @@ In \autoref{fig:chapter03:bearerauthenticationentrypoint} ist die Funktionsweise
 Damit die Ressource Server die Tokens validieren können, musste der JSON Web Key Set Endpunkt des Authorization Server in der Spring-Boot-Applikation angegeben werden. Dadurch kann die Applikation sich die öffentlichen Schlüssel der RSA-Signatur von diesem Endpunkt holen und damit die RSA-Signatur validieren, indem aus dem durch Base64 kodierten Header und Payload des JSON Web Tokens die Signatur berechnet und auf Gleichheit überprüft wird. Da der Ressource Server auf derselben Host-Maschine wie Keycloak, der Authorization Server, läuft, ist der Endpunkt in diesem Fall also:
 
 \begin{lstlisting}
-  http://localhost:9080/auth/realms/sample/protocol/openid-connect/certs
+  HTTP://localhost:9080/auth/realms/sample/protocol/openid-connect/certs
 \end{lstlisting}
 \smallskip
 
@@ -314,12 +314,12 @@ Der JwtAuthenticationConverter wurde so konfiguriert, dass es Rollen aus dem JSO
 \bigskip
 
 In \autoref{lst:JwtAuthenticationConverter} ist die verwendete Konfiguration dargestellt. Es wird also in dem JSON Web Token, der von dem Client gesendet wurde, nach dem Claim roles in dem Payload des Tokens gesucht und die Werte, die darin enthalten sind in GrantedAuthorities konvertiert. In dem Claim roles steht unter anderem auch die Rolle des Nutzers, der sich bei Keycloak authentifiziert hat, und zwar ROLE\_USER. Siehe Abbildung 13 Keycloak Access Token.
-Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich zu machen, die die Autorität ROLE\_USER besitzen, wurde HttpSecurity verwendet, das Teil von Spring Security ist. 
+Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich zu machen, die die Autorität ROLE\_USER besitzen, wurde HTTPSecurity verwendet, das Teil von Spring Security ist. 
 
-\begin{lstlisting}[language=Java,frame=tb,caption={HttpSecurity},label=lst:HttpSecurity]
+\begin{lstlisting}[language=Java,frame=tb,caption={HTTPSecurity},label=lst:HTTPSecurity]
   @Override
-  protected void configure(HttpSecurity http) throws Exception {
-      http
+  protected void configure(HTTPSecurity HTTP) throws Exception {
+      HTTP
           .authorizeRequests(authorize -> authorize
               .mvcMatchers("/documents").hasAuthority("ROLE_USER")
               .anyRequest().permitAll()
@@ -329,7 +329,7 @@ Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich 
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:HttpSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
+In \autoref{lst:HTTPSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
 
 \subsection{Spring Security Ressource Server mit externer Zugriffskontrolle}
 Um die Zugriffskontrolle von dem zweiten Ressource Server zu entkoppeln, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist und es erlaubt Zugriffsentscheidungen externen Programmen zu überlassen. 
@@ -351,7 +351,7 @@ Mit diesem JSON Web Token sendet der Client eine Anfrage an die OPA-enabled Soft
 Um eine Zugriffsentscheidung zu evaluieren, muss die OPA-enabled Software nun also die angefragte Schnittstelle inklusive Input-Daten an Open Policy Agent senden. Diese Input-Daten sind die JSON Web Token, in welchem unter anderem auch Nutzerattribute vorhanden sind, anhand dessen Open Police Agent mithilfe programmierter Zugriffsrichtlinien in Rego, eine Zugriffsentscheidung trifft und diese der OPA-enabled Software mitteilt, woraufhin der Client dann eine Antwort auf seine Anfrage erhält basierend auf der Zugriffsentscheidung von Open Policy Agent. 
 
 \begin{lstlisting}[frame=tb,caption={Rollenbasierte Zugriffsrichtlinie in Rego},label=lst:RollenbasierteZugriffsrichtlinieinRego]
-  package http.authz
+  package HTTP.authz
 
   default allow = false
   
@@ -374,7 +374,7 @@ Um eine Zugriffsentscheidung zu evaluieren, muss die OPA-enabled Software nun al
 \bigskip
 
 In \autoref{lst:RollenbasierteZugriffsrichtlinieinRego} ist die verwendete programmierte rollenbasierte Zugriffskontrolle in Rego, der Programmiersprache von Open Policy Agent, um Zugriffsrichtlinien zu definieren, dargestellt. 
-Es wird zunächst der JSON Web Token, den Open Policy Agent von dem Ressource Server erhält, dekodiert, da JSON Web Token in Base64 kodiert sind. Neben dem Token wird Open Policy Agent auch die angefragte http-Schnittstelle mitgeteilt. 
+Es wird zunächst der JSON Web Token, den Open Policy Agent von dem Ressource Server erhält, dekodiert, da JSON Web Token in Base64 kodiert sind. Neben dem Token wird Open Policy Agent auch die angefragte HTTP-Schnittstelle mitgeteilt. 
 In der ersten allow Methode, wird definiert, dass auf eine GET-Anfrage auf den Pfad documents, nur Zugriff erhalten werden darf, falls in dem Payload des JSON Web Token der Claim roles vorhanden ist und in diesem Claim der Wert ROLE\_USER vorhanden ist. Falls dem so ist, wird dem Ressource Server mitgeteilt, dass der Client autorisiert ist, eine Antwort auf seine Anfrage zu erhalten. 
 Die zweite allow-Methode wird hier nicht weiter erläutert. Anfragen, die nicht der Schnittstelle documents oder h2-console entsprechen, werden grundsätzlich abgelehnt. 
 
@@ -390,19 +390,19 @@ Um Ressource Server Open Policy Agent die Zugriffsentscheidungen zu überlassen,
 \bigskip
 
 In \autoref{fig:chapter03:filtersecurityinterceptor} ist die Funktionsweise dargestellt. Zunächst durchläuft die ankommende Anfrage des Clients die SecurityFilterChain. Im Fall einer erfolgreichen Authentifikation, was im Falle von OAuth2 einer erfolgreichen Validierung des JSON Web Tokens entspricht, trifft der AccessDecisionManager eine Zugriffsentscheidung. 
-In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine http-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde man in den allermeisten Anwendungsszenarien auch im Produktiveinsatz machen, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
+In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine HTTP-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde man in den allermeisten Anwendungsszenarien auch im Produktiveinsatz machen, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
 
 \begin{itemize}
   \item Der Pfad auf den der Client zugreifen möchte
-  \item Die http-Methode, mit der der Client auf diesen Pfad zugreifen möchte (GET, PUT, POST etc.)
+  \item Die HTTP-Methode, mit der der Client auf diesen Pfad zugreifen möchte (GET, PUT, POST etc.)
   \item Die Input-Daten, also der in Base64-kodierte JSON Web Token, welcher in dem SecurityContextHolder-Objekt gespeichert wird
 \end{itemize}
 
-Daraufhin wird dem Ressource Server dann von dem AccessDecisionManager, also Open Policy Agent, eine Zugriffsentscheidung per http mitgeteilt. Anhand dieser Entscheidung erlaubt oder verweigert der Ressource Server dem Client den Zugriff auf die Schnittstelle. 
+Daraufhin wird dem Ressource Server dann von dem AccessDecisionManager, also Open Policy Agent, eine Zugriffsentscheidung per HTTP mitgeteilt. Anhand dieser Entscheidung erlaubt oder verweigert der Ressource Server dem Client den Zugriff auf die Schnittstelle. 
 Es wurde nun also beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle beschrieben. 
 
 \section{Performancetests mit Apache JMeter}
-Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die http-Anfragen an einen Server senden. In diesen http-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
+Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die HTTP-Anfragen an einen Server senden. In diesen HTTP-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese müssen dann jeweils eine Zugriffsentscheidung evaluieren. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
 
 Wenn ein Single Sign-On mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei diesen Performancetests werden also eingeloggte Nutzer simuliert, die auf Schnittstellen eines Servers zugreifen möchten. Jeder Thread entspricht einem eingeloggten Nutzer.\smallskip
 
@@ -414,7 +414,7 @@ Es wurden drei Testpläne erstellt, die verschiedene Aspekte der Server testen, 
   \item[Stresstest:] Bei dem Stresstest wird eine unüblich hohe Last auf den Server generiert, um die Grenzen des Servers feststellen zu können. 
 \end{description}
 
-Bei jedem Test wird auch die \ac{CPU}-Auslastung und Arbeitsspeicherbelegung betrachtet. Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (Apache JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von http-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremsen sollten. Die verwendete Systemhardware von Client und Server, ist im \autoref{subsec:SystemhardwareundTestumfeld} zu sehen.
+Bei jedem Test wird auch die \ac{CPU}-Auslastung und Arbeitsspeicherbelegung betrachtet. Alle Tests wurden verteilt gestartet, das bedeutet, dass Client (Apache JMeter) und Server auf jeweils einem Rechner laufen. Dies dient dem Zweck, dass die Testergebnisse nicht verfälscht werden, da bei einer hohen Anzahl von Threads sowohl das Senden von HTTP-Anfragen CPU-Last erzeugt als auch das Abarbeiten der Anfragen durch den Server und beide Prozesse sich gegenseitig nicht ausbremsen sollten. Die verwendete Systemhardware von Client und Server, ist im \autoref{subsec:SystemhardwareundTestumfeld} zu sehen.
 
 \subsection{Lasttest}
 In dem Lasttest wurde eine übliche Last auf den Server generiert und mittels sogenannten Listener die Ergebnisse gemessen und protokolliert. 
@@ -427,7 +427,7 @@ In dem Lasttest wurde eine übliche Last auf den Server generiert und mittels so
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:ThreadGroup-Last} ist die verwendete Konfiguration dargestellt. Es werden zehn Threads gestartet, die jeweils gleichzeitig http-Anfragen an den Server senden. Als Ramp-up period wurde fünf Sekunden gesetzt. Das bedeutet, es dauert fünf Sekunden, bis alle zehn Threads gestartet sind. Als Duration ist 900 Sekunden eingestellt worden, das bedeutet das der Test 15 Minuten dauert. 
+In \autoref{fig:chapter03:ThreadGroup-Last} ist die verwendete Konfiguration dargestellt. Es werden zehn Threads gestartet, die jeweils gleichzeitig HTTP-Anfragen an den Server senden. Als Ramp-up period wurde fünf Sekunden gesetzt. Das bedeutet, es dauert fünf Sekunden, bis alle zehn Threads gestartet sind. Als Duration ist 900 Sekunden eingestellt worden, das bedeutet das der Test 15 Minuten dauert. 
 
 \begin{figure}[htbp]
   \centering
@@ -438,7 +438,7 @@ In \autoref{fig:chapter03:ThreadGroup-Last} ist die verwendete Konfiguration dar
 \bigskip
 
 In \autoref{fig:chapter03:TestPlan-Last} ist eine Gesamtübersicht des Testplans dargestellt. In Thread Group wurde die Konfiguration vorgenommen, die in Abbildung 22 dargestellt ist. Hier wurden zwei Listener konfiguriert, nämlich Summary Report und jp@gc – Performance Metrics Collector. Summary Report ist für das Protokollieren der Messdaten zuständig. Hier werden unter anderem die Latenz, Response Time und Connect Time protokolliert. Der Performance Metrics Collector ist für das Messen von CPU-Auslastung und RAM-Belegung zuständig.
-In dem http Header Manager wird der http-Header der http-Anfrage, die jeweils an den Server gesendet werden soll, konfiguriert. 
+In dem HTTP Header Manager wird der HTTP-Header der HTTP-Anfrage, die jeweils an den Server gesendet werden soll, konfiguriert. 
 
 \begin{figure}[htbp]
   \centering
@@ -448,7 +448,7 @@ In dem http Header Manager wird der http-Header der http-Anfrage, die jeweils an
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:HTTPHeaderManager} ist der verwendete http Header Manager zu sehen. Hier wurde lediglich der JSON Web Token in dem Schlüssel Authorization des http-Headers hinterlegt. Der Erhalt des Tokens wurde in Kapitel 3.2 beschrieben. Als Prefix wird Bearer angegeben, um dem empfangenden System zu signalisieren, dass in dem Authorization-Feld des http-Headers ein Bearer Token steht, also ein durch OAuth2 Code Grant erlangter Token [8].
+In \autoref{fig:chapter03:HTTPHeaderManager} ist der verwendete HTTP Header Manager zu sehen. Hier wurde lediglich der JSON Web Token in dem Schlüssel Authorization des HTTP-Headers hinterlegt. Der Erhalt des Tokens wurde in Kapitel 3.2 beschrieben. Als Prefix wird Bearer angegeben, um dem empfangenden System zu signalisieren, dass in dem Authorization-Feld des HTTP-Headers ein Bearer Token steht, also ein durch OAuth2 Code Grant erlangter Token [8].
 
 \begin{figure}[htbp]
   \centering
@@ -458,7 +458,7 @@ In \autoref{fig:chapter03:HTTPHeaderManager} ist der verwendete http Header Mana
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:HTTPRequest} ist die http-Anfrage zu sehen, die jeweils an den Server gesendet wird. Hier wurde die Anfragemethode auf GET eingestellt und der Pfad auf documents gesetzt, denn die Schnittstelle des Ressource Server ist wie in Kapitel 3.3.1 erläutert eine http-GET-Schnittstelle. In dem Feld Server Name or IP wurde die IP-Adresse des Servers angegeben. Bei den Tests wird Client, also Apache JMeter, und Server auf zwei Rechnern gestartet, damit die Testergebnisse nicht verfälscht werden. 
+In \autoref{fig:chapter03:HTTPRequest} ist die HTTP-Anfrage zu sehen, die jeweils an den Server gesendet wird. Hier wurde die Anfragemethode auf GET eingestellt und der Pfad auf documents gesetzt, denn die Schnittstelle des Ressource Server ist wie in Kapitel 3.3.1 erläutert eine HTTP-GET-Schnittstelle. In dem Feld Server Name or IP wurde die IP-Adresse des Servers angegeben. Bei den Tests wird Client, also Apache JMeter, und Server auf zwei Rechnern gestartet, damit die Testergebnisse nicht verfälscht werden. 
 
 \subsection{Skalierbarkeitstest}
 Bei dem Skalierbarkeitstest geht es darum, eine ansteigende Last zu generieren, um herauszufinden inwiefern sich die Latenzen verändern. Je mehr Last erzeugt wird, desto höher werden tendenziell die Latenzen. 
@@ -485,13 +485,13 @@ Bei dem Stresstest geht es darum, dass eine möglichst hohe Last auf den Server 
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:ThreadGroup-Stress} ist die verwendete Konfiguration zu sehen. Es werden insgesamt 1000 Threads gestartet wobei alle 1000 Threads erst nach 120 Sekunden gestartet sind. Der Test dauert insgesamt 900 Sekunden, das heißt 15 Minuten. Während dieser Zeit sendet jeder Thread kontinuierlich Anfragen an den Server. Dieser Test ist also deutlich ressourcenintensiver als der Last-und-Skalierbarkeitstest. Verlässlich können pro Maschine in Apache JMeter, ca. 1000-2000 Threads gestartet werden, was allerdings abhängig ist von der jeweiligen Hardware des Systems, auf dem Apache JMeter ausgeführt wird [30]. Dieser Test wird ohne die GUI von Apache JMeter ausgeführt, da diese speziell bei ressourcenintensiven Stresstests die Testergebnisse verfälschen kann. Die verwendete Systemhardware von Client und Server werden im Kapitel Systemhardware beschrieben. 
+In \autoref{fig:chapter03:ThreadGroup-Stress} ist die verwendete Konfiguration zu sehen. Es werden insgesamt 1000 Threads gestartet wobei alle 1000 Threads erst nach 120 Sekunden gestartet sind. Der Test dauert insgesamt 900 Sekunden, das heißt 15 Minuten. Während dieser Zeit sendet jeder Thread kontinuierlich Anfragen an den Server. Dieser Test ist also deutlich ressourcenintensiver als der Last-und-Skalierbarkeitstest. Verlässlich können pro Maschine in Apache JMeter, ca. 1000-2000 Threads gestartet werden, was allerdings abhängig ist von der jeweiligen Hardware des Systems, auf dem Apache JMeter ausgeführt wird \citep{jmetermaxthreads:2017}. Dieser Test wird ohne die GUI von Apache JMeter ausgeführt, da diese speziell bei ressourcenintensiven Stresstests die Testergebnisse verfälschen kann. Die verwendete Systemhardware von Client und Server werden im Kapitel Systemhardware beschrieben. 
 
 \subsection{Messung und Protokollierung von Messdaten}
 Um die Messdaten der Tests aus den vorrangegangenen Kapiteln zu protokollieren und in geeigneter Weise zu visualisieren, wurden Apache JMeter Listener verwendet, die Messdaten in Comma-separated values (CSV)-Dateien schreiben. Um diese Daten visuell darzustellen, wurde der HTML Report von Apache JMeter verwendet. Als Listener wurde jeweils Summary Report verwendet. Dieser misst und protokolliert unter anderem die folgenden Daten: 
 \begin{itemize}
   \item Response Time
-  \item http-Status Code der Antwort des Servers
+  \item HTTP-Status Code der Antwort des Servers
   \item Latenz
   \item Connect Time
   \item Gesendete Bytes
@@ -521,7 +521,7 @@ Das bedeutet, dass Nutzer bis zu einer Response Time von 500 Millisekunden zufri
 \section{Systemhardware und Testumfeld}
 \label{subsec:SystemhardwareundTestumfeld}
 Es wird die verwendete Systemhardware für Client und Server, die in allen drei Tests verwendet wurde, aufgelistet. Dies ist erwähnenswert, da die Messwerte von der Leistungsfähigkeit der Hardware abhängen. Da allerdings ein Vergleich zwischen zwei Systemen gezogen wird, können auch allgemeingültige Erkenntnisse aus den Ergebnissen der Tests gezogen werden. Ein weiterer wichtige Punkt ist der, dass beide Rechner, also Client und Server, sich in demselben Netzwerk befinden und über denselben Router über Ethernet mit dem Internet verbunden sind. 
-Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird Windows-Subsystem für Linux 2 (WSL 2) verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden [31]. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
+Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird \ac{WSL 2} verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden \citep{wsl:2021}. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
 
 \begin{table}[h]
   \myfloatalign
@@ -538,7 +538,7 @@ Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simuli
   \label{tab:SystemdesClients}
 \end{table}
 
-In \autoref{tab:SystemdesClients} ist das System des Clients dargestellt. Auf diesem System wird Apache JMeter ausgeführt, es sendet also jeweils die http-Anfragen an den Server. 
+In \autoref{tab:SystemdesClients} ist das System des Clients dargestellt. Auf diesem System wird Apache JMeter ausgeführt, es sendet also jeweils die HTTP-Anfragen an den Server. 
 
 \begin{table}[h]
   \myfloatalign
