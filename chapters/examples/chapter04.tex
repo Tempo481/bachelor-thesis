@@ -141,7 +141,7 @@ In dem Server, der die Zugriffskontrolle mit Open Policy Agent entkoppelt hat, w
 
 Die Meldung, die die Spring-Boot Applikation, ausgibt ist in \autoref{lst:FehlermeldungSpring-Boot} zu sehen. Der Ressource Server sendet jeweils bei jeder einkommenden Anfrage von Clients, eine HTTP-POST Anfrage an Open Policy Agent, um eine Zugriffsentscheidung für diese Anfrage der Clients zu erhalten. Dies war in 21.11\% aller Anfragen nicht möglich, weil Open Policy Agent blockiert. Da dieses Verhalten bei dem Lasttest nicht aufgetreten ist und der Lasttest mit lediglich zehn Threads eine weitaus geringere Belastung generiert, ist davon auszugehen, dass ab einer gewissen Belastung Open Policy Agent sperrt.\smallskip
 
-Open Policy Agent selbst nutzt als Webserver kein Apache Tomcat, sondern benutzt einen eigens in Go programmierten Webserver [33]. Etwaige Performanceeinstellungen lassen sich also nicht vornehmen, ohne den Source-Code zu modifizieren und Open Policy Agent neu zu kompilieren und ein Docker-Container daraus wieder zu erstellen. 
+Open Policy Agent selbst nutzt als Webserver kein Apache Tomcat, sondern einen eigens in Go programmierten Webserver \citep{opagithub:2021}. Etwaige Performanceeinstellungen lassen sich also nicht vornehmen, ohne den Source-Code zu modifizieren und Open Policy Agent neu zu kompilieren und ein Docker-Container daraus wieder zu erstellen. 
 
 \section{Stresstest}
 Bei dem Stresstest wurde eine abnormal hohe Belastung auf beide Server erzeugt, um die Grenzen des Systems auszuloten. Hier wurden 1000 Threads über einen Zeitraum von 15 Minuten gestartet. 

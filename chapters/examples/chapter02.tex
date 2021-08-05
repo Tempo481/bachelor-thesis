@@ -227,7 +227,7 @@ Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. 
 \begin{description}
   \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie \ac{RBAC}
   umgesetzt werden kann.
-  \item[objects:] Das ist das Objekt, auf das man den Zugriff beschränken will. Das kann
+  \item[objects:] Das ist das Objekt, auf das der Zugriff beschränkt werden soll. Das kann
   beispielsweise ein Datenbankeintrag, ein Drucker oder eine HTTP-Schnittstelle sein.
   \item[operations:] Eine Operation ist ein ausführbares Programm, was dem Nutzer Funktionen
   bereitstellt.
@@ -244,7 +244,8 @@ Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. 
 Open Policy Agent (OPA) ist eine quelloffene Policy Engine, die Zugriffskontrolle von 
 Applikationen entkoppelt \citep{opaperformance:2021:07}. Es entkoppelt das Treffen von Zugriffsentscheidungen von der Komponente die Richtlinien durchsetzen muss.
 Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwendet. 
-Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego. 
+Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego.\smallskip
+
 Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen eine 
 programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden kann 
 oder nicht und entsprechend sendet der OPA-Service an das anfragende Programm eine 
@@ -282,6 +283,7 @@ Owner entsprechen. Beispielsweise werden folgende Input-Daten dem OPA-Service ge
     "user": "alice@hooli.com"
   }
 \end{lstlisting}
+\smallskip
 
 Dann würde der OPA-Service die folgende Zugriffsentscheidung evaluieren:
 
@@ -290,13 +292,14 @@ Dann würde der OPA-Service die folgende Zugriffsentscheidung evaluieren:
     "allow": false
   }
 \end{lstlisting}
+\smallskip
 
-Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in Abbildung 4 Input-Daten für Open Policy Agent der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
+Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in \autoref{lst:Input-DatenfürOpenPolicyAgent} der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
 
 \section{Apache Tomcat}
-Apache Tomcat ist ein Webserver, der Spezifikationen der Java EE Plattform implementiert
+Apache Tomcat ist ein Webserver, der Spezifikationen der Java Enterprise Edition (EE) Plattform implementiert
 \citep{tomcat:2021}. Dieser Webserver kann HTTP-Anfragen abhören und diese entgegennehmen und 
-beantworten. Die relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
+beantworten. Die für diese Arbeit relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
 und Filter. 
 
 \section{Spring}
