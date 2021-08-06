@@ -26,7 +26,7 @@ Token gemappt werden, denn anhand dieser Attribute wird dann ja im Ressource Ser
 die Zugriffe auf dessen HTTP-Schnittstelle kontrolliert. Die Charakterisierung des Nutzers ist 
 an dieser Stelle wichtig, da die vorhandenen Attribute, die den Nutzern zugewiesen werden, auch 
 in den Token gemappt werden und die Größe des Tokens Einfluss auf die Performance 
-hat.
+hat.\bigskip
 
 \begin{figure}[htbp]
   \centering
@@ -35,8 +35,8 @@ hat.
   \label{fig:chapter03:keycloak-sample-user}
 \end{figure}
 
-In \autoref{fig:chapter03:keycloak-sample-user} Keycloak Sample User ist der erstellte Nutzer in Keycloak zu sehen. Neben 
-den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die Rolle ROLE\_USER.\bigskip
+In \autoref{fig:chapter03:keycloak-sample-user} ist der erstellte Nutzer in Keycloak zu sehen. Neben 
+den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die Rolle ROLE\_USER. Dies ist in Keycloak möglich und damit lässt sich in den Applikationen dann eine rollenbasierte Zugriffskontrolle realisieren.\bigskip
 
 \begin{figure}[htbp]
   \centering
@@ -45,9 +45,7 @@ den Standardattributen wird dem Nutzer auch eine Rolle zugewiesen, und zwar die 
   \label{fig:chapter03:keycloak-sample-user-role}
 \end{figure}
 
-Dies ist in Keycloak möglich und damit lässt sich in den Applikationen dann eine 
-rollenbasierte Zugriffskontrolle realisieren. In \autoref{fig:chapter03:keycloak-sample-user-role} sind die zugewiesenen Rollen zu sehen. default-roles-sample ist eine durch Keycloak automatisch 
-zugewiesene Rolle und hat hier keine weitere Relevanz. 
+In \autoref{fig:chapter03:keycloak-sample-user-role} sind die zugewiesenen Rollen zu sehen. default-roles-sample ist eine durch Keycloak automatisch zugewiesene Rolle und hat hier keine weitere Relevanz. 
 Außerdem wurde diesem Nutzer noch eine Gruppenzugehörigkeit und ein weiteres Attribut 
 hinzugewiesen. Gruppenzugehörigkeiten sind in Firmen oftmals die Bürostandorte, 
 Abteilungen und dergleichen. Nach Gruppenzugehörigkeiten wird in der Regel nicht 
@@ -385,13 +383,13 @@ Um dem Ressource Server, Open Policy Agent die Zugriffsentscheidungen zu überla
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=1.0\textwidth]{gfx/filtersecurityinterceptor.png}
+  \includegraphics[width=0.8\textwidth]{gfx/filtersecurityinterceptor.png}
   \caption{AccessDecisionManager in Spring Security \citep{springsecuritydoc:2021}}
   \label{fig:chapter03:filtersecurityinterceptor}
 \end{figure}
 \bigskip
 
-In \autoref{fig:chapter03:filtersecurityinterceptor} ist die Funktionsweise dargestellt. Zunächst durchläuft die ankommende Anfrage des Clients die SecurityFilterChain. Im Fall einer erfolgreichen Authentifikation, was im Falle von OAuth2 einer erfolgreichen Validierung des JSON Web Tokens entspricht, trifft der AccessDecisionManager eine Zugriffsentscheidung. 
+In \autoref{fig:chapter03:filtersecurityinterceptor} ist die Funktionsweise des AccessDecisionManagers dargestellt. Zunächst durchläuft die ankommende Anfrage des Clients die SecurityFilterChain. Im Fall einer erfolgreichen Authentifikation, was im Falle von OAuth2 einer erfolgreichen Validierung des JSON Web Tokens entspricht, trifft der AccessDecisionManager eine Zugriffsentscheidung. 
 In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine HTTP-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde man in den allermeisten Anwendungsszenarien auch im Produktiveinsatz machen, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
 
 \begin{itemize}

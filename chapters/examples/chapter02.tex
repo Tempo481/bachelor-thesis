@@ -52,7 +52,7 @@ Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser 
 \end{figure}
 
 In \autoref{fig:chapter02:oauth_auth_code_flow} ist der Authorization Code Grant Flow als Sequenzdiagramm abgebildet. Es ist zu sehen, dass es Beziehungen zwischen allen vier Rollen gibt, nämlich dem Ressource Owner, dem Client, in diesem Fall als „Web App“ gekennzeichnet, dem Authorization Server, Okta, und dem Ressource Server. 
-Grob kann man es sich in der Praxis so vorstellen, dass ein Nutzer eine Webapplikation (=Client) bedient und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation, die der Client ist, leitet also den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, Daten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
+In der Praxis ist der Ablauf folgendermaßen zu beschreiben: Ein Nutzer bedient eine Webapplikation (=Client) und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von beispielsweise dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation, also der Client, leitet also den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, seine Adressdaten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
 
 \section{JSON Web Token}
 \label{sec:JSONWebToken}
@@ -98,7 +98,7 @@ Tokens sichergestellt.
 
 \subsection{JSON Web Token Key}
 \label{sec:JSONWebToken:JSONWebTokenKey}
-Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der im JSONFormat dargestellte öffentliche Schlüssel \citep{jwk:2015}. 
+Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der in JSON dargestellte öffentliche Schlüssel. Mithilfe dieses öffentlichen Schlüssels, kann die Signatur aus dem Header und Payload des JSON Web Tokens berechnet werden. Entspricht die berechnete Signatur der Signatur die in dem JSON Web Token vorhanden ist, ist der Token erfolgreich validiert und Integrität sowie Authentizität sind sichergestellt \citep{jwk:2015}.
 
 \subsection{Base64 Kodierung}
 \label{sec:JSONWebToken:Base64Kodierung}
@@ -127,7 +127,7 @@ ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben 
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|X|} \toprule
       \tableheadline{Claim} & \tableheadline{Beschreibung} \\ \midrule
-      iss & Die Issuer-URL. Dies ist die \ac{URL} des Authorization Server, der den Token 
+      iss & Die Issuer-URL. Dies ist die URL des Authorization Server, der den Token 
       erstellt hat („Herausgeber“). \\
       \midrule
       sub & Das Subject. Dies ist ein eindeutiger Identifier des Nutzers, der sich 
@@ -196,7 +196,7 @@ Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \c
 \section{OAuth2 Endpunkte des Autorisationsservers}
 \label{sec:OAuth2EndpunktedesAutorisationsservers}
 
-Der Autorisationsserver ist über eine Reihe von Endpunkte für den Client ansprechbar. Über den Token 
+Der Autorisationsserver ist über eine Reihe von Endpunkte für den Client und Ressource Server ansprechbar. Über den Token 
 Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Client 
 übermitteln. Im Folgenden werden die relevanten Endpunkte erläutert.
 
