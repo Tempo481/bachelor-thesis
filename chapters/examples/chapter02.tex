@@ -12,7 +12,7 @@ Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelm�
 \begin{description}
   \item[Authentifizierung:] Bei einer Authentifizierung beweist ein Nutzer seine Identität, indem er dem gegenüberliegenden System Informationen übermittelt, über die nur der Nutzer verfügen kann wie beispielsweise ein Nutzername und Passwort oder ein Token \citep{Cankaya2011}.
   \item[Autorisierung:] Eine Autorisierung findet grundsätzlich nach der Authentifizierung statt. Hier überprüft das System nach der Authentifizierung des Nutzers, ob der Nutzer über die notwendigen Rechte verfügt eine Aktion auszuführen \citep{Authorization2011}. 
-  \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erstellen kann, gewährleistet werden \citep{connect2id:2021}.
+  \item[Integrität:] Bei der Integrität wird verifiziert, dass Daten seit ihrer Erstellung nicht verändert wurden. Dies kann beispielsweise durch eine Signatur, die nur der Ersteller der Daten erzeugen kann, gewährleistet werden \citep{connect2id:2021}.
   \item[Authentizität:] Das Ziel der Authentizität ist die Verifizierung des Erstellers der Daten \citep{connect2id:2021}. Das bedeutet, es soll möglich sein zu überprüfen, dass die Daten, die zugesendet werden, auch tatsächlich von der Person oder dem System kommen, von der man annimmt, dass sie der Urheber ist.
   \item[Validierung:] Man kann von einer Validierung sprechen, wenn die Authentizität und Integrität überprüft werden.
   \item[Zugriffskontrolle:] Zugriffskontrolle ist eine Sicherheitsfunktion, die gemeinsame Ressourcen gegen unautorisierten Zugriff schützt. Der Unterschied zwischen autorisierten und unautorisierten Zugriff wird anhand einer Zugriffskontrollrichtlinie gemacht \citep{Brose2011}. 
@@ -40,7 +40,7 @@ Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind \citep{oauth2:
 \subsection{Erhalt von Token}
 \label{subsec:OAuth2:ErhaltvonToken}
 
-Gemäß der Spezifikation gibt es fünf verschiedene Wege, wie ein Client von einem Authorization Server einen Token erhalten kann \citep{oauth2:2012}. Im Folgenden wird nur der sogenannte Authorization Code Grant beschrieben, da die anderen vier für diese Arbeit keine Relevanz haben.\smallskip
+Gemäß der Spezifikation gibt es fünf verschiedene Wege, wie ein Client von einem Authorization Server einen Token erhalten kann \citep{oauth2:2012}. Im Folgenden wird nur der sogenannte Authorization Code Grant beschrieben, da die anderen vier (Client Credential Grant, User Password Credential Grant, Implicit Grant, Refresh Token) für diese Arbeit keine Relevanz haben.\smallskip
 
 Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser verwendet, von dem Client auf den Authorization Server weitergeleitet, um den Ressource Owner zu bitten, sich bei dem Authorization Server zu authentifizieren, um dann dem Client zu autorisieren auf eine geschützte Ressource des Ressource Servers zuzugreifen \citep{oauth2:2012}. 
 
@@ -52,7 +52,7 @@ Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser 
 \end{figure}
 
 In \autoref{fig:chapter02:oauth_auth_code_flow} ist der Authorization Code Grant Flow als Sequenzdiagramm abgebildet. Es ist zu sehen, dass es Beziehungen zwischen allen vier Rollen gibt, nämlich dem Ressource Owner, dem Client, in diesem Fall als „Web App“ gekennzeichnet, dem Authorization Server, Okta, und dem Ressource Server. 
-In der Praxis ist der Ablauf folgendermaßen zu beschreiben: Ein Nutzer bedient eine Webapplikation (=Client) und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von beispielsweise dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation, also der Client, leitet also den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, seine Adressdaten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
+In der Praxis ist der Ablauf folgendermaßen zu beschreiben: Ein Nutzer bedient eine Webapplikation (=Client) und diese Webapplikation möchte, dass der Nutzer sie autorisiert, in ihrem Namen seine Adressdaten von beispielsweise dem Google-Konto abzufragen. In diesem Fall wäre Google der Authorization und Ressource Server. Die Webapplikation,b der Client, leitet den Nutzer auf den Google-Server weiter, wo er dann aufgefordert wird sich zu authentifizieren und der Webapplikation Erlaubnis zu erteilen, seine Adressdaten abzufragen. Daraufhin wird der Webbrowser des End-Nutzers zu dem Client zurückgeleitet und der Client erhält einen Token von dem Authorization Server, womit er die Ressource des End-Nutzers von dem Ressource Server abfragen kann. 
 
 \section{JSON Web Token}
 \label{sec:JSONWebToken}
@@ -196,7 +196,7 @@ Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \c
 \section{OAuth2 Endpunkte des Autorisationsservers}
 \label{sec:OAuth2EndpunktedesAutorisationsservers}
 
-Der Autorisationsserver ist über eine Reihe von Endpunkte für den Client und Ressource Server ansprechbar. Über den Token 
+Der Autorisationsserver ist über eine Reihe von Endpunkten für den Client und Ressource Server ansprechbar. Über den Token 
 Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Client 
 übermitteln. Im Folgenden werden die relevanten Endpunkte erläutert.
 
@@ -222,10 +222,10 @@ Signatur zu validieren und die Authentizität und Integrität des Tokens sicherz
 \label{sec:Zugriffskontrolle:RoleBasedAccessControl(RBAC)}
 \ac{RBAC}, zu Deutsch rollenbasierte Zugriffskontrolle, ist eine ANSI-NORM 
 und sie beschreibt die Verknüpfung von Rollen, die Nutzern zugewiesen werden, mit 
-Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. Gemäß der Norm gibt es eine Reihe Definitionen:
+Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. Gemäß der Norm gibt es mehrere Definitionen:
 
 \begin{description}
-  \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschrieben wie \ac{RBAC}
+  \item[component:] Es gibt mehrere Komponenten in der ANSI-NORM, die beschreiben wie \ac{RBAC}
   umgesetzt werden kann.
   \item[objects:] Das ist das Objekt, auf das der Zugriff beschränkt werden soll. Das kann
   beispielsweise ein Datenbankeintrag, ein Drucker oder eine HTTP-Schnittstelle sein.
@@ -299,8 +299,8 @@ Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in \autoref{ls
 \section{Apache Tomcat}
 Apache Tomcat ist ein Webserver, der Spezifikationen der Java Enterprise Edition (EE) Plattform implementiert
 \citep{tomcat:2021}. Dieser Webserver kann HTTP-Anfragen abhören und diese entgegennehmen und 
-beantworten. Die für diese Arbeit relevanten Spezifikationen die Tomcat implementiert, sind Jakarta Servlet
-und Filter. 
+beantworten. Die für diese Arbeit relevanten Spezifikationen, die Tomcat implementiert, sind Jakarta Servlet
+und Filter. TODO Servlet und Filter
 
 \section{Spring}
 Spring ist ein quelloffenes Java-Framework, das die Implementierung von Anwendungen 
@@ -322,7 +322,19 @@ OAuth2 und OpenID Connect-Spezifikation. Das bedeutet, dass Clients von Keycloak
 Token sowie ID Token erhalten können.\smallskip
 
 Daneben ist Keycloak auch ein Identity Provider, das heißt es ermöglicht es hinterlegten 
-Nutzern sich zu authentifizieren. Damit ist also dann der Authorization Code Grant und 
+Nutzern sich zu authentifizieren. Damit ist
+
+
+
+
+
+
+
+
+
+
+
+der Authorization Code Grant und 
 Hybrid Flow der OpenID Connect und OAuth2 Spezifikation möglich, denn es kann sich ein 
 Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermittelt 
 werden kann \citep{keycloak:2021}.
@@ -333,18 +345,18 @@ Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnit
 Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
 kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
 protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann \citep{jmeter:2021}.
-Da zum Testen der Performanz verschiedene Metriken betrachtet werden, werden diese 
+Da zum Testen der Performance verschiedene Metriken betrachtet werden, werden diese 
 Metriken nachfolgend definiert. 
 
 \begin{description}
   \item[Elapsed Time / Response Time:] Gemäß der Definition von Apache JMeter ist die Elapsed Time, auch Response Time 
-  genannt, die Zeit vom bevor dem Senden der HTTP-Anfrage an den Server bis nach dem 
+  genannt, die Zeit von bevor dem Senden der HTTP-Anfrage an den Server bis nach dem 
   Eintreffen des in der Regel letzten Bytes der Antwort des Servers \citep{jmeterglossary:2021}. 
-  \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit vom bevor dem Senden der 
+  \item[Latenz:] Gemäß der Definition von Apache JMeter ist die Latenz die Zeit von bevor dem Senden der 
   HTTP-Anfrage an den Server bis nach dem Eintreffen des in der Regel ersten Bytes der 
   Antwort des Servers \citep{jmeterglossary:2021}. 
-  \item[Datendurchsatz:] Der Datendurchsatz (engl. Throughput) wird berechnet aus dem Quotienten von Anzahl der Anfragen 
-  und Zeiteinheit \citep{jmeterglossary:2021}]. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
+  \item[Datendurchsatz:] Der Datendurchsatz (Throughput) wird berechnet aus dem Quotienten von Anzahl der Anfragen 
+  und Zeiteinheit \citep{jmeterglossary:2021}. Es wird in dem Testplan selbst aus der ersten Anfrage bis zur letzten 
   Anfrage berechnet mit der folgenden Formel:
 
   \begin{equation}
@@ -362,8 +374,8 @@ festgelegt, der die Response Time angibt, bis zu der der Nutzer zufrieden ist. D
 einen zweiten Wert, der ein Vielfaches von T ist und angibt, bis zu welcher Länge der 
 Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist der Nutzer 
 frustriert. Aus diesen Werten errechnet sich dann ein Ergebnis für den Application 
-Performance Index, wobei hier 1.0 der beste Wert, sodass der Nutzer vollständig 
-zufrieden ist.\smallskip
+Performance Index, wobei hier 1.0 der beste Wert ist, das heißt der Nutzer ist vollständig 
+zufrieden.\smallskip
 
 Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, 
 dann ergeben sich folgende Werte:
@@ -386,7 +398,8 @@ dann ergeben sich folgende Werte:
 Die Grenzwerte sind in \autoref{tab:ApplicationPerformanceIndex} dargestellt. Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
 und bei Response Times größer als 4,8 Sekunden ist der Nutzer frustriert. Am Beispiel 
 Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
-vollständig dargestellt ist.\smallskip
+vollständig dargestellt wird.\smallskip 
+
 Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich 
 dann der Application Performance Index.
 
@@ -394,26 +407,23 @@ dann der Application Performance Index.
   Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples}
 \end{equation}
 
-In der obenstehenden Gleichung ist die Formel zur Berechnung des Application Performance Index dargestellt \citep{apdex:2007}. Satisfied Count ist hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
+In der obenstehenden Gleichung ist die Formel zur Berechnung des Application Performance Index dargestellt \citep{apdex:2007}. Satisfied count ist hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
 count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
 haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn 
-also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Score, 
+also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Index, 
 der 1,0 beträgt.
 
 \section{Postman}
 Postman ist ein API-Client, mit dem unter anderem HTTP-Anfragen gesendet und Antworten 
 des Servers erhalten werden können \citep{postman:2021}. Außerdem bietet Postman Unterstützung für 
 OAuth2 an, das heißt es ist mittels Postman möglich, den Authorization Code Grant und
-Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. 
+Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. Hierbei ist Postman der Client der OAuth2 Spezifikation.
 
 \section{Docker-Container}
-In einem Docker-Container können Programme plattformunabhängig ausgeführt werden. 
-Der Docker-Container stellt alles bereit, was das auszuführende Programm benötigt, also 
-unter anderem: Den Code, die Ausführungsumgebung, wie beispielsweise die Java Runtime 
-Environment (JRE), und das Betriebssystem \citep{docker:2021}. 
+Ein Docker-Container ist ein leichtes, eigenständiges, ausführbares Softwarepaket, das alles enthält, was zum Ausführen einer Anwendung erforderlich ist: Code, Laufzeit, Systemtools, Systembibliotheken und Einstellungen. \citep{docker:2021}. 
 
-\section{Zusammenfassung}
-Es wurden also die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
+\section{Zusammenfassung der technischen Grundlagen}
+Es wurden die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
 Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre HTTP-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der HTTP-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies also der Authorization Server. In OpenID Connect Vokabular würde man 
 bei Keycloak von einem OpenID Provider sprechen. In dem ID Token, der von dem 
 Authorization Server übermittelt wird, werden Attribute des Nutzers in den Payload 
@@ -427,8 +437,8 @@ entspricht dies einer Authentifizierung des Nutzers.\smallskip
 Beide Ressource Server haben als Zugriffskontrolle \ac{RBAC} 
 implementiert, das heißt in dem Token muss die Rolle ROLE\_USER vorhanden sein, damit 
 Zugriff auf die HTTP-Schnittstelle erfolgen kann. Allerdings wird dies in beiden Servern auf 
-unterschiedliche Weise realisiert. In dem einen wurde die Zugriffskontrolle in dem Server 
-selbst implementiert, in dem Anderem wird diese entkoppelt durch den Open Policy Agent. 
+unterschiedliche Weise realisiert. In dem einen Server wurde die Zugriffskontrolle in dem Server 
+selbst implementiert, in dem anderen Server wird diese entkoppelt durch den Open Policy Agent. 
 Dieser wird als eigenständiges Programm in einem Docker-Container ausgeführt und die 
 Kommunikation zwischen Ressource Server und OPA-Service geschieht auf localhost-zu-localhost Basis. 
 Um die Performance zu testen, wird Apache JMeter verwendet. JMeter erzeugt Last auf die 
