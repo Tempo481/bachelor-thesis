@@ -104,17 +104,12 @@ Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der in 
 \label{sec:JSONWebToken:Base64Kodierung}
 JSON Web Token werden, wenn sie übertragen werden, in Base64 kodiert \citep{jwt:2015}. Base64 ist
 keine Verschlüsselung und auch keine Datenkomprimierung, sondern dient vor allem dem
-Zweck, dass Daten in ausschließlich ANSI-Zeichen kodiert übertragen werden, also das
-irreguläre Zeichen wie Umlaute nicht mehr vorkommen, um Probleme vorzubeugen \citep{base64:2006}. 
+Zweck, dass Daten in ausschließlich ANSI-Zeichen kodiert übertragen werden. Irreguläre Zeichen wie Umlaute werden nicht übertragen, um Probleme vorzubeugen \citep{base64:2006}. 
 
 \section{OpenID Connect}
 \label{sec:OpenIDConnect}
 OpenID Connect ist eine Authentifizierungsschicht, die auf der OAuth2 Spezifikation
-aufbaut.
-Ursprünglich wurde OAuth2 nur dazu angewandt, dass Clients im Namen des Ressource
-Owners auf Daten auf dem Ressource Server durch den Erhalt eines Tokens von einem
-Authorization Server zugreifen darf.
-OpenID Connect baut darauf eine Authentifizierung auf, indem es in dem JSON Web Token
+aufbaut. OpenID Connect baut darauf eine Authentifizierung auf, indem es in dem JSON Web Token
 Claims steckt, dass den Client, der den Token erhalten hat, nachdem sich ein End-Nutzer bei
 dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses End-Nutzers zu verifizieren.
 Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token \citep{openidconnect:2014}. 
@@ -123,7 +118,7 @@ Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token \citep{
 \label{subsec:OpenIDConnect:IDToken}
 ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben \citep{openidconnect:2014}. Diese sind in \autoref{tab:idtoken} gelistet.
 
-\begin{table}[h]
+\begin{table}[htbp]
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|X|} \toprule
       \tableheadline{Claim} & \tableheadline{Beschreibung} \\ \midrule
@@ -133,7 +128,7 @@ ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben 
       sub & Das Subject. Dies ist ein eindeutiger Identifier des Nutzers, der sich 
       authentifiziert hat. \\
       \midrule
-      aud & Die Audience. Das ist der Empfänger des Tokens, also in der Regel die 
+      aud & Die Audience. Das ist der Empfänger des Tokens, in der Regel die 
       Client-ID. \\
       \midrule
       exp & Expiration Time. Das ist der Zeitpunkt, zu dem der Token abgelaufen ist. \\
@@ -149,7 +144,7 @@ In \autoref{tab:idtoken} sind die Claims zu sehen, die in dem Payload gesetzt se
 JSON Web Token als ID-Token bezeichnet werden kann.
 \end{table}
 
-\begin{table}[h]
+\begin{table}[htbp]
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|l|X|} \toprule
       \tableheadline{Member} & \tableheadline{Type} & \tableheadline{Beschreibung} \\ \midrule
@@ -182,7 +177,14 @@ das hier neben einem Access Token der Client auch einen ID-Token von dem Authori
 Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \citep{openidconnect:2014}.
 
 \begin{enumerate}
-  \item Der Client bereitet eine Authorization Request vor.
+  \item Der Client bereitet eine Authorization Request vor. In dieser Request müssen folgende Daten hinterlegt sein:
+    \begin{description}
+      \item[response\_type:] In Falle des Authorization Code Grants muss hier code stehen. 
+      \item[State:] Ein zufälliger String. 
+      \item[Client\_Id:] Die ID des Clients. 
+      \item[Scope:] Ein Wert, der den Geltungsbereich (scope) des Tokens angibt. 
+      \item[Redirect\_uri:] Das ist die URI des Clients. An diese URI sendet der Autorisationsserver den Authorization Code. 
+    \end{description}
   \item Der Client sendet die Authorization Request zu dem Authorization Server.
   \item Der Authorization Server authentifiziert den End-Nutzer. 
   \item Der Authorization Server holt sich die Autorisation/Einwilligung des End-Nutzers ein. 
@@ -203,7 +205,7 @@ Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Cl
 \subsection{Authorization Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:AuthorizationEndpunkt}
 Dies ist der Endpunkt, an den der Client den End-Nutzer weiterleitet. Hier muss sich der 
-End-Nutzer authentifizieren und gegeben falls den Client autorisieren, damit der Client einen Token erhält \citep{oauth2:2012}.
+End-Nutzer authentifizieren und gegeben falls den Client autorisieren, damit der Client einen Authorization Code erhält \citep{oauth2:2012}.
 
 \subsection{Token Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:TokenEndpunkt}
@@ -246,10 +248,8 @@ Applikationen entkoppelt \citep{opaperformance:2021:07}. Es entkoppelt das Treff
 Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwendet. 
 Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego.\smallskip
 
-Im Wesentlichen werden dem OPA-Service Daten in JSON zugesendet anhand dessen eine 
-programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden darf 
-oder nicht und entsprechend sendet der OPA-Service an das anfragende Programm eine 
-Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy Agent zu entkoppeln, diese lediglich eine Unterstützung für HTTP und JSON mitbringen 
+Im Wesentlichen werden dem OPA-Service Input-Daten in JSON zugesendet anhand dessen eine 
+programmierte Zugriffskontrolle in Rego evaluiert, ob Zugriff gewährleistet werden darf und entsprechend sendet der OPA-Service an das anfragende Programm eine Zugriffsentscheidung. Dadurch das OPA als eigenständiger Service in einem Docker-Container ausgeführt wird und um die Zugriffskontrolle von Systemen mit Open Policy Agent zu entkoppeln, diese lediglich eine Unterstützung für HTTP und JSON mitbringen 
 müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Zugriffsrichtlinie in Rego},label=lst:ZugriffsrichtlinieinRego]
@@ -294,7 +294,7 @@ In \autoref{lst:Input-DatenfürOpenPolicyAgent} sind Input-Daten dargestellt. We
 \end{lstlisting}
 \smallskip
 
-Der Zugriff auf den Pfad /pets kann also nicht gegeben werden, da in \autoref{lst:Input-DatenfürOpenPolicyAgent} der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
+Der Zugriff auf den Pfad /pets kann nicht gegeben werden, da in \autoref{lst:Input-DatenfürOpenPolicyAgent} der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
 
 \section{Apache Tomcat}
 Apache Tomcat ist ein Webserver, der Spezifikationen der Java Enterprise Edition (EE) Plattform implementiert
@@ -312,7 +312,7 @@ Spring-Boot erleichtert die Implementierung mit dem Spring-Framework. In Spring-
 \subsection{Spring Security}
 Spring Security ist ein Teilprojekt des Spring-Frameworks. Spring Security bietet 
 Unterstützung für OAuth2 und unter anderem auch für OAuth2 Ressource Server \citep{springsecurity:2021}. 
-Man kann also mittels Spring Security einen OAuth2 Ressource Server implementieren, der 
+Man kann mittels Spring Security einen OAuth2 Ressource Server implementieren, der 
 Zugriff auf HTTP-Schnittstellen nur ermöglicht, wenn ein valider JSON Web Token in dem 
 Authorization Header der HTTP-Anfrage gesendet wird. 
 
@@ -322,19 +322,7 @@ OAuth2 und OpenID Connect-Spezifikation. Das bedeutet, dass Clients von Keycloak
 Token sowie ID Token erhalten können.\smallskip
 
 Daneben ist Keycloak auch ein Identity Provider, das heißt es ermöglicht es hinterlegten 
-Nutzern sich zu authentifizieren. Damit ist
-
-
-
-
-
-
-
-
-
-
-
-der Authorization Code Grant und 
+Nutzern sich zu authentifizieren. Damit ist der Authorization Code Grant und 
 Hybrid Flow der OpenID Connect und OAuth2 Spezifikation möglich, denn es kann sich ein 
 Nutzer authentifizieren, sodass dem Client ein Access Token und ID Token übermittelt 
 werden kann \citep{keycloak:2021}.
@@ -342,9 +330,7 @@ werden kann \citep{keycloak:2021}.
 \section{Apache JMeter und Metriken}
 \label{sec:ApacheJMeterundMetriken}
 Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines HTTP-Servers auf 
-Performance zu testen, indem es in unterschiedlicher Weise Last auf den Server erzeugen 
-kann und die Latenzen der Antworten des Servers sowie andere Metriken misst und 
-protokolliert und diese Werte in Graphen und anderer Weise ausgeben kann \citep{jmeter:2021}.
+Performance zu testen. Es kann Last auf den Server erzeugen und die Latenzen der Antworten des Servers sowie andere Metriken messen und protokollieren und diese Werte in Graphen und anderer Weise ausgeben \citep{jmeter:2021}.
 Da zum Testen der Performance verschiedene Metriken betrachtet werden, werden diese 
 Metriken nachfolgend definiert. 
 
@@ -373,12 +359,11 @@ hinsichtlich der Response Time in Webapplikationen misst \citep{apdex:2007}. Es 
 festgelegt, der die Response Time angibt, bis zu der der Nutzer zufrieden ist. Dann gibt es 
 einen zweiten Wert, der ein Vielfaches von T ist und angibt, bis zu welcher Länge der 
 Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist der Nutzer 
-frustriert. Aus diesen Werten errechnet sich dann ein Ergebnis für den Application 
+frustriert. Aus diesen Werten errechnet sich ein Ergebnis für den Application 
 Performance Index, wobei hier 1.0 der beste Wert ist, das heißt der Nutzer ist vollständig 
 zufrieden.\smallskip
 
-Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, 
-dann ergeben sich folgende Werte:
+Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, ergeben sich folgende Werte:
 
 \begin{table}[h]
   \myfloatalign
@@ -395,13 +380,11 @@ dann ergeben sich folgende Werte:
   \label{tab:ApplicationPerformanceIndex}
 \end{table}
 
-Die Grenzwerte sind in \autoref{tab:ApplicationPerformanceIndex} dargestellt. Wenn die durchschnittliche Response Time also <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
+Die Grenzwerte sind in \autoref{tab:ApplicationPerformanceIndex} dargestellt. Wenn die durchschnittliche Response Time <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
 und bei Response Times größer als 4,8 Sekunden ist der Nutzer frustriert. Am Beispiel 
-Webanwendungen wäre hier die Response Time vom Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer 
-vollständig dargestellt wird.\smallskip 
+Webanwendungen wäre hier die Response Time die Zeit von bevor dem Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer vollständig dargestellt wird.\smallskip 
 
-Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich 
-dann der Application Performance Index.
+Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich der Application Performance Index.
 
 \begin{equation}
   Apdex_T = \frac{Satisfied\;count + \frac{Tolerating\;count}{2}}{Total\;samples}
@@ -409,8 +392,7 @@ dann der Application Performance Index.
 
 In der obenstehenden Gleichung ist die Formel zur Berechnung des Application Performance Index dargestellt \citep{apdex:2007}. Satisfied count ist hierbei die Anzahl der Anfragen deren Beantwortung <= T dauerten und der Tolerating 
 count diejenigen Anfragen die <= 4T dauerten, wobei diese nur eine halbe Gewichtung 
-haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn 
-also die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Index, 
+haben. Die Summe aus beiden Werten wird durch die Anzahl aller Anfragen geteilt. Wenn die Response Times aller Anfragen <= T betrugen, errechnet sich ein perfekter Index, 
 der 1,0 beträgt.
 
 \section{Postman}
@@ -424,7 +406,7 @@ Ein Docker-Container ist ein leichtes, eigenständiges, ausführbares Softwarepa
 
 \section{Zusammenfassung der technischen Grundlagen}
 Es wurden die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
-Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre HTTP-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der HTTP-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies also der Authorization Server. In OpenID Connect Vokabular würde man 
+Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre HTTP-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der HTTP-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies der Authorization Server. In OpenID Connect Vokabular würde man 
 bei Keycloak von einem OpenID Provider sprechen. In dem ID Token, der von dem 
 Authorization Server übermittelt wird, werden Attribute des Nutzers in den Payload 
 gemappt, unter anderem auch die Rollenzugehörigkeit. Die Spring-Boot Applikationen 
