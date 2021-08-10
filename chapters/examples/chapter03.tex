@@ -262,7 +262,7 @@ Zudem werden die folgenden Claims des JSON Web Tokens validiert:
 
 In beiden Ressource Servern wird eine erfolgreiche Authentifizierung, ein valider JSON Web Token, der von Keycloak erstellt wurde, erwartet. Die Autorisierung aber, das heißt die Prüfung, ob der authentifizierte Nutzer die benötigten Rechte verfügt, um Zugriff auf die Schnittstelle zu erhalten, wird in den zwei Ressource Servern auf zwei unterschiedliche Weisen realisiert und in den nachfolgenden zwei Kapiteln beschrieben.
 
-\subsection{Spring Security Ressource Server mit interner Zugriffskontrolle}
+\subsection{Ressource Server mit interner Zugriffskontrolle}
 
 Um eine rollenbasierter Zugriffskontrolle in dem Ressource Server selbst zu realisieren, wurde JwtAuthenticationConverter verwendet, das Teil von Spring Security ist.
 
@@ -312,7 +312,7 @@ Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich 
 
 In \autoref{lst:HTTPSecurity} ist die verwendete Konfiguration zu sehen. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. Anfragen auf andere Schnittstellen werden grundsätzlich abgelehnt. 
 
-\subsection{Spring Security Ressource Server mit externer Zugriffskontrolle}
+\subsection{Ressource Server mit externer Zugriffskontrolle}
 Um die Zugriffskontrolle von dem zweiten Ressource Server zu entkoppeln, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist und es erlaubt Zugriffsentscheidungen externen Programmen zu überlassen. 
 Als externes Programm um diese Zugriffsentscheidungen zu fällen, wurde Open Policy Agent in der Version 0.30.2 verwendet, das in einem Docker-Container ausgeführt wird und auf dem gleichen Host wie der Ressource Server läuft. 
 
@@ -352,7 +352,7 @@ In \autoref{lst:RollenbasierteZugriffsrichtlinieinRego} ist die verwendete progr
 Es wird zunächst der JSON Web Token, den Open Policy Agent von dem Ressource Server erhält, dekodiert, da JSON Web Token in Base64 kodiert sind. Neben dem Token wird Open Policy Agent auch die angefragte HTTP-Schnittstelle mitgeteilt. 
 In der ersten allow Methode, wird definiert, dass auf eine GET-Anfrage auf den Pfad documents, nur Zugriff erhalten werden darf, falls in dem Payload des JSON Web Token der Claim roles vorhanden ist und in diesem Claim der Wert ROLE\_USER vorhanden ist. Falls dem so ist, wird dem Ressource Server mitgeteilt, dass der Client autorisiert ist, eine Antwort auf seine Anfrage zu erhalten. Anfragen, die nicht der Schnittstelle documents entsprechen, werden grundsätzlich abgelehnt. 
 
-\subsubsection{Spring Security AccessDecisionManager}
+\subsubsection{AccessDecisionManager}
 Um Open Policy Agent die Zugriffsentscheidungen zu überlassen, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist. 
 
 \begin{figure}[H]
