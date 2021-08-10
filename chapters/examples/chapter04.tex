@@ -8,7 +8,7 @@ In diesem Test wurden zehn Threads, die jeweils kontinuierlich \ac{HTTP}-Anfrage
 
 Zunächst werden die Messergebnisse von der Spring-Boot Applikation dargestellt, die eine rollenbasierte Zugriffskontrolle mittels dem JwtAuthenticationConverter realisiert hat. Dies ist der Server, der die Zugriffskontrolle in dem Server selbst implementiert. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime.png}
   \caption{Response Time Graph von Lasttest von Ressource Server ohne OPA}
@@ -17,16 +17,16 @@ Zunächst werden die Messergebnisse von der Spring-Boot Applikation dargestellt,
 
 In \autoref{fig:chapter04:flotResponseTimesOverTime} ist ein Diagramm dargestellt, das die durchschnittliche Response Time von dem Ressource Server ohne Open Policy Agent über den gesamten Zeitraum des Lasttests darstellt. Auf der x-Achse ist die Zeit und auf der y-Achse die durchschnittliche Response Time zu dem jeweiligen Zeitpunkt. Es ist zu sehen, dass die Response Time anfangs höher ausfällt und sie kontinuierlich sinkt, bis sie auf ungefähr dem gleichen Niveau verbleibt. Das könnte damit erklärt werden, dass jeder Thread zunächst eine Verbindung durch den 3-Way-Handshake mit dem Server aufbauen muss, welcher zusätzliche Zeit in Anspruch nimmt. Sobald die Verbindung aufgebaut ist, fällt die durchschnittliche Response Time niedriger aus. Über den gesamten Zeitraum bewegen sich aber die Response Times im Bereich zwischen 7,8 Millisekunden und 6,6 Millisekunden. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotLatenciesOverTime.png}
   \caption{Latency Time Graph von Lasttest von Ressource Server ohne OPA}
   \label{fig:chapter04:flotLatenciesOverTime}
 \end{figure}
 
-In \autoref{fig:chapter04:flotLatenciesOverTime} ist prinzipiell der gleiche Graph dargestellt, nur das hier anstatt der Response Time die Latenz dargestellt ist. Der Unterschied ist hier, wie in \autoref{sec:ApacheJMeterundMetriken} erläutert, dass die Latenz die Zeit vom bevor dem Senden der Anfrage bis zum Eintreffen des ersten Bytes der Antwort darstellt, während die Response Time die Zeit bis zum letzten Byte der Antwort misst. Die Latenz ist immer kürzer als die Response Time. Hier ist zu sehen das zu dem Zeitpunkt 17:38 die Latenz 6,4 Millisekunden beträgt, während zum selben Zeitpunkt die Response Time 7,2 Millisekunden beträgt. In den folgenden Betrachtungen wird allerdings nur noch auf die Response Time eingegangen, da sie die wichtigere Metrik aus Nutzersicht ist, da ein Nutzer eine vollständige Antwort von dem Server haben möchte. Es ist keine zweckmäßige Beurteilung von Antwortzeiten möglich, wenn das erste Byte der Antwort des Servers zeitnah eintrifft, bis zum Eintreffen des letzten Bytes allerdings zwei Stunden vergehen. 
+In \autoref{fig:chapter04:flotLatenciesOverTime} ist prinzipiell der gleiche Graph dargestellt, nur das hier anstatt der Response Time die Latenz dargestellt ist. Der Unterschied ist hier, wie in \autoref{sec:ApacheJMeterundMetriken} erläutert, dass die Latenz die Zeit von bevor dem Senden der Anfrage bis zum Eintreffen des ersten Bytes der Antwort darstellt, während die Response Time die Zeit bis zum letzten Byte der Antwort misst. Die Latenz ist also immer kürzer als die Response Time. Hier ist zu sehen das zu dem Zeitpunkt 17:38 die Latenz 6,4 Millisekunden beträgt, während zum selben Zeitpunkt die Response Time 7,2 Millisekunden beträgt. In den folgenden Betrachtungen wird allerdings nur noch auf die Response Time eingegangen, da sie die wichtigere Metrik aus Nutzersicht ist, da ein Nutzer eine vollständige Antwort von dem Server haben möchte. Es ist keine zweckmäßige Beurteilung von Antwortzeiten möglich, wenn das erste Byte der Antwort des Servers zeitnah eintrifft, bis zum Eintreffen des letzten Bytes allerdings zwei Stunden vergehen. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime-opa-last.png}
   \caption{Response Time Graph von Lasttest von Ressource Server mit OPA}
@@ -37,7 +37,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last} ist der Response T
 
 Dies ist insofern überraschend, da die Kommunikation, die zwischen Ressource Server und Open Policy Agent auftritt, auf localhost zu localhost Basis verläuft. Das heißt der Ressource Server und Open Policy Agent laufen auf derselben Maschine und es war nicht vorhersehbar, dass durch die HTTP-Kommunikation zwischen diesen beide Komponente eine derart hohe zusätzliche Latenz entsteht. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/statistik-last-noOPA.png}
   \caption{Statistiken von Lasttest von Ressource Server ohne OPA}
@@ -46,7 +46,7 @@ Dies ist insofern überraschend, da die Kommunikation, die zwischen Ressource Se
 
 In \autoref{fig:chapter04:statistik-last-noOPA} ist abschließend noch eine statistische Auswertung der Lasttests für den Ressource Server ohne Open Policy Agent zu sehen. Die durchschnittliche Response Time beträgt 7.03 Millisekunden und innerhalb von 15 Minuten wurden 1255959 Anfragen bearbeitet. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/statistik-last-opa.png}
   \caption{Statistiken von Lasttest von Ressource Server mit OPA}
@@ -55,30 +55,30 @@ In \autoref{fig:chapter04:statistik-last-noOPA} ist abschließend noch eine stat
 
 In \autoref{fig:chapter04:statistik-last-opa} ist die statistische Auswertung der Lasttests für den Ressource Server mit entkoppelter Zugriffskontrolle dargestellt. Hier beträgt die durchschnittliche Response Time 26.69 Millisekunden. Erwähnenswert ist, dass in diesem Test der Server lediglich 334421 Anfragen innerhalb 15 Minuten beantworten konnte. Die durchschnittliche Response Time ist um den Faktor drei höher und entsprechend können auch um etwa um den Faktor drei weniger Anfragen beantwortet werden.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/perfmon-last-noOPA.png}
   \caption{Perfmon von Lasttest von Ressource Server ohne OPA}
   \label{fig:chapter04:perfmon-last-noOPA}
 \end{figure}
 
-In \autoref{fig:chapter04:perfmon-last-noOPA} ist die CPU-Auslastung während des Lasttests für den Ressource Server ohne entkoppelte Zugriffskontrolle zu sehen. Dies ist die rote Linie. Es ist der Anstieg der CPU-Auslastung zu sehen, dies ist der Start des Lasttests. Die CPU-Auslastung bewegt sich im Bereich von 42\%. Die RAM-Belegung bleibt konstant, dies ist durch die blaue Linie gekennzeichnet. 
+In \autoref{fig:chapter04:perfmon-last-noOPA} ist die CPU-Auslastung während des Lasttests für den Ressource Server ohne entkoppelte Zugriffskontrolle zu sehen. Dies ist die rote Linie. Die CPU-Auslastung bewegt sich im Bereich von 42\%. Die RAM-Belegung bleibt konstant, dies ist durch die blaue Linie gekennzeichnet. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/perfmon-last-opa.png}
   \caption{Perfmon von Lasttest von Ressource Server mit OPA}
   \label{fig:chapter04:perfmon-last-opa}
 \end{figure}
 
-In \autoref{fig:chapter04:perfmon-last-opa} ist die CPU-Auslastung sowie RAM-Belegung während dem Lasttest des Ressource Servers mit entkoppelter Zugriffskontrolle zu sehen. Hier ist zu sehen, dass die CPU-Auslastung deutlich höher ausfällt. Die Zeitachse auf beiden Abbildungen haben jeweils die gleiche Skalierung. Die CPU-Auslastung beträgt hierbei größtenteils ca. 91\%. Dies ist damit zu erklären, dass Open Policy Agent die JSON Web Token, die durch eine HTTP-Verbindung zwischen Server und Open Policy Agent erhalten werden, dekodieren und parsen muss, um eine Zugriffsentscheidung zu treffen. Dieser Vorgang ist anscheinend ressourcenintensiv. Der regelmäßigen Einbrüche der CPU-Auslastung auf unter 50\% sind schwer zu erklären. Die RAM-Belegung entspricht derselben wie in Abbildung 33. Sie bleibt konstant, Memory Leaks und dergleichen treten nicht auf.\smallskip
+In \autoref{fig:chapter04:perfmon-last-opa} ist die CPU-Auslastung sowie RAM-Belegung während dem Lasttest des Ressource Servers mit entkoppelter Zugriffskontrolle zu sehen. Hier ist zu sehen, dass die CPU-Auslastung deutlich höher ausfällt. Die Zeitachse auf beiden Abbildungen haben jeweils die gleiche Skalierung. Die CPU-Auslastung beträgt hierbei größtenteils ca. 91\%. Dies ist damit zu erklären, dass Open Policy Agent die JSON Web Token, die durch eine HTTP-Verbindung zwischen Server und Open Policy Agent erhalten werden, dekodieren und parsen muss, um eine Zugriffsentscheidung zu treffen. Dieser Vorgang ist anscheinend ressourcenintensiv. Die regelmäßigen Einbrüche der CPU-Auslastung auf unter 50\% sind schwer zu erklären. Die RAM-Belegung entspricht derselben wie in \autoref{fig:chapter04:perfmon-last-noOPA}. Sie bleibt konstant, Memory Leaks und dergleichen treten nicht auf.\smallskip
 
 In beiden Servern wurden alle Anfragen erfolgreich bearbeitet und es kamen keine Fehlermeldungen wie Unerreichbarkeit des Servers vor. Eine erfolgreiche Bearbeitung entspricht hierbei, dass die Server den Token validiert haben und entsprechend erkannt wurde, dass der Nutzer autorisiert ist, eine Antwort von dem Server zu erhalten. Dies entspricht in diesem Fall dem HTTP-Code 200 (OK). 
 
 \section{Skalierbarkeitstest}
 In diesem Test wurde eine ansteigende Last auf bis zu 100 Threads auf die jeweiligen Server erzeugt. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotActiveThreadsOverTime.png}
   \caption{Aktive Threads über Zeitraum des Tests}
@@ -87,7 +87,7 @@ In diesem Test wurde eine ansteigende Last auf bis zu 100 Threads auf die jeweil
 
 In \autoref{fig:chapter04:flotActiveThreadsOverTime} ist die Anzahl der aktiven Threads über den Zeitraum des Tests dargestellt. Es werden bis zu 100 Threads gestartet und die Anzahl der Threads nimmt kontinuierlich zu. Es wird also eine zunehmende Last auf den Server erzeugt. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime-skalierung-noOPA.png}
   \caption{Response Time Graph von Skalierbarkeitstest von Ressource Server ohne OPA}
@@ -96,7 +96,7 @@ In \autoref{fig:chapter04:flotActiveThreadsOverTime} ist die Anzahl der aktiven 
 
 In \autoref{fig:chapter04:flotResponseTimesOverTime-skalierung-noOPA} ist ersichtlich, dass bei dem Ressource Server mit interner Zugriffskontrolle die Response Times ab einen gewissen Zeitpunkt kontinuierlich zunehmen. Während sie anfangs lediglich ca. 10 Millisekunden betragen, steigen sie auf bis zu 35 Millisekunden an. Das ist ein relativer Anstieg von 350\% und ein absoluter Anstieg von 25 Millisekunden. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime-skalierung-opa.png}
   \caption{Response Time Graph von Skalierbarkeitstest von Ressource Server mit OPA}
@@ -105,7 +105,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-skalierung-noOPA} ist ersich
 
 In \autoref{fig:chapter04:flotResponseTimesOverTime-skalierung-noOPA} sind die Response Times für den Ressource Server mit entkoppelter Zugriffskontrolle zu sehen. Hier ist eine ähnliche Situation vorzufinden, nämlich die Response Times steigen kontinuierlich mit steigender Last. Allerdings steigen sie hier von ca. 25 Millisekunden auf bis zu ca. 250 Millisekunden. Das ist ein Anstieg um den Faktor 10 beziehungsweise 1000\% und ein absoluter Anstieg um 225 Millisekunden. Es ist offensichtlich, dass der Server mit entkoppelter Zugriffskontrolle deutlich schlechter skaliert. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/perfmon-skalierung-noOPA.png}
   \caption{Perfmon von Skalierbarkeitstest von Ressource Server ohne OPA}
@@ -114,7 +114,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-skalierung-noOPA} sind die R
 
 In \autoref{fig:chapter04:perfmon-skalierung-noOPA} ist die CPU-Auslastung (rote Linie) im Laufe des Tests bei dem Server ohne Open Policy Agent dargestellt. Es ist ein langsamer Anstieg der CPU-Auslastung festzustellen, die sich auf etwa 95\% einpendelt. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/perfmon-skalierung-opa.png}
   \caption{Perfmon von Skalierbarkeitstest von Ressource Server mit OPA}
@@ -125,37 +125,37 @@ In \autoref{fig:chapter04:perfmon-skalierung-opa} ist die CPU-Auslastung bei dem
 Die RAM-Belegung bleibt in beiden Systemen jedoch konstant. Dies ist nicht verwunderlich, da Systeme mit JSON Web Token als statuslos gelten, das heißt, dass der Server keine Informationen des Clients speichern muss, da alle Informationen in dem JSON Web Token vorhanden sind. 
 Ein weiterer äußerst erwähnenswerter Punkt ist der, dass während des Skalierbarkeitstests, zeitweise Open Policy Agent unerreichbar war. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/statistik-skalierung-opa.png}
   \caption{Statistiken von Skalierbarkeitstest von Ressource Server mit OPA}
   \label{fig:chapter04:statistik-skalierung-opa}
 \end{figure}
 
-In dem Server, der die Zugriffskontrolle mit Open Policy Agent entkoppelt hat, wurden 21,11\% aller Anfragen nicht erfolgreich beantwortet, stattdessen wurden sie mit dem HTTP-Code 500 beantwortet. Der Fehler-Code 500 steht für Internal Server Error [32]. Die Ursache davon ist, dass der Ressource Server, also die Spring-Boot-Applikation, nicht Open Policy Agent erreichen konnte. 
+In dem Server, der die Zugriffskontrolle mit Open Policy Agent entkoppelt hat, wurden 21,11\% aller Anfragen nicht erfolgreich beantwortet, stattdessen wurden sie mit dem HTTP-Code 500 beantwortet. Der Fehler-Code 500 steht für Internal Server Error \citep{mdnwebdocs:2021}. Die Ursache davon ist, dass der Ressource Server, also die Spring-Boot-Applikation, nicht Open Policy Agent erreichen konnte. 
 
 \begin{lstlisting}[frame=tb,caption={Fehlermeldung Spring-Boot},label=lst:FehlermeldungSpring-Boot]
   org.springframework.web.client.ResourceAccessException: I/O error on POST request for "HTTP://localhost:8181/v1/data/HTTP/authz/allow": Address already in use: connect; nested exception is java.net.BindException: Address already in use: connect
 \end{lstlisting}
 \bigskip
 
-Die Meldung, die die Spring-Boot Applikation, ausgibt ist in \autoref{lst:FehlermeldungSpring-Boot} zu sehen. Der Ressource Server sendet jeweils bei jeder einkommenden Anfrage von Clients, eine HTTP-POST Anfrage an Open Policy Agent, um eine Zugriffsentscheidung für diese Anfrage der Clients zu erhalten. Dies war in 21.11\% aller Anfragen nicht möglich, weil Open Policy Agent blockiert. Da dieses Verhalten bei dem Lasttest nicht aufgetreten ist und der Lasttest mit lediglich zehn Threads eine weitaus geringere Belastung generiert, ist davon auszugehen, dass ab einer gewissen Belastung Open Policy Agent sperrt.\smallskip
+Die Meldung, die die Spring-Boot Applikation, ausgibt ist in \autoref{lst:FehlermeldungSpring-Boot} zu sehen. Der Ressource Server sendet jeweils bei jeder einkommenden Anfrage von Clients eine HTTP-POST Anfrage an Open Policy Agent, um eine Zugriffsentscheidung für diese Anfrage des Clients zu erhalten. Dies war in 21.11\% aller Anfragen nicht möglich, weil Open Policy Agent blockiert. Da dieses Verhalten bei dem Lasttest nicht aufgetreten ist und der Lasttest mit lediglich zehn Threads eine weitaus geringere Belastung generiert, ist davon auszugehen, dass ab einer gewissen Belastung Open Policy Agent sperrt.\smallskip
 
 Open Policy Agent selbst nutzt als Webserver kein Apache Tomcat, sondern einen eigens in Go programmierten Webserver \citep{opagithub:2021}. Etwaige Performanceeinstellungen lassen sich nicht vornehmen, ohne den Source-Code zu modifizieren und Open Policy Agent neu zu kompilieren und ein Docker-Container daraus wieder zu erstellen. 
 
 \section{Stresstest}
 Bei dem Stresstest wurde eine abnormal hohe Belastung auf beide Server erzeugt, um die Grenzen des Systems auszuloten. Hier wurden 1000 Threads über einen Zeitraum von 15 Minuten gestartet. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime-stress-noOPA.png}
   \caption{Response Time Graph von Stresstest von Ressource Server ohne OPA}
   \label{fig:chapter04:flotResponseTimesOverTime-stress-noOPA}
 \end{figure}
 
-In \autoref{fig:chapter04:flotResponseTimesOverTime-stress-noOPA} sind die Response Times für den Server ohne OPA über den Zeitraum des gesamten Stresstests dargestellt. Die Response Times stiegen kontinuierlich an, bis sie sich auf etwa 400 Millisekunden durchschnittlich einpendeln. 
+In \autoref{fig:chapter04:flotResponseTimesOverTime-stress-noOPA} sind die Response Times für den Server ohne OPA über den Zeitraum des gesamten Stresstests dargestellt. Die Response Times stiegen kontinuierlich an, bis sie sich auf etwa durchschnittlich 400 Millisekunden einpendeln. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/flotResponseTimesOverTime-stress-opa.png}
   \caption{Response Time Graph von Stresstest von Ressource Server mit OPA}
@@ -164,26 +164,26 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-stress-noOPA} sind die Respo
 
 In \autoref{fig:chapter04:flotResponseTimesOverTime-stress-opa} sind die Response Times für den Server mit entkoppelter Zugriffskontrolle mit Open Policy Agent zu sehen. Das Verhalten ist insgesamt sehr ähnlich, das heißt die Response Times steigen bis zu einem gewissen Zeitpunkt und bleiben dann konstant. Hier pendeln sich die Response Times allerdings auf 2500 Millisekunden ein. Das bedeutet im Vergleich zu dem Server ohne entkoppelter Zugriffskontrolle, sind diese Response Times ca. 6,25-mal höher. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/requests-summary-stress-opa.png}
   \caption{Request Summary von Stresstest von Ressource Server mit OPA}
   \label{fig:chapter04:requests-summary-stress-opa}
 \end{figure}
 
-Allerdings wurden auch bei dem Stresstest ähnlich wie bei dem Skalierbarkeitstest eine hohe Anzahl von Anfragen bei dem Server mit entkoppelter Zugriffskontrolle nicht erfolgreich beantwortet. Dies ist in Abbildung 45 erkenntlich, 28,7\% aller Anfragen wurden nicht erfolgreich beantwortet. Auch hier war Open Policy Agent schlichtweg nicht erreichbar für den Server, sodass der Server dem Client mit dem HTTP-Code 500 antwortete.
-Aufgrund der hohen Response Times und den nicht erfolgreich beantworteten Anfragen, ist der Application Performance Index bei dem Server mit Open Policy Agent deutlich schlechter. 
+Allerdings wurden auch bei dem Stresstest ähnlich wie bei dem Skalierbarkeitstest eine hohe Anzahl von Anfragen bei dem Server mit entkoppelter Zugriffskontrolle nicht erfolgreich beantwortet. Dies ist in Abbildung 45 erkenntlich. 28,7\% aller Anfragen wurden nicht erfolgreich beantwortet. Auch hier war Open Policy Agent schlichtweg nicht erreichbar für den Server, sodass der Server dem Client mit dem HTTP-Code 500 antwortete.
+Aufgrund der hohen Response Times und den nicht erfolgreich beantworteten Anfragen, ist der Application Performance Index bei dem Server mit Open Policy Agent deutlich schlechter ausgefallen. 
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/APDEX (Application Performance Index)-stress-opa.png}
   \caption{APDEX (Application Performance Index) von Stresstest von Ressource Server mit OPA}
   \label{fig:chapter04:APDEX (ApplicationPerformanceIndex)-stress-opa}
 \end{figure}
 
-Der Application Performance Index für das System mit Open Policy Agent ist in \autoref{fig:chapter04:APDEX (ApplicationPerformanceIndex)-stress-opa} zu sehen. Lediglich weniger als 6.4\% aller Anfragen wurden bei dem System mit einer Response Time von weniger als 500 Millisekunden beantwortet. In anderen Worten: Der Großteil aller Antworten der Anfragen dauern aus Nutzersicht zu lange, sodass dieser Nutzer frustriert ist.
+Der Application Performance Index für das System mit Open Policy Agent ist in \autoref{fig:chapter04:APDEX (ApplicationPerformanceIndex)-stress-opa} zu sehen. Lediglich weniger als 6.4\% aller Anfragen wurden bei diesem Server mit einer Response Time von weniger als 500 Millisekunden beantwortet. In anderen Worten: Der Großteil aller Antworten der Anfragen dauern aus Nutzersicht zu lange, sodass diese Nutzer frustriert sind.
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/APDEX (Application Performance Index)-stress-noOPA.png}
   \caption{APDEX (Application Performance Index) von Stresstest von Ressource Server ohne OPA}
@@ -193,8 +193,10 @@ Der Application Performance Index für das System mit Open Policy Agent ist in \
 Bei dem Server ohne entkoppelter Zugriffskontrolle hingegen, fällt der Score des Application Performance Index mit 0.938 wesentlich besser aus, siehe \autoref{fig:chapter04:APDEX (ApplicationPerformanceIndex)-stress-noOPA}. Fast alle Anfragen konnten hier innerhalb von 500 Millisekunden erfolgreich beantwortet werden. 
 
 \section{Fazit}
-Es konnte gezeigt werden, dass eine entkoppelte Zugriffskontrolle mittels Open Policy Agent in einem OAuth2 System einen signifikanten negativen Einfluss auf die Performance hat. Bei leichter Last mit lediglich zehn gleichzeitigen Threads, fallen die Response Time durchschnittlich um ein dreifaches höher aus als bei dem Ressource Server, der die Zugriffskontrolle in der Spring-Boot Applikation implementiert hat. Monolithen sind zwar grundsätzlich schneller als Microservice-Architekturen durch die hinzukommende HTTP-Kommunikation zwischen den Microservices, aber ein derartig großer Performanceunterschied wurde nicht erwartet unter dem Hintergrund, dass bei dem Ressource Server mit entkoppelter Zugriffskontrolle, der Server und Open Policy Agent auf demselben Host laufen. Zu erwähnen ist hierbei allerdings, dass wenn jeweils auf die Response Time eine entfernungsabhängige Latenz zwischen Client und Server hinzugerechnet wird, der prozentuale Unterschied in der Performance zwischen Server mit interner vs. externer Zugriffskontrolle, geringer ist. Zusätzlich muss beachtet werden, dass die hier programmierte http-GET-Schnittstelle in den jeweiligen Servern äußerst rudimentär ist. Das bedeutet, es wird keine lange Rechenzeit benötigt, die die Response Time maßgeblich beeinflusst. Auch dies kann in anderen Szenarien anders sein und den relativen Unterschied in der Performance zwischen beiden Servern verringern.\smallskip
+Es konnte gezeigt werden, dass eine entkoppelte Zugriffskontrolle mittels Open Policy Agent in einem OAuth2 System einen signifikanten negativen Einfluss auf die Performance hat. Bei leichter Last mit lediglich zehn gleichzeitigen Threads, fallen die Response Time durchschnittlich um ein dreifaches höher aus als bei dem Ressource Server, der die Zugriffskontrolle in der Spring-Boot Applikation implementiert hat.\smallskip
+
+Monolithen sind zwar grundsätzlich schneller als Microservice-Architekturen durch die hinzukommende HTTP-Kommunikation zwischen den Microservices, aber ein derartig großer Performanceunterschied wurde nicht erwartet unter dem Hintergrund, dass bei dem Ressource Server mit entkoppelter Zugriffskontrolle, der Server und Open Policy Agent auf demselben Host laufen. Zu erwähnen ist hierbei allerdings, dass wenn jeweils auf die Response Time eine entfernungsabhängige Latenz zwischen Client und Server hinzugerechnet wird, der prozentuale Unterschied in der Performance zwischen Server mit interner vs. externer Zugriffskontrolle, geringer ist. Zusätzlich muss beachtet werden, dass die hier programmierte http-GET-Schnittstelle in den jeweiligen Servern äußerst rudimentär ist. Das bedeutet, es wird keine lange Rechenzeit benötigt, die die Response Time maßgeblich beeinflusst. Auch dies kann in anderen Szenarien anders sein und den relativen Unterschied in der Performance zwischen beiden Servern verringern.\smallskip
 
 Neben der Response Time fiel zudem die äußerst hohe CPU-Auslastung im System mit entkoppelter Zugriffskontrolle auf. Bei dem Lastttest ist diese doppelt so hoch im Vergleich zu dem Server ohne Open Policy Agent. Selbst bei nur zehn gleichzeitig Threads bewegt sich das System mit Open Policy Agent bei annähernd 100-prozentiger CPU-Auslastung beinahe am Anschlag.\smallskip
 
-Zudem sperrt der Server von Open Policy Agent ab einer bestimmten Belastung, sodass der Ressource Server viele Client-Anfragen mit einer HTTP-Fehlermeldung 500 beantworten musste. Es scheint, dass mehrere Instanzen von Open Policy Agent für einen einzigen Ressource Server erstellt werden müssen, damit das Gesamtsystem unter starker Last regulär funktioniert. Da allerdings schon bei zehn Threads, das System mit Open Policy Agent am Anschlag arbeitet, scheint es nicht sinnvoll, mehrere Instanzen von Open Policy Agent auf der gleichen Host-Maschine zu starten. Wenn allerdings mehrere Open Policy Agent Instanzen auf mehreren Hosts laufen, würde die Latenz zwischen Ressource Server und Open Policy Agent zunehmen, da diese ja wiederrum nicht mehr auf dem gleichen Host laufen. 
+Zudem sperrt der Server von Open Policy Agent ab einer bestimmten Belastung, sodass der Ressource Server viele Client-Anfragen mit einer HTTP-Fehlermeldung 500 beantworten musste. Es scheint, dass mehrere Instanzen von Open Policy Agent für einen einzigen Ressource Server erstellt werden müssen, damit das Gesamtsystem unter starker Last regulär funktioniert. Da allerdings schon bei zehn Threads, das System mit Open Policy Agent am Anschlag arbeitet, scheint es nicht sinnvoll, mehrere Instanzen von Open Policy Agent auf der gleichen Host-Maschine zu starten. Wenn allerdings mehrere Open Policy Agent Instanzen auf mehreren Hosts laufen, würde die Latenz zwischen Ressource Server und Open Policy Agent zunehmen, da diese ja wiederrum nicht mehr auf dem gleichen Host laufen. Es scheint also, dass bei der Nutzung von Open Policy Agent unweigerlich ein Kompromiss eingegangen werden muss. 

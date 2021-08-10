@@ -24,7 +24,7 @@ Im Bereich der IT-Sicherheit gibt es eine Reihe relevanter Begriffe, die regelm�
 \section{OAuth2}
 \label{sec:OAuth2}
 OAuth2 ist eine Spezifikation, die ursprünglich entwickelt wurde, um Dritten Zugriff auf die Daten eines sogenannten Ressource Owners zu ermöglichen, ohne dass dieser Ressource Owner dem Dritten, in der Spezifikation Client genannt, sein Nutzername und Passwort übermitteln muss \citep{oauth2:2012}. Dies wird dadurch ermöglicht, dass dem Client von einem Autorisationsserver ein Token übermittelt wird und mit diesem Token kann der Client Daten des Ressource Owners abfragen oder Aktionen im Namen des Ressource Owners durchführen. Diese Daten des Ressource Owners werden auf dem sogenannten Ressource Server gehostet.
-Im Laufe der Zeit wurde diese Spezifikation erweitert, um weitere Anwendungsfälle abzudecken, wie die Spezifikation OpenID Connect, welche Single-Sign-On ermöglicht. 
+Im Laufe der Zeit wurde diese Spezifikation erweitert, um weitere Anwendungsfälle abzudecken, wie die Spezifikation OpenID Connect, welche Single-Sign-On ermöglicht \citep{openidconnect:2014}. 
 
 \subsection{Rollen in OAuth2}
 \label{subsec:OAuth2:RolleninOAuth2}
@@ -47,7 +47,7 @@ Bei dem Authorization Code Grant wird der Ressource Owner, der einen Webbrowser 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=1.0\textwidth]{gfx/oauth_auth_code_flow.png}
-  \caption{Authorization Code Grant \citep{okta:2020}}
+  \caption[Authorization Code Grant]{Authorization Code Grant \citep{okta:2020}}
   \label{fig:chapter02:oauth_auth_code_flow}
 \end{figure}
 
@@ -84,6 +84,7 @@ In dem Header und Payload stehen sogenannte Claims. Ein Claim ist ein Schlüssel
   }.
   [signature]   
 \end{lstlisting}
+\bigskip
 
 Obenstehend ist ein rudimentärer dekodierter JSON Web Token dargestellt. In dem \autoref{subsec:OpenIDConnect:IDToken}
 wird erläutert, welche Bedeutung die einzelnen Claims haben.
@@ -97,8 +98,8 @@ Daneben gibt es einen öffentlichen Schlüssel, mit dem die Signatur überprüft
 Das heißt es ist nicht möglich, dass der Client den Token verändern kann, da dann die
 Signatur nicht mehr übereinstimmt.
 
-\subsection{JSON Web Token Key}
-\label{sec:JSONWebToken:JSONWebTokenKey}
+\subsection{JSON Web Key}
+\label{sec:JSONWebToken:JSONWebKey}
 Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der in JSON dargestellte öffentliche Schlüssel. Mithilfe dieses öffentlichen Schlüssels, kann die Signatur aus dem Header und Payload des JSON Web Tokens berechnet werden. Entspricht die berechnete Signatur der Signatur die in dem JSON Web Token vorhanden ist, ist der Token erfolgreich validiert und Integrität sowie Authentizität sind sichergestellt \citep{jwk:2015}.
 
 \subsection{Base64 Kodierung}
@@ -113,13 +114,13 @@ OpenID Connect ist eine Authentifizierungsschicht, die auf der OAuth2 Spezifikat
 aufbaut. OpenID Connect baut auf OAuth2 eine Authentifizierung auf, indem es in dem JSON Web Token
 Claims steckt, dass den Client, der den Token erhalten hat, nachdem sich ein End-Nutzer bei
 dem Authorization Server authentifiziert hat, die Möglichkeit gibt die Identität dieses End-Nutzers zu verifizieren.
-Diese Art von JSON Web Token, die der Client erhält nennt sich ID Token \citep{openidconnect:2014}. 
+Diese Art von JSON Web Token, die der Client erhält, nennt sich ID Token \citep{openidconnect:2014}. 
 
 \subsection{ID Token}
 \label{subsec:OpenIDConnect:IDToken}
 ID Token sind JSON Web Token, die gewisse Claims in ihrem Payload gesetzt haben \citep{openidconnect:2014}.
 
-\begin{table}[htbp]
+\begin{table}[H]
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|X|} \toprule
       \tableheadline{Claim} & \tableheadline{Beschreibung} \\ \midrule
@@ -145,7 +146,7 @@ In \autoref{tab:idtoken} sind die Claims zu sehen, die in dem Payload gesetzt se
 JSON Web Token als ID-Token bezeichnet werden kann.
 \end{table}
 
-\begin{table}[htbp]
+\begin{table}[H]
   \myfloatalign
   \begin{tabularx}{\textwidth}{|l|l|X|} \toprule
       \tableheadline{Member} & \tableheadline{Type} & \tableheadline{Beschreibung} \\ \midrule
@@ -173,7 +174,7 @@ Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert.
 \subsection{Hybrid Flow}
 \label{subsec:OpenIDConnect:HybridFlow}
 Der Hybrid Flow ist der „Flow“ der beschreibt, wie der Client in OpenID Connect einen
-Token erhalten kann. Es ist fast identisch mit dem Authorization Code Grant in OAuth2, nur 
+Token erhalten kann. Es ist identisch mit dem Authorization Code Grant in OAuth2, nur 
 das hier neben einem Access Token der Client auch einen ID-Token von dem Authorization 
 Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \citep{openidconnect:2014}.
 
@@ -206,7 +207,7 @@ Endpunkt kann der Autorisationsserver beispielsweise Token an den anfragenden Cl
 \subsection{Authorization Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:AuthorizationEndpunkt}
 Dies ist der Endpunkt, an den der Client den End-Nutzer weiterleitet. Hier muss sich der 
-End-Nutzer authentifizieren und gegeben falls den Client autorisieren, damit der Client einen Authorization Code erhält \citep{oauth2:2012}.
+End-Nutzer authentifizieren und gegebenenfalls den Client autorisieren, damit der Client einen Authorization Code erhält \citep{oauth2:2012}.
 
 \subsection{Token Endpunkt}
 \label{sec:OAuth2EndpunktedesAutorisationsservers:TokenEndpunkt}
@@ -245,7 +246,7 @@ Zugriffsprivilegien \citep{rbac:2006}. Sie ist eine Form der Zugriffskontrolle. 
 \section{Open Policy Agent}
 \label{sec:OpenPolicyAgent}
 Open Policy Agent (OPA) ist eine quelloffene Policy Engine, die Zugriffskontrolle von 
-Applikationen entkoppelt \citep{opaperformance:2021:07}. Es entkoppelt das Treffen von Zugriffsentscheidungen von der Komponente die Richtlinien durchsetzen muss.
+Applikationen entkoppelt \citep{opaperformance:2021:07}. Es entkoppelt das Treffen von Zugriffsentscheidungen von der Komponente, die Richtlinien durchsetzen muss.
 Als Programmiersprache um diese Zugriffskontrolle zu definieren, wird Rego verwendet. 
 Die Dateiendung von in Rego programmierten Zugriffsrichtlinien ist .rego.\smallskip
 
@@ -268,10 +269,10 @@ müssen, ist Open Policy Agent praktisch system und plattformunabhängig.
 \end{lstlisting}
 \smallskip
 
-In \autoref{lst:ZugriffsrichtlinieinRego} \citep{opaplayground:2021} wird eine solche Zugriffskontrolle realisiert. Diese Zugriffsrichtlinie ist wie folgt zu beschreiben:\smallskip
+In \autoref{lst:ZugriffsrichtlinieinRego} \citep{opaplayground:2021} ist eine solche Zugriffskontrolle in Rego programmiert. Diese Zugriffsrichtlinie ist wie folgt zu beschreiben:\smallskip
 
 Falls eine HTTP-PUT-Anfrage auf den Pfad /pets/{petid} eintrifft, muss der User dem 
-Owner entsprechen.
+Owner entsprechen. Anfragen, die nicht dem Pfad /pets/{petid} entsprechen, werden abgelehnt. 
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Input-Daten für Open Policy Agent},label=lst:Input-DatenfürOpenPolicyAgent]
   {
@@ -295,7 +296,7 @@ In \autoref{lst:Input-DatenfürOpenPolicyAgent} sind Input-Daten dargestellt. We
 \end{lstlisting}
 \smallskip
 
-Der Zugriff auf den Pfad /pets kann nicht gegeben werden, da in \autoref{lst:Input-DatenfürOpenPolicyAgent} der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
+Der Zugriff auf den Pfad /pets/pet113-987 kann nicht gegeben werden, da in \autoref{lst:Input-DatenfürOpenPolicyAgent} der owner nicht dem user entspricht. bob@hooli.com ist ungleich zu alice@hooli.com. 
 
 \section{Apache Tomcat}
 Apache Tomcat ist ein Webserver, der Spezifikationen der Java Enterprise Edition (EE) Plattform implementiert
@@ -338,7 +339,7 @@ werden kann \citep{keycloak:2021}.
 \section{Apache JMeter und Metriken}
 \label{sec:ApacheJMeterundMetriken}
 Apache JMeter ist ein Programm, mit dem es unter anderem möglich ist die Schnittstellen eines HTTP-Servers auf 
-Performance zu testen. Es kann Last auf den Server erzeugen und die Latenzen der Antworten des Servers sowie andere Metriken messen und protokollieren und diese Werte in Graphen und anderer Weise ausgeben \citep{jmeter:2021}.
+Performance zu testen. Es kann Last auf den Server erzeugen und die Latenzen der Antworten des Servers sowie andere Metriken messen und protokollieren und diese Werte in Graphen visualisieren \citep{jmeter:2021}.
 Da zum Testen der Performance verschiedene Metriken betrachtet werden, werden diese 
 Metriken nachfolgend definiert. 
 
@@ -358,7 +359,7 @@ Metriken nachfolgend definiert.
   \end{equation}
 
   \item[Connect Time:] Die Connect Time ist die Zeit, die in Anspruch genommen wird, eine Verbindung mit dem 
-  Server aufzunehmen, das heißt im Falle von der Nutzung von TCP ist das der Three-Way-Handshake \citep{jmeterglossary:2021}. 
+  Server aufzunehmen \citep{jmeterglossary:2021}. Im Falle von der Nutzung von \ac{TCP} ist das der Three-Way-Handshake. 
 \end{description}
 
 \section{Application Performance Index}
@@ -370,8 +371,6 @@ Response Time der Nutzer Antwortzeiten toleriert. Bei allen Werten darüber ist 
 frustriert. Aus diesen Werten errechnet sich ein Ergebnis für den Application 
 Performance Index, wobei hier 1.0 der beste Wert ist, das heißt der Nutzer ist vollständig 
 zufrieden.\smallskip
-
-Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T beträgt, ergeben sich folgende Werte:
 
 \begin{table}[h]
   \myfloatalign
@@ -388,9 +387,9 @@ Wenn T beispielsweise 1,2 Sekunden beträgt und die Tolerierbarkeitsgrenze 4T be
   \label{tab:ApplicationPerformanceIndex}
 \end{table}
 
-Die Grenzwerte sind in \autoref{tab:ApplicationPerformanceIndex} dargestellt. Wenn die durchschnittliche Response Time <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
+In \autoref{tab:ApplicationPerformanceIndex} sind beispielhaft Grenzwerte für einen Application Performance Index dargestellt. Wenn die durchschnittliche Response Time <= 1,2 Sekunden beträgt, ist der Nutzer vollständig zufrieden. Response Times zwischen 1,2 und 4,8 Sekunden toleriert der Nutzer 
 und bei Response Times größer als 4,8 Sekunden ist der Nutzer frustriert. Am Beispiel 
-Webanwendungen wäre hier die Response Time die Zeit von bevor dem Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer vollständig dargestellt wird.\smallskip 
+Webanwendungen wäre hier die Response Time die Zeit von bevor dem Senden einer Anfrage für eine HTTP-Schnittstelle, beispielsweise die GET-Anfrage, um eine Webseite darzustellen, bis zum Erreichen des letzten Bytes der Antwort des Servers, d.h. bis die Webseite bei dem Nutzer vollständig dargestellt ist.\smallskip 
 
 Aus den durchschnittlichen Response Times und den festgelegten Werten T, errechnet sich der Application Performance Index.
 
@@ -405,9 +404,9 @@ der 1,0 beträgt.
 
 \section{Postman}
 Postman ist ein API-Client, mit dem unter anderem HTTP-Anfragen gesendet und Antworten 
-des Servers erhalten werden können \citep{postman:2021}. Außerdem bietet Postman Unterstützung für 
+des Servers erhalten werden können. Außerdem bietet Postman Unterstützung für 
 OAuth2 an, das heißt es ist mittels Postman möglich, den Authorization Code Grant und
-Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. Hierbei ist Postman der Client der OAuth2 Spezifikation.
+Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erhalten. Hierbei ist Postman der Client der OAuth2 Spezifikation \citep{postman:2021}.
 
 \section{Docker-Container}
 Ein Docker-Container ist ein leichtes, eigenständiges, ausführbares Softwarepaket, das alles enthält, was zum Ausführen einer Anwendung erforderlich ist: Code, Laufzeit, Systemtools, Systembibliotheken und Einstellungen. \citep{docker:2021}. 
@@ -418,9 +417,9 @@ Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sin
 Authorization Server übermittelt wird, werden Attribute des Nutzers in den Payload 
 gemappt, unter anderem auch die Rollenzugehörigkeit. Die Spring-Boot Applikationen 
 validieren den Token jeweils, in dem sie die Signatur des Tokens überprüfen. Dies 
-geschieht, indem der Public Key über den JSON Web Key Set Endpunkt des Authorization 
+geschieht, indem der öffentliche Schlüssel über den JSON Web Key Set Endpunkt des Authorization 
 Server geholt und damit aus dem Header und Payload die Signatur berechnet und auf 
-Gleichheit überprüft wird. Daneben werden die Standardclaims überprüft. Bei Erfolg 
+Gleichheit überprüft wird. Bei Erfolg 
 entspricht dies einer Authentifizierung des Nutzers.\smallskip
 
 Beide Ressource Server haben als Zugriffskontrolle \ac{RBAC} 
