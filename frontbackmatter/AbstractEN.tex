@@ -6,17 +6,10 @@
 
 \begin{otherlanguage}{american}
 	\chapter*{Abstract}
-	A short summary of the contents in English of about one page. The following points should be addressed in particular:
-	\begin{itemize}
-		\item Motivation: Why did this work come about? Why is the topic of the work interesting (for the general public)? The motivation should be abstracted as far as possible from the specific tasks that may be given by a company.
-		\item Content: What is the content of this thesis? What exactly is covered in the thesis? The methodology and working method should be briefly discussed here.
-		\item Results: What are the results of this work? A brief overview of the most important results as a teaser to read the complete thesis.
-	\end{itemize}
-	\medskip
-	
-	\noindent
-	BTW: A great guide by Kent Beck how to write good abstracts can be found here:
-	\begin{center}
-		\url{https://plg.uwaterloo.ca/~migod/research/beckOOPSLA.html}
-	\end{center}
+
+	With Open Policy Agent (OPA) it is possible to decouple access control from a server. When a client sends a request to a server, this server does not evaluate an access decision itself, but OPA as an external program. This creates additional communication between the server and OPA. In OAuth2 systems, the evaluation of access decisions is based on tokens that the client sends to the server. In past performance tests, the latency in the communication between server and OPA was not taken into account, and no access decisions were made on the basis of tokens \citep{opaperformance:2021:07}.\smallskip
+
+	In order to investigate to what extent decoupling the access control with OPA affects the performance, two test servers were implemented. In one server the access control is decoupled with OPA, in the other the server evaluates access decisions itself. Apache JMeter was used to examine the performance. This tool generates requests with valid tokens to the servers and measures the response times of the responses. With ten simultaneous users, response times on the server with OPA turned out to be three times as high compared to the server without OPA. In addition, the server with OPA scales worse, because with increasing load up to 100 users, the response times increased linearly, while with the server without OPA these remained consistently low. A significant performance disadvantage could be demonstrated.
+
+
 \end{otherlanguage}
