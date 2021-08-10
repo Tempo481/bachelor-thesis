@@ -83,7 +83,7 @@ Als Scope wurde openid angegeben, damit die notwendigen Nutzerattribute von dem 
 Wenn diese Anfrage in Postman abgeschickt wird, öffnet sich der Webbrowser und die Auth-URL von Keycloak wird dargestellt. Hier muss sich der End-Nutzer authentifizieren. Die Auth URL ist nachfolgend dargestellt. 
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Authorization Request},label=lst:AuthorizationRequest]
-  HTTP://localhost:9080/auth/realms/sample/protocol/openid-connect/auth?
+  http://localhost:9080/auth/realms/sample/protocol/openid-connect/auth?
   response_type=code
   &state=
   &client_id=sample-app
@@ -118,7 +118,7 @@ geschieht automatisch und wird hier nicht beschrieben.
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:Base64-kodierterJSONWebToken} ist der Base64 kodierte Token zu sehen. Wie man sieht, ist er in drei Teile 
+In \autoref{lst:Base64-kodierterJSONWebToken} ist der Base64 kodierte Token zu sehen. Er ist in drei Teile 
 unterteilt: Dem Header, dem Payload und der Signatur. Um ihn zu dekodieren und den 
 Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf \url{https://jwt.io/} ist es möglich, Base64 kodierte JSON Web Token zu dekodieren. 
 
@@ -133,7 +133,7 @@ Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf 
     "iat": 1626689794,
     "auth_time": 1626689528,
     "jti": "dacddb77-6de4-4464-b623-b766a8624cda",
-    "iss": "HTTP://localhost:9080/auth/realms/sample",
+    "iss": "http://localhost:9080/auth/realms/sample",
     "aud": "account",
     "sub": "8cf89140-e8d6-4850-b416-3cceda982ec2",
     "typ": "Bearer",
@@ -235,7 +235,7 @@ Diese HTTP-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients
 
 \subsection{Spring Security OAuth2}
 Um die Server und die Schnittstelle als OAuth2 Ressource Server zu konfigurieren, wurde Spring Security verwendet, welches ein Teilprojekt des Spring Frameworks ist. 
-Um Zugriffe auf Schnittstellen nur Anfragen, die einen validen JSON Web Token haben zu erlauben, implementiert Spring Security eine SecurityFilterChain. 
+Um Zugriffe auf Schnittstellen nur Anfragen, die einen validen JSON Web Token haben zu erlauben, implementiert Spring Security eine SecurityFilterChain. Diese ist eine Implementierung der Servlet Filter Spezifikation. 
 
 \begin{figure}[htbp]
   \centering
@@ -249,20 +249,18 @@ In \autoref{fig:chapter03:bearerauthenticationentrypoint} ist die Funktionsweise
 Damit die Ressource Server die Tokens validieren können, musste der JSON Web Key Set Endpunkt des Authorization Server in der Spring-Boot-Applikation angegeben werden. Dadurch kann die Applikation sich die öffentlichen Schlüssel der RSA-Signatur von diesem Endpunkt holen und damit die RSA-Signatur validieren, indem aus dem durch Base64 kodierten Header und Payload des JSON Web Tokens die Signatur berechnet und auf Gleichheit überprüft wird. Da der Ressource Server auf derselben Host-Maschine wie Keycloak, der Authorization Server, läuft, ist der Endpunkt in diesem Fall:
 
 \begin{lstlisting}
-  HTTP://localhost:9080/auth/realms/sample/protocol/openid-connect/certs
+  http://localhost:9080/auth/realms/sample/protocol/openid-connect/certs
 \end{lstlisting}
 \smallskip
 
 Zudem werden die folgenden Claims des JSON Web Tokens validiert:
-\begin{itemize}
-  \item exp
-  \item nbf
-  \item iss
-\end{itemize}
 
-Der exp-Claim (Expiration Time) ist derjenige Claim der angibt, bis wann der Token gültig ist.
-Der nbf-Claim (Not Before) gibt den Zeitpunkt an, ab wann der Token akzeptiert werden darf.
-Der iss-Claim (Issuer) gibt die \ac{URI} des Authorization Server an. Sie sollte dem Authorization Server entsprechen, von dem auch die öffentlichen Schlüssel für die RSA-Signatur geholt werden. 
+\begin{description}
+  \item[exp:] Der exp-Claim (Expiration Time) ist derjenige Claim der angibt, bis wann der Token gültig ist.
+  \item[nbf:] Der nbf-Claim (Not Before) gibt den Zeitpunkt an, ab wann der Token akzeptiert werden darf.
+  \item[iss:] Der iss-Claim (Issuer) gibt die \ac{URI} des Authorization Server an. Sie sollte dem Authorization Server entsprechen, von dem auch die öffentlichen Schlüssel für die RSA-Signatur geholt werden. 
+\end{description}
+
 In beiden Ressource Servern wird eine erfolgreiche Authentifizierung, ein valider JSON Web Token, der von Keycloak erstellt wurde, erwartet. Die Autorisierung aber, das heißt die Prüfung, ob der authentifizierte Nutzer die benötigten Rechte verfügt, um Zugriff auf die Schnittstelle zu erhalten, wird in den zwei Ressource Servern auf zwei unterschiedliche Weisen realisiert und in den nachfolgenden zwei Kapiteln beschrieben.
 
 \subsection{Spring Security Ressource Server mit interner Zugriffskontrolle}
@@ -278,7 +276,7 @@ Um eine rollenbasierter Zugriffskontrolle in dem Ressource Server selbst zu real
 \bigskip
 
 In \autoref{fig:chapter03:jwtauthenticationprovider} ist der Ablauf dargestellt, um eine rollenbasierte Zugriffskontrolle in dem Server, also der Spring-Boot Applikation, mit dem JwtAuthenticationConverter zu realisieren. Im Wesentlichen wird hier der JSON Web Token durch den JWTAuthenticationProvider von einem JwtDecoder dekodiert, verifiziert und validiert und von dem JwtAuthenticationConverter werden Autoritäten in eine Collection gemappt. Als JwtDecoder wird die Nimbus Bibliothek verwendet \citep{springsecuritydoc:2021}.
-Der JwtAuthenticationConverter wurde so konfiguriert, dass es Rollen aus dem JSON Web Token in sogenannte GrantedAuthorities mappt. Diese sind Objekte, die Privilegien von Nutzern widerspiegeln wie beispielsweise Rollen \citep{springsecuritydoc:2021}. 
+Der JwtAuthenticationConverter wurde so konfiguriert, dass er Rollen aus dem JSON Web Token in sogenannte GrantedAuthorities mappt. Diese sind Objekte, die Privilegien von Nutzern widerspiegeln wie beispielsweise Rollen \citep{springsecuritydoc:2021}. 
 
 \begin{lstlisting}[language=Java,frame=tb,caption={JwtAuthenticationConverter},label=lst:JwtAuthenticationConverter]
   @Bean
@@ -313,7 +311,7 @@ Um die Schnittstelle aus \autoref{subsec:Schnittstelle} nur Nutzern zugänglich 
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:HTTPSecurity} sieht man die verwendete Konfiguration. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
+In \autoref{lst:HTTPSecurity} ist die verwendete Konfiguration zu sehen. Hierbei wurde konfiguriert, dass auf den Pfad /documents nur zugegriffen werden darf, wenn dem anfragenden Client die GrantedAuthority ROLE\_USER zugewiesen wurde. 
 
 \subsection{Spring Security Ressource Server mit externer Zugriffskontrolle}
 Um die Zugriffskontrolle von dem zweiten Ressource Server zu entkoppeln, wurde der AccessDecisionManager verwendet, der Teil von Spring Security ist und es erlaubt Zugriffsentscheidungen externen Programmen zu überlassen. 
@@ -374,7 +372,7 @@ Um dem Ressource Server, Open Policy Agent die Zugriffsentscheidungen zu überla
 \bigskip
 
 In \autoref{fig:chapter03:filtersecurityinterceptor} ist die Funktionsweise des AccessDecisionManagers dargestellt. Zunächst durchläuft die ankommende Anfrage des Clients die SecurityFilterChain. Im Fall einer erfolgreichen Authentifikation, was im Falle von OAuth2 einer erfolgreichen Validierung des JSON Web Tokens entspricht, trifft der AccessDecisionManager eine Zugriffsentscheidung. 
-In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine HTTP-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde man in den allermeisten Anwendungsszenarien auch im Produktiveinsatz machen, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
+In dem AccessDecisionManager-Objekt wurde die Funktion vote() implementiert, die eine HTTP-Verbindung mit dem Open Policy Agent aufbaut, der auf der gleichen Host-Maschine wie die Spring-Boot Applikation läuft, um eine möglichst geringe Latenz zwischen beiden Programmen zu haben. Dies würde in den allermeisten Anwendungsszenarien auch im Produktiveinsatz so gemacht werden, da Open Policy Agent äußerst leichtgewichtig ist in der Belegung des Arbeitsspeichers. Die vote()-Funktion, sendet Open Policy Agent alle nötigen Informationen, damit dieser anhand dieser Informationen mit der programmierten Zugriffsrichtlinie eine Zugriffsentscheidung treffen kann, also:
 
 \begin{itemize}
   \item Der Pfad auf den der Client zugreifen möchte
@@ -459,7 +457,7 @@ In \autoref{fig:chapter03:ThreadGroup-Skalierung} ist die verwendete Konfigurati
 Was dadurch ermöglicht wird, ist das bis zum Ende des Tests eine ansteigende Last auf den Server entsteht. Dadurch lässt sich betrachten, inwiefern sich die Latenzen beziehungsweise Response Times der Anfragen bei ansteigender Last verhalten. 
 
 \subsection{Stresstest}
-Bei dem Stresstest geht es darum, dass eine möglichst hohe Last auf den Server erzeugt wird, um die Grenzen des Systems auszuloten. Dies ist wichtig, da man in der Regel wissen will, wie viele Nutzer ein System gleichzeitig bedienen kann, bis das System entweder unerreichbar wird oder die Latenzen der Antworten unakzeptabel hoch sind, damit man dem zum geeigneten Zeitpunkt durch horizontale Skalierung entgegenwirken kann. Zudem können durch diesen Test, Schwachstellen der jeweiligen Implementierungen wie beispielsweise Memory Leaks, erkannt werden. 
+Das Ziel des Stresstests ist es, eine möglichst hohe Last auf den Server zu erzeugen, um die Grenzen des Systems auszuloten. Es ist wichtig zu wissen, wie viele Nutzer ein System gleichzeitig bedienen kann, bis das System entweder unerreichbar wird oder die Latenzen der Antworten unakzeptabel hoch sind, damit dem zum geeigneten Zeitpunkt durch horizontale Skalierung entgegengewirkt werden kann. Zudem können durch diesen Test, Schwachstellen der jeweiligen Implementierungen wie beispielsweise Memory Leaks, erkannt werden. 
 
 \begin{figure}[htbp]
   \centering
