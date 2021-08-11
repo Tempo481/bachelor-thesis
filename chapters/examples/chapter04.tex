@@ -171,7 +171,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-stress-opa} sind die Respons
   \label{fig:chapter04:requests-summary-stress-opa}
 \end{figure}
 
-Allerdings wurden auch bei dem Stresstest ähnlich wie bei dem Skalierbarkeitstest eine hohe Anzahl von Anfragen bei dem Server mit entkoppelter Zugriffskontrolle nicht erfolgreich beantwortet. Dies ist in Abbildung 45 erkenntlich. 28,7\% aller Anfragen wurden nicht erfolgreich beantwortet. Auch hier war Open Policy Agent schlichtweg nicht erreichbar für den Server, sodass der Server dem Client mit dem HTTP-Code 500 antwortete.
+Allerdings wurden auch bei dem Stresstest ähnlich wie bei dem Skalierbarkeitstest eine hohe Anzahl von Anfragen bei dem Server mit entkoppelter Zugriffskontrolle nicht erfolgreich beantwortet. Dies ist in \autoref{fig:chapter04:requests-summary-stress-opa} erkenntlich. 28,7\% aller Anfragen wurden nicht erfolgreich beantwortet. Auch hier war Open Policy Agent schlichtweg nicht erreichbar für den Server, sodass der Server dem Client mit dem HTTP-Code 500 antwortete.
 Aufgrund der hohen Response Times und den nicht erfolgreich beantworteten Anfragen, ist der Application Performance Index bei dem Server mit Open Policy Agent deutlich schlechter ausgefallen. 
 
 \begin{figure}[H]
