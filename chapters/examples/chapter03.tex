@@ -55,7 +55,10 @@ Users und hat als zusätzliches Attribut das statische Schlüssel-Wert-Paar Attr
 Um Token durch den Hybrid Flow zu erhalten, wird ein Client und ein Nutzer benötigt, der 
 sich für den Client authentifiziert und der Authorization Server, der den Token ausstellt. 
 Der erstellte Nutzer wurde im vorhergehenden Kapitel gezeigt. Der End-Nutzer muss einen Browser bedienen, damit der Client über 
-den Hybrid Flow Token erhalten kann. Als Client wurde der API-Client Postman verwendet, 
+den Hybrid Flow Token erhalten kann. 
+
+\subsection{Authorization Code Grant mit Postman}
+Als Client wurde der API-Client Postman verwendet, 
 der eingebauten Support für OAuth2 besitzt und mittels eines Browsers den Hybrid Flow 
 ausführen und damit Postman, also der OAuth2 Client, Token erhalten kann. 
 
@@ -105,6 +108,7 @@ sind diejenigen, die auch in \autoref{subsec:OpenIDConnect:HybridFlow} beschrieb
   \item Redirect\_uri
 \end{itemize}
 
+\subsection{Darstellung des erhaltenen Tokens}
 Nachdem sich der End-Nutzer authentifiziert hat, erhält Postman einen JSON Web Token. Die 
 Token-Anfrage, bei der der Authorization Code durch einen Token ausgetauscht wird, 
 geschieht automatisch und wird hier nicht beschrieben.
@@ -192,7 +196,7 @@ Die verwendete Spring-Boot Version ist 2.4.8 mit Apache Tomcat 9.0.48, welcher �
 
 Gemäß der OAuth2 Spezifikation bezeichnet man diese Server Ressource Server, weil sie valide Tokens erwarten, die von einem Authorization Server ausgestellt werden, damit sie den Clients Zugriff auf ihre Schnittstellen geben können. Im weiteren Verlauf werden beide Ressource Server auf ihre Performance getestet. Der einzige Unterschied zwischen beiden Servern besteht darin, wie sie Zugriffsentscheidungen evaluieren, das heißt wie sie ermitteln, ob der Client berechtigt ist auf die Schnittstelle des Servers zuzugreifen. Dies wird als Zugriffskontrolle bezeichnet. Der eine Ressource Server implementiert diese Zugriffskontrolle in der Spring-Boot Applikation selbst, während der andere diese entkoppelt mit Open Policy Agent, das ein externes Programm ist. Es ist per HTTP für den Server erreichbar ist, um eine Zugriffsentscheidung zu erhalten.\smallskip
 
-Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die HTTP-, JSON-, Base64-Kodierung-sowie-RSA unterstützt. 
+Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich in jeder Programmiersprache erfolgen kann, die HTTP-, JSON-,\linebreak Base64-Kodierung sowie RSA unterstützt.
 
 \subsection{Schnittstelle}
 \label{subsec:Schnittstelle}
@@ -225,7 +229,7 @@ Diese Schnittstelle wurde in eine für Spring-Anwendungen typischen objektorient
 
 In \autoref{fig:chapter03:projekstruktur-spring} ist die Projektstruktur dargestellt und die typische in Spring-Anwendungen vorzufindende geschichtete Architektur. Es gibt die Packages *.config, *.controller, *.entity, *.repository und *.service.\smallskip
 
-In dem *.controller-Package befindet sich die DocumentController-Klasse, die in \autoref{lst:HTTP-SchnittstellederServer} zu sehen ist. Diese ruft eine Funktion der DocumentService-Klasse aus dem *.service-Package auf, welche alle Daten aus dem DocumentRepository in dem Package *.repository abruft. Dieses Repository ist ein JPARepository. JPA steht für Jakarta Persistence API, welche eine Spezifikation für die Schnittstelle zwischen Java-Anwendungen und SQL-Datenbanken ist. Als Implementierung dieser Spezifikation wird in dem Projekt der object-relational Mapper (ORM) Hibernate verwendet. 
+In dem *.controller-Package befindet sich die DocumentController-Klasse, die in \autoref{lst:HTTP-SchnittstellederServer} zu sehen ist. Diese ruft eine Funktion der DocumentService-Klasse aus dem *.service-Package auf, welche alle Daten aus dem DocumentRepository in dem Package *.repository abruft. Dieses Repository ist ein JPARepository. JPA steht für Jakarta Persistence API, welche eine Spezifikation für die Schnittstelle zwischen Java-Anwendungen und \linebreak SQL Datenbanken ist. Als Implementierung dieser Spezifikation wird in dem Projekt der object-relational Mapper (ORM) Hibernate verwendet. 
 Das JPARepository implementiert unter anderem die Funktion .findAll(), welche alle Daten aus der Document-Table aus der verbundenen SQL-Datenbank holt. Diese Funktion wird in der DocumentService-Klasse aufgerufen.
 In dem Package *.entity befindet sich die Klasse Document, welche die durch Hibernate annotierte Entität darstellt. Diese repräsentiert die Table Document in der SQL-Datenbank. 
 Als Datenbank wird H2 Database Engine verwendet. Sample-Daten werden in diese Datenbank bei dem Start der Anwendung automatisch durch ein SQL-insert-Skript geladen.\smallskip
@@ -489,7 +493,7 @@ Das bedeutet, dass Nutzer bis zu einer Response Time von 500 Millisekunden zufri
 \label{subsec:SystemhardwareundTestumfeld}
 Es wird die verwendete Systemhardware für Client und Server, die in allen drei Tests verwendet wurde, aufgelistet. Dies ist erwähnenswert, da die Messwerte von der Leistungsfähigkeit der Hardware abhängen. Da allerdings ein Vergleich zwischen zwei Systemen gezogen wird, können auch allgemeingültige Erkenntnisse aus den Ergebnissen der Tests gezogen werden. Ein weiterer wichtige Punkt ist der, dass beide Rechner, Client und Server, sich in demselben Netzwerk befinden und über denselben Router über Ethernet mit dem Internet verbunden sind.\smallskip
 
-Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird \ac{WSL 2} verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden \citep{wsl:2021}. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
+Open Policy Agent wird in einem Docker-Container ausgeführt und für die Simulierung der virtuellen Maschine des Docker-Containers wird \linebreak \ac{WSL 2} verwendet. Für die Ressourcenbereitstellung des Docker-Containers, wurden die Standardeinstellungen verwendet. Diese sind in der Dokumentation von Microsoft vorzufinden \citep{wsl:2021}. Das bedeutet, der Docker-Container kann alle Prozessorkerne verwenden und ist bei der Arbeitsspeicherbelegung auf 8 Gigabyte begrenzt. 
 
 \begin{table}[H]
   \myfloatalign
