@@ -34,7 +34,7 @@ Es gibt vier verschiedene Rollen, die in OAuth2 spezifiziert sind \citep{oauth2:
   \item[Ressource Owner:] Der Ressource Owner ist dazu in der Lage, Dritten Zugriff auf seine Daten zu geben oder Aktionen in seinem Namen durchzuführen. Falls der Ressource Owner eine Person ist, wird dieser als End-Nutzer bezeichnet.
   \item[Ressource Server:] Der Ressource Server hostet die geschützten Ressourcen des Ressource Owners und ist in der Lage Anfragen zu diesen Ressourcen zu beantworten, falls ein valider Token, ein sogenannter Access Token, in der Anfrage zur Ressource vorliegt.
   \item[Client:] Der Client ist diejenige Komponente, die die Ressource des Ressource Owner's von dem Ressource Servers erlangen möchte und dafür einen Access Token benötigt. 
-  \item[Authorization Server:] Der Authorization Server, zu deutsch Autorisationsserver, verteilt Access Token falls sich der Ressource Owner erfolgreich authentifiziert und gegebenenfalls den Client autorisiert hat, Aktionen durchzuführen. 
+  \item[Authorization Server:] Der Authorization Server, zu Deutsch Autorisationsserver, verteilt Access Token falls sich der Ressource Owner erfolgreich authentifiziert und gegebenenfalls den Client autorisiert hat, Aktionen durchzuführen. 
 \end{description}
 
 \subsection{Erhalt von Token}
@@ -100,7 +100,7 @@ Signatur nicht mehr übereinstimmt.
 
 \subsection{JSON Web Key}
 \label{sec:JSONWebToken:JSONWebKey}
-Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der in JSON dargestellte öffentliche Schlüssel. Mithilfe dieses öffentlichen Schlüssels, kann die Signatur aus dem Header und Payload des JSON Web Tokens berechnet werden. Entspricht die berechnete Signatur der Signatur die in dem JSON Web Token vorhanden ist, ist der Token erfolgreich validiert und Integrität sowie Authentizität sind sichergestellt \citep{jwk:2015}.
+Im Falle eines durch RSA signierten JSON Web Token, ist der JSON Web Key der in JSON dargestellte öffentliche Schlüssel. Mithilfe dieses öffentlichen Schlüssels kann die Signatur aus dem Header und Payload des JSON Web Tokens berechnet werden. Entspricht die berechnete Signatur, der Signatur die in dem JSON Web Token vorhanden ist, ist der Token erfolgreich validiert und Integrität sowie Authentizität sind sichergestellt \citep{jwk:2015}.
 
 \subsection{Base64 Kodierung}
 \label{sec:JSONWebToken:Base64Kodierung}
@@ -175,7 +175,7 @@ Einige dieser Standard Claims sind in \autoref{tab:standardclaims} definiert.
 \label{subsec:OpenIDConnect:HybridFlow}
 Der Hybrid Flow ist der „Flow“ der beschreibt, wie der Client in OpenID Connect einen
 Token erhalten kann. Es ist identisch mit dem Authorization Code Grant in OAuth2, nur 
-das hier neben einem Access Token der Client auch einen ID-Token von dem Authorization 
+dass hier neben einem Access Token der Client auch einen ID-Token von dem Authorization 
 Server erhält. Der Hybrid Flow teilt sich in die folgenden acht Schritte auf \citep{openidconnect:2014}.
 
 \begin{enumerate}
@@ -419,7 +419,7 @@ Kubernetes ist eine Plattform zur Verwaltung von Container-Anwendungen. Es ermö
   \item[Cluster] In einem Cluster können sich mehrere Nodes befinden. Kubernetes koordiniert in einem Cluster Nodes, die miteinander verbunden sind, um als eine Einheit zu arbeiten \citep{kubernetesclusternode:2019}.
   \item[Pod] Ein Pod ist die kleinste Einheit, die in Kubernetes erstellt und verwaltet werden kann. In einem Pod laufen ein oder mehrere Docker-Container, die sich Speicher- und Netzwerkressourcen teilen \citep{kubernetespods:2021}.  
   \item[Deployment] Ein Deployment weist an, wie Instanzen einer Anwendung erstellt und aktualisiert werden. Hierzu wird eine Deployment-Konfiguration geschrieben und auf ein Kubernetes Cluster angewandt, woraufhin Kubernetes ein Pod erstellt. Darüber hinaus bietet Kubernetes für Deployments Selbstheilungsmechanismen. Wenn beispielsweise ein Node, der eine Instanz hostet, ausfällt, ersetzt der sogenannte Deployment Controller diese Instanz durch eine Instanz auf einem anderen Node im Cluster \citep{kubernetesdeployment:2021}.
-  \item[Service] Ein Service definiert Richtlinien wie auf Pods zugegriffen werden können. Es regelt also, wie ein Nutzer auf einen Pod in einem Cluster von außerhalb des Clusters zugreifen kann, als auch wie Pods miteinander innerhalb des Clusters kommunizieren können. Hierfür muss ebenfalls eine Service-Konfiguration geschrieben werden \citep{kubernetesservice:2021}. 
+  \item[Service] Ein Service definiert Richtlinien wie auf Pods zugegriffen werden können. Es regelt also, wie ein Nutzer auf einen Pod in einem Cluster von außerhalb des Clusters zugreifen kann, als auch wie Pods miteinander innerhalb des Clusters kommunizieren können. Hierfür muss ebenfalls eine Konfiguration geschrieben werden \citep{kubernetesservice:2021}. 
 \end{description}
 
 \begin{figure}[!htb]
@@ -429,7 +429,7 @@ Kubernetes ist eine Plattform zur Verwaltung von Container-Anwendungen. Es ermö
   \label{fig:chapter02:KubernetesCluster}
 \end{figure}
 
-In \autoref{fig:chapter02:KubernetesCluster} ist ein Kubernetes Cluster mit drei Nodes beispielhaft dargestellt. In einem Node ist zu sehen, dass dort eine kontainerisierte Anwendung läuft, die ein Docker-Container ist. Auf jedem Node im Cluster wird kubelet ausgeführt, der ein Agent ist und sicherstellt dass Container in einem Pod ausgeführt werden. Um mit dem Cluster zu kommunizieren, um beispielsweise Pods zu starten, gibt es die Kubernetes-API und kubectl als Kommandozeilenprogramm \citep{kuberneteskubelet:2020}. 
+In \autoref{fig:chapter02:KubernetesCluster} ist ein Kubernetes Cluster mit drei Nodes beispielhaft dargestellt. In einem Node ist zu sehen, dass dort eine kontainerisierte Anwendung läuft, die ein Docker-Container ist. Auf jedem Node im Cluster wird kubelet ausgeführt, der ein Agent ist und sicherstellt, dass Container in einem Pod ausgeführt werden. Um mit dem Cluster zu kommunizieren, um beispielsweise Pods zu starten, gibt es die Kubernetes-API und kubectl als Kommandozeilenprogramm \citep{kuberneteskubelet:2020}. 
 
 \section{Zusammenfassung der technischen Grundlagen}
 Es wurden die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
@@ -450,6 +450,8 @@ selbst implementiert, in dem anderen Server wird diese entkoppelt durch den Open
 Dieser wird als eigenständiges Programm in einem Docker-Container ausgeführt und die 
 Kommunikation zwischen Ressource Server und OPA-Service geschieht auf localhost-zu-localhost Basis. 
 Um die Performance zu testen, wird Apache JMeter verwendet. JMeter erzeugt Last auf die 
-beiden Server, das heißt es sendet HTTP-Anfragen mit validem Token an die Ressource 
+beiden Servern, das heißt es sendet HTTP-Anfragen mit validem Token an die Ressource 
 Server und misst die Latenzen der Antworten. Neben der Latenz wird auch die Response 
-Time und Connect Time gemessen und der Datendurchsatz berechnet. Außerdem werden während aller Tests die CPU-Auslastung und Arbeitsspeicherbelegung betrachtet. 
+Time und Connect Time gemessen und der Datendurchsatz berechnet. Außerdem werden während aller Tests die CPU-Auslastung und Arbeitsspeicherbelegung betrachtet.\smallskip
+
+Zudem wird das System mit entkoppelter Zugriffskontrolle als drittes Testsystem auch in ein Kubernetes Cluster deployed und verglichen inwiefern sich eine Nutzung von Kubernetes auf die Performance auswirkt. 
