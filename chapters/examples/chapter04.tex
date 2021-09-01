@@ -193,9 +193,9 @@ Der Application Performance Index für das System mit Open Policy Agent ist in \
 
 Bei dem Server ohne entkoppelter Zugriffskontrolle hingegen, fällt der Score des Application Performance Index mit 0.938 wesentlich besser aus, siehe \autoref{fig:chapter04:APDEX (ApplicationPerformanceIndex)-stress-noOPA}. Fast alle Anfragen konnten hier innerhalb von 500 Millisekunden erfolgreich beantwortet werden. 
 
-\section{Ressource Server und Open Policy Agent in Kubernetes Cluster}
+\section{Kubernetes Cluster}
 
-In diesem Kapitel wird gesondert betrachtet, inwiefern sich ein Deployment von Ressource Server und OPA in einem Kubernetes Cluster auf die Performancewerte auswirkt. Hierbei befindet sich Docker-Container von Ressource Server und OPA in demselben Pod. OPA wird also als Sidecar verwendet \citep{sidecar:2017}. 
+In diesem Kapitel wird gesondert betrachtet, inwiefern sich ein Deployment von Ressource Server und OPA in einem Kubernetes Cluster auf die Performancewerte auswirkt. Hierbei befinden sich die Docker-Container von Ressource Server und OPA in demselben Pod. OPA wird also als Sidecar verwendet \citep{sidecar:2017}. 
 
 \begin{figure}[H]
   \centering
