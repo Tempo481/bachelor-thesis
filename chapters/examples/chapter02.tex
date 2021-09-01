@@ -411,6 +411,26 @@ Hybrid Flow abzuhandeln, um dadurch Token von einem Authorization Server zu erha
 \section{Docker-Container}
 Ein Docker-Container ist ein leichtes, eigenständiges, ausführbares Softwarepaket, das alles enthält, was zum Ausführen einer Anwendung erforderlich ist: Code, Laufzeit, Systemtools, Systembibliotheken und Einstellungen. \citep{docker:2021}. 
 
+\section{Kubernetes}
+Kubernetes ist eine Plattform zur Verwaltung von Container-Anwendungen. Es ermöglicht die Konfiguration von Container-Anwendungen sowie die Automatisierung der Bereitstellung von Container-Anwendungen. Außerdem bietet Kubernetes Funktionen zur Bereitstellung, Skalierung, Lastausgleich, Protokollierung und Überwachung der Container-Anwendungen \citep{kubernetes:2020}. Mit Container-Anwendungen sind in diesem Fall Docker-Container gemeint, in denen Anwendungen ausgeführt werden. Kubernetes wurde von Google 2014 als Open-Source Projekt zur Verfügung gestellt. Es gibt eine Reihe von Komponenten in Kubernetes, die nachfolgend definiert werden.  
+
+\begin{description}
+  \item[Node] Ein Node ist ein physischer Computer oder virtuelle Maschine, der als Arbeitsmaschine in einem Kubernetes Cluster dient. Auf einem Node werden Container-Anwendungen ausgeführt \citep{kubernetesclusternode:2019}. 
+  \item[Cluster] In einem Cluster können sich mehrere Nodes befinden. Kubernetes koordiniert in einem Cluster Nodes, die miteinander verbunden sind, um als eine Einheit zu arbeiten \citep{kubernetesclusternode:2019}.
+  \item[Pod] Ein Pod ist die kleinste Einheit, die in Kubernetes erstellt und verwaltet werden kann. In einem Pod laufen ein oder mehrere Docker-Container, die sich Speicher- und Netzwerkressourcen teilen \citep{kubernetespods:2021}.  
+  \item[Deployment] Ein Deployment weist an, wie Instanzen einer Anwendung erstellt und aktualisiert werden. Hierzu wird eine Deployment-Konfiguration geschrieben und auf ein Kubernetes Cluster angewandt, woraufhin Kubernetes ein Pod erstellt. Darüber hinaus bietet Kubernetes für Deployments Selbstheilungsmechanismen. Wenn beispielsweise ein Node, der eine Instanz hostet, ausfällt, ersetzt der sogenannte Deployment Controller diese Instanz durch eine Instanz auf einem anderen Node im Cluster \citep{kubernetesdeployment:2021}.
+  \item[Service] Ein Service definiert Richtlinien wie auf Pods zugegriffen werden können. Es regelt also, wie ein Nutzer auf einen Pod in einem Cluster von außerhalb des Clusters zugreifen kann, als auch wie Pods miteinander innerhalb des Clusters kommunizieren können. Hierfür muss ebenfalls eine Service-Konfiguration geschrieben werden \citep{kubernetesservice:2021}. 
+\end{description}
+
+\begin{figure}[!htb]
+  \centering
+  \includegraphics[width=1.0\textwidth]{gfx/module_02_first_app.pdf}
+  \caption[Kubernetes Cluster]{Kubernetes Cluster \citep{kubernetesdeployment:2021}}
+  \label{fig:chapter02:KubernetesCluster}
+\end{figure}
+
+In \autoref{fig:chapter02:KubernetesCluster} ist ein Kubernetes Cluster mit drei Nodes beispielhaft dargestellt. In einem Node ist zu sehen, dass dort eine kontainerisierte Anwendung läuft, die ein Docker-Container ist. Auf jedem Node im Cluster wird kubelet ausgeführt, der ein Agent ist und sicherstellt dass Container in einem Pod ausgeführt werden. Um mit dem Cluster zu kommunizieren, um beispielsweise Pods zu starten, gibt es die Kubernetes-API und kubectl als Kommandozeilenprogramm \citep{kuberneteskubelet:2020}. 
+
 \section{Zusammenfassung der technischen Grundlagen}
 Es wurden die nötigen technischen Grundlagen zusammengetragen. Was im nachfolgenden Kapitel folgt ist die Systemarchitektur.
 Beide Systeme sind OAuth2 Ressource Server, die Spring-Boot Webapplikationen sind und mit Spring-Security ihre HTTP-Schnittstellen sichern. Das bedeutet, dass diese Schnittstellen erwarten, dass ein valider JSON Web Token in dem Authorization Header der HTTP-Anfrage mitgesendet wird. Dieser JSON Web Token wird durch Keycloak ausgestellt, in OAuth2-Vokabular ist dies der Authorization Server. In OpenID Connect Vokabular würde bei Keycloak von einem OpenID Provider gesprochen werden. In dem ID Token, der von dem 

@@ -379,6 +379,88 @@ Daraufhin wird dem Ressource Server von Open Policy Agent, eine Zugriffsentschei
 
 Es wurde nun beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle beschrieben. 
 
+\section{Kubernetes Deployment von Ressource Server, OPA und Keycloak}
+
+Da auch ein weiterer Performancetest von dem System mit OPA in einem Kubernetes Cluster durchgeführt werden soll, werden in diesem Kapitel die jeweiligen Konfigurationen von Kubernetes-Deployment und Service beschrieben. Um ein Single-Node Cluster auf einem Computer zu betreiben, wurde Minikube verwendet \citep{minikube:2020}. Single-Node Cluster bedeutet, dass es lediglich ein Node in dem gesamten Cluster gibt. Das heißt, die jeweiligen Pods laufen auf einer Maschine. 
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Deployment von Ressource Server und OPA},label=lst:DeploymentvonRessourceServerundOPA]
+  apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    name: ressource-server-opa
+    labels:
+      app: ressource-server-opa
+  spec:
+    replicas: 2
+    selector:
+      matchLabels:
+        app: ressource-server-opa
+    template:
+      metadata:
+        labels:
+          app: ressource-server-opa
+      spec:
+        containers:
+        - name: oauth2-opa
+          image: oauth2-opa:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+          - containerPort: 8080
+  
+        - name: opa
+          image: openpolicyagent/opa:0.30.2
+          ports:
+          - name: http
+            containerPort: 8181
+          args:
+          - "run"
+          - "--ignore=.*"  # exclude hidden dirs created by Kubernetes
+          - "--server"
+          - "/policies"
+          volumeMounts:
+          - readOnly: true
+            mountPath: /policies
+            name: rbac-policy
+        volumes:
+        - name: rbac-policy
+          configMap:
+            name: rbac-policy       
+\end{lstlisting}
+\bigskip
+
+In \autoref{lst:DeploymentvonRessourceServerundOPA} ist die Deployment-Konfiguration zu sehen. Es wurde konfiguriert, dass zwei Container in einem Pod gestartet werden. Der eine Container ist der Ressource Server und der andere ist OPA. Der Ressource Server wurde mithilfe des Jib-Plugins in der Version 3.1.3 containerisiert. Das bedeutet, es wurde ein Docker-Image des Ressource Servers erstellt mit dem Namen \emph{oauth2-opa}, welches in der Deployment-Konfiguration referenziert wird unter dem Schlüssel \emph{image}. Dieses akzeptiert Verbindungen auf den Port 8080. Damit Minikube dieses lokale Image ordnungemäß pullt, musste als imagePullPolicy \emph{IfNotPresent} konfiguriert werden, da ansonsten Minikube versucht, das Image aus dem öffentlichen Docker Hub zu pullen. Um Minikube das Image aus dem lokalen Docker Registry zugänglich zu machen, wurde ein Terminal mit dem Docker Daemon von Minikube verknüpft und in diesem Terminal das Image mittels Jib erstellt. Dies ist gemäß der Dokumentation von Minikube ein performantes Vorgehen \citep{minikubepushimages:2021}.\smallskip
+
+Der zweite Container ist OPA. Dieser akzeptiert Anfragen innerhalb des Clusters auf den Port 8181. Damit dieser die rollenbasierte Zugriffskontrolle aus \autoref{lst:RollenbasierteZugriffsrichtlinieinRego} zur Verfügung gestellt bekommt, wurde eine ConfigMap für diese Zugriffskontrolle erstellt mit dem Namen \emph{rbac-policy}. ConfigMaps sind Objekte, in denen Schlüssel-Wert Paare gespeichert werden können, die von Pods konsumiert werden können \citep{configmaps:2021}. Als Vorlage wurde die Konfiguration aus der Dokumentation von OPA verwendet \citep{opadeployment:2021}.\smallskip
+
+Als Wert für Replicas wurde zwei gewählt. Das bedeutet, dass zwei Instanzen dieses Pods auf dem Node erstellt werden.\smallskip
+
+\begin{lstlisting}[language=C++,frame=tb,caption={Service von Ressource Server und OPA},label=lst:ServicevonRessourceServerundOPA]
+  kind: Service
+  apiVersion: v1
+  metadata:
+    name: ressource-server-opa
+    labels:
+      app: ressource-server-opa
+  spec:
+    type: LoadBalancer
+    selector:
+      app: ressource-server-opa
+    ports:
+      - name: http
+        protocol: TCP
+        port: 8080
+        targetPort: 8080       
+\end{lstlisting}
+\bigskip
+
+Die Service-Konfiguration ist in \autoref{lst:ServicevonRessourceServerundOPA} dargestellt. Es wurde konfiguriert, dass der Pod \emph{ressource-server-opa} von außen über den Port 8080 durch das Protokoll TCP erreichbar ist. Eine Öffnung des Ports 8181 ist hier nicht notwendig und wäre sicherheitstechnisch fatal, da Nutzer nicht ohne Weiteres Zugriffsrichtlinien in den OPA-Service pushen dürfen. Es ist also lediglich der Ressource Server für Nutzer außerhalb des Clusters zugänglich.\smallskip
+
+Als Typ für den Service wurde LoadBalancer gewählt. Dies bedeutet, dass Anfragen durch den LoadBalancer an den korrekten Port des Pods weitergeleitet werden und Anfragen gleichmäßig auf alle verfügbaren Instanzen des Pods verteilt werden \citep{loadbalancer:2020}.\smallskip
+
+Die Deployment und Service-Konfiguration, um Keycloak ebenfalls innerhalb des Clusters auszuliefern, ist in \autoref{Appendix} vorzufinden. Diese wird hier allerdings nicht weiter erläutert. Hierbei wurden Konfigurationen aus der Dokumentation von Keycloak \citep{keycloakkubernetes:2021} sowie PostgreSQL-Konfigurationen von Shanika Wickramasinghe als Vorlage benutzt und angepasst \citep{postgresk8s:2021}. Die PostgreSQL Datenbank ist für Keycloak notwendig, damit Keycloak Einstellungen und Nutzer persistieren kann. \smallskip
+
+Um schließlich die Services des Clusters von außerhalb des Clusters zugänglich zu machen, wurde minikube tunnel verwendet. 
+
 \section{Performancetests mit Apache JMeter}
 Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die HTTP-Anfragen an einen Server senden. In diesen HTTP-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese evaluieren jeweils eine Zugriffsentscheidung. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
 
@@ -413,7 +495,7 @@ In \autoref{fig:chapter03:ThreadGroup-Last} ist die verwendete Konfiguration dar
   \label{fig:chapter03:TestPlan-Last}
 \end{figure}
 
-In \autoref{fig:chapter03:TestPlan-Last} ist eine Gesamtübersicht des Testplans dargestellt. In Thread Group wurde die Konfiguration vorgenommen, die in \autoref{fig:chapter03:ThreadGroup-Last} dargestellt ist. Es wurden zwei Listener konfiguriert, nämlich Summary Report und jp@gc – Performance Metrics Collector. Summary Report ist für das Protokollieren der Messdaten zuständig. Hier werden unter anderem die Latenz, Response Time und Connect Time protokolliert. Der Listener jp@gc – Performance Metrics Collector ist für das Messen von CPU-Auslastung und \ac{RAM}-Belegung zuständig. Dieser erhält per TCP kontinuierlich Informationen über die momentane CPU-Auslastung sowie RAM-Belegung von dem Server und stellt sie graphisch dar \citep{perfmon:2021}. 
+In \autoref{fig:chapter03:TestPlan-Last} ist eine Gesamtübersicht des Testplans dargestellt. In Thread Group wurde die Konfiguration vorgenommen, die in \autoref{fig:chapter03:ThreadGroup-Last} dargestellt ist. Es wurden zwei Listener konfiguriert, nämlich \emph{Summary Report} und \emph{jp@gc – Performance Metrics Collector}. Summary Report ist für das Protokollieren der Messdaten zuständig. Hier werden unter anderem die Latenz, Response Time und Connect Time protokolliert. Der Listener jp@gc – Performance Metrics Collector ist für das Messen von CPU-Auslastung und \ac{RAM}-Belegung zuständig. Dieser erhält per TCP kontinuierlich Informationen über die momentane CPU-Auslastung sowie RAM-Belegung von dem Server und stellt sie graphisch dar \citep{perfmon:2021}. 
 
 \begin{figure}[H]
   \centering
