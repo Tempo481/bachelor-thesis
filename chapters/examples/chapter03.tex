@@ -183,8 +183,8 @@ Inhalt in JSON betrachten zu können, gibt es Dienste, die das Übernehmen. Auf 
 \end{lstlisting}
 \bigskip
 
-In \autoref{lst:DekodierterJSONWebToken} ist der dekodierte JSON Web Token dargestellt, den Keycloak erstellt und an Postman gesendet hat. Wie zu sehen ist, sind die Nutzerattribute, das heißt die Standard Claims, in diesen Token gemappt. Das heißt der Vor-und-Nachname, die E-Mail-Adresse, der Nickname sowie das Claim sub. 
-Zudem ist die Gruppenzugehörigkeit zu sehen, denn der Nutzer ist ja Mitglied in der Gruppe Users. Außerdem ist unter dem Schlüssel roles auch die Rolle ROLE\_USER vorzufinden. Diese Rolle wurde dem End-Nutzer in Keycloak zugewiesen und nach dieser Rolle wird bei der Schnittstelle im Ressource Server die Zugriffe kontrolliert. Das heißt in dem Token muss diese Rolle gemappt sein, ansonsten sollte kein Zugriff erlaubt werden. Die restlichen Rollen, die in diesem Token zu sehen sind wie beispielsweise default-roles-sample, wurden automatisch von Keycloak erstellt und werden hier nicht erläutert.\smallskip
+In \autoref{lst:DekodierterJSONWebToken} ist der dekodierte JSON Web Token dargestellt, den Keycloak erstellt und an Postman gesendet hat. Wie zu sehen ist, sind die Nutzerattribute, das heißt die Standard Claims, in diesen Token gemappt. Also in diesem Fall der Vor-und-Nachname, die E-Mail-Adresse, der Nickname sowie das Claim sub. 
+Zudem ist die Gruppenzugehörigkeit zu sehen, denn der Nutzer ist Mitglied in der Gruppe Users. Außerdem ist unter dem Schlüssel roles auch die Rolle ROLE\_USER vorzufinden. Diese Rolle wurde dem End-Nutzer in Keycloak zugewiesen und nach dieser Rolle wird bei der Schnittstelle im Ressource Server die Zugriffe kontrolliert. Das heißt in dem Token muss diese Rolle gemappt sein, ansonsten sollte kein Zugriff erlaubt werden. Die restlichen Rollen, die in diesem Token zu sehen sind wie beispielsweise default-roles-sample, wurden automatisch von Keycloak erstellt und werden hier nicht erläutert.\smallskip
 
 Außerdem sind die Claims vorzufinden, die in einem ID Token Pflicht sind wie beispielsweise exp, der angibt, wann der Token abläuft. Erklärungen zu diesen Claims sind in \autoref{subsec:OpenIDConnect:IDToken} zu finden. Im Header ist unter anderem das Claim alg: RS256 vorzufinden, das angibt, dass der Token durch RSA mit 256 Bit großen Schlüssel asymmetrisch signiert ist. Der Ressource Sever kann sich den passenden öffentlichen Schlüssel von Keycloak über den JSON Web Key Set Endpunkt holen und damit die Authentizität und Integrität des Tokens validieren. 
 Nun wurde also durch den Authorization Code Grant beziehungsweise Hybrid Flow ein Token von dem Authorization Server Keycloak erhalten mit dem es möglich ist, auf die HTTP-Schnittstellen eines Ressource Servers zuzugreifen. Diese Ressource Server werden im nachfolgenden Kapitel beschrieben. 
@@ -200,7 +200,7 @@ Zu erwähnen ist, dass eine Implementierung von Ressource Servern grundsätzlich
 
 \subsection{Schnittstelle}
 \label{subsec:Schnittstelle}
-Beide Ressource Server haben eine HTTP-GET-Schnittstelle implementiert, welche Daten aus einer SQL-Datenbank holt und sie dem anfragenden Client sendet. Dies ist genau die Schnittstelle, die nicht für alle frei zugänglich ist, sondern nur Nutzern zur Verfügung steht, die einen validen JSON Web Token haben und der Rolle ROLE\_USER zugehörig sind. 
+Beide Ressource Server haben eine HTTP-GET-Schnittstelle implementiert, welche Daten aus einer SQL-Datenbank holt und sie dem anfragenden Client sendet. Dies ist genau die Schnittstelle, die nicht für alle Nutzer frei zugänglich ist, sondern nur Nutzern zur Verfügung steht, die einen validen JSON Web Token haben und der Rolle \emph{ROLE\_USER} zugehörig sind. 
 
 \begin{lstlisting}[language=Java,frame=tb,caption={HTTP-Schnittstelle der Ressource Server},label=lst:HTTP-SchnittstellederServer]
   /**
@@ -234,7 +234,7 @@ Das JPARepository implementiert unter anderem die Funktion .findAll(), welche al
 In dem Package *.entity befindet sich die Klasse Document, welche die durch Hibernate annotierte Entität darstellt. Diese repräsentiert die Table Document in der SQL-Datenbank. 
 Als Datenbank wird H2 Database Engine verwendet. Sample-Daten werden in diese Datenbank bei dem Start der Anwendung automatisch durch ein SQL-insert-Skript geladen.\smallskip
 
-Diese HTTP-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients alle Document-Daten in JSON aus der SQL-Datenbank zu. Das eine SQL-Datenbank mit der Applikation verbunden wurde, dient der Simulierung von realistischen Testbedingungen, da in der Regel HTTP-GET-Schnittstellen Daten aus einer Datenbank holen und sie den anfragenden Clients zusenden.
+Diese HTTP-GET-Schnittstelle /documents sendet autorisierten anfragenden Clients alle Document-Daten in JSON aus der SQL-Datenbank zu. In der SQL-Datenbank befinden sich lediglich zwölf Document-Daten. Jedes Document besitzt zwei Attribute, die ID und einen Namen. Das eine SQL-Datenbank mit der Applikation verbunden wurde, dient der Simulierung von realistischen Testbedingungen, da in der Regel HTTP-GET-Schnittstellen Daten aus einer Datenbank holen und sie den anfragenden Clients zusenden.
 
 \subsection{Spring Security OAuth2}
 Um die Server und die Schnittstelle als OAuth2 Ressource Server zu konfigurieren, wurde Spring Security verwendet, welches ein Teilprojekt des Spring Frameworks ist. 
@@ -381,7 +381,7 @@ Es wurde nun beide Ressource Server mit ihrer jeweiligen Zugriffskontrolle besch
 
 \section{Kubernetes Deployment von Ressource Server, OPA und Keycloak}
 
-Da auch ein weiterer Performancetest von dem System mit OPA in einem Kubernetes Cluster durchgeführt werden soll, werden in diesem Kapitel die jeweiligen Konfigurationen von Kubernetes-Deployment und Service beschrieben. Um ein Single-Node Cluster auf einem Computer zu betreiben, wurde Minikube verwendet \citep{minikube:2020}. Single-Node Cluster bedeutet, dass es lediglich ein Node in dem gesamten Cluster gibt. Das heißt, die jeweiligen Pods laufen auf einer Maschine. Als Kubernetes Client Version wurde v1.21.3 und Server Version v1.21.2 verwendet. 
+Da auch ein weiterer Performancetest von dem System mit OPA in einem Kubernetes Cluster durchgeführt werden soll, werden in diesem Kapitel die jeweiligen Konfigurationen von Kubernetes-Deployment und Service beschrieben. Um ein Single-Node Cluster auf einem Computer zu betreiben, wurde Minikube verwendet \citep{minikube:2020}. Single-Node Cluster bedeutet, dass es lediglich ein Node in dem gesamten Cluster gibt. Das heißt, die jeweiligen Pods laufen auf einer Maschine. Als Kubernetes Client Version wurde v1.21.3 und als Server Version v1.21.2 verwendet. 
 
 \begin{lstlisting}[language=C++,frame=tb,caption={Deployment von Ressource Server und OPA},label=lst:DeploymentvonRessourceServerundOPA]
   apiVersion: apps/v1
@@ -457,14 +457,14 @@ Die Service-Konfiguration ist in \autoref{lst:ServicevonRessourceServerundOPA} d
 
 Als Typ für den Service wurde LoadBalancer gewählt. Dies bedeutet, dass Anfragen durch den LoadBalancer an den korrekten Port des Pods weitergeleitet werden und Anfragen gleichmäßig auf alle verfügbaren Instanzen des Pods verteilt werden \citep{loadbalancer:2020}.\smallskip
 
-Die Deployment und Service-Konfiguration, um Keycloak ebenfalls innerhalb des Clusters auszuliefern, ist in \autoref{Appendix} vorzufinden. Diese wird hier allerdings nicht weiter erläutert. Hierbei wurden Konfigurationen aus der Dokumentation von Keycloak \citep{keycloakkubernetes:2021} sowie PostgreSQL-Konfigurationen von Shanika Wickramasinghe als Vorlage benutzt und angepasst \citep{postgresk8s:2021}. Die PostgreSQL Datenbank ist für Keycloak notwendig, damit Keycloak Einstellungen und Nutzer persistieren kann. \smallskip
+Die Deployment und Service-Konfiguration, um Keycloak ebenfalls innerhalb des Clusters auszuliefern, ist in \autoref{Appendix} vorzufinden. Hierbei wurden Konfigurationen aus der Dokumentation von Keycloak \citep{keycloakkubernetes:2021} sowie PostgreSQL-Konfigurationen von Shanika Wickramasinghe \citep{postgresk8s:2021} als Vorlage benutzt und angepasst. Die PostgreSQL Datenbank ist für Keycloak notwendig, damit Keycloak Einstellungen und Nutzer persistieren kann.\smallskip
 
 Um schließlich die Services des Clusters von außerhalb des Clusters zugänglich zu machen, wurde minikube tunnel verwendet. 
 
 \section{Performancetests mit Apache JMeter}
 Um Performancetests auf beiden Ressource Server durchzuführen und die Ergebnisse vergleichend auszuwerten, um den Einfluss von externer Zugriffskontrolle mit Open Policy Agent auf OAuth2 Ressource Server zu untersuchen, wurde Apache JMeter in der Version 5.4.1 verwendet. Mit Apache JMeter ist es möglich durch die Verwendung von Threads, Nutzer zu simulieren, die HTTP-Anfragen an einen Server senden. In diesen HTTP-Anfragen wird jeweils ein valider JSON Web Token an die Ressource Server gesendet und diese evaluieren jeweils eine Zugriffsentscheidung. Es wird gemessen, wie lange die Ressource Server jeweils für eine Evaluierung einer Zugriffsentscheidung und das darauffolgende Senden der Antwort benötigen.\smallskip
 
-Wenn ein Single Sign-On mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben, an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei den Performancetests werden eingeloggte Nutzer simuliert, die auf gesicherte Schnittstellen eines Servers zugreifen möchten. Jeder Thread entspricht einem eingeloggten Nutzer.\smallskip
+Wenn ein Single Sign-On mittels OpenID Connect implementiert wird, senden eingeloggte Nutzer bei jeder Anfrage den JSON Web Token, den sie nach der Authentifikation von dem Authorization Server erhalten haben, an den Ressource Server, um Zugriff auf dessen Schnittstellen zu erhalten. Bei den Performancetests werden also eingeloggte Nutzer simuliert, die auf gesicherte Schnittstellen eines Servers zugreifen möchten. Jeder Thread entspricht einem eingeloggten Nutzer.\smallskip
 
 Es wurden drei Testpläne erstellt, die verschiedene Aspekte der Server testen, wobei alle drei unter dem Überpunkt der Performance gehören. Die drei Testpläne werden als Lasttest, Skarlierbarkeitstest und Stresstest bezeichnet. 
 
@@ -513,7 +513,7 @@ In \autoref{fig:chapter03:HTTPHeaderManager} ist der verwendete HTTP Header Mana
   \label{fig:chapter03:HTTPRequest}
 \end{figure}
 
-In \autoref{fig:chapter03:HTTPRequest} ist die HTTP-Anfrage zu sehen, die jeweils an den Server gesendet wird. Hier wurde die Anfragemethode auf GET eingestellt und der Pfad auf documents gesetzt, denn die Schnittstelle des Ressource Server ist eine HTTP-GET-Schnittstelle. In dem Feld Server Name or IP wurde die IP-Adresse des Servers angegeben.
+In \autoref{fig:chapter03:HTTPRequest} ist die HTTP-Anfrage zu sehen, die jeweils an den Server gesendet wird. Hier wurde die Anfragemethode auf GET eingestellt und der Pfad auf documents gesetzt, denn die Schnittstelle des Ressource Server ist eine HTTP-GET-Schnittstelle. In dem Feld \emph{Server Name or IP} wurde die IP-Adresse des Servers angegeben.
 
 \subsection{Skalierbarkeitstest}
 Bei dem Skalierbarkeitstest wird eine ansteigende Last auf den Server generiert, um zu untersuchen, inwiefern sich die Latenzen verändern. Je mehr Last erzeugt wird, desto höher werden tendenziell die Latenzen. 
@@ -525,7 +525,7 @@ Bei dem Skalierbarkeitstest wird eine ansteigende Last auf den Server generiert,
   \label{fig:chapter03:ThreadGroup-Skalierung}
 \end{figure}
 
-In \autoref{fig:chapter03:ThreadGroup-Skalierung} ist die verwendete Konfiguration zu sehen. Es werden 100 Threads gestartet, wobei hier die Ramp-up period 300 beträgt, dass bedeutet das erst nach 300 Sekunden alle 100 Threads gestartet wurden. Es werden pro Sekunde 300/100 = 3 Threads gestartet. Die Gesamtdauer des Tests beträgt 300 Sekunden, das heißt 15 Minuten. 
+In \autoref{fig:chapter03:ThreadGroup-Skalierung} ist die verwendete Konfiguration zu sehen. Es werden 100 Threads gestartet, wobei hier die Ramp-up period 300 beträgt, dass bedeutet das erst nach 300 Sekunden alle 100 Threads gestartet wurden. Es werden pro Sekunde 300/100 = 3 Threads gestartet. Die Gesamtdauer des Tests beträgt 300 Sekunden, das heißt 5 Minuten. 
 Was dadurch ermöglicht wird, ist das bis zum Ende des Tests eine ansteigende Last auf den Server entsteht. Dadurch lässt sich betrachten, inwiefern sich die Latenzen beziehungsweise Response Times der Anfragen bei ansteigender Last verhalten. 
 
 \subsection{Stresstest}

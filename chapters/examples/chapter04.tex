@@ -133,7 +133,7 @@ Ein weiterer äußerst erwähnenswerter Punkt ist der, dass während des Skalier
   \label{fig:chapter04:statistik-skalierung-opa}
 \end{figure}
 
-In dem Server, der die Zugriffskontrolle mit Open Policy Agent entkoppelt hat, wurden 21,11\% aller Anfragen nicht erfolgreich beantwortet, stattdessen wurden sie mit dem HTTP-Code 500 beantwortet. Der Fehler-Code 500 steht für Internal Server Error \citep{mdnwebdocs:2021}. Die Ursache davon ist, dass der Ressource Server, also die Spring-Boot-Applikation, nicht Open Policy Agent erreichen konnte. 
+In dem Server, der die Zugriffskontrolle mit Open Policy Agent entkoppelt hat, wurden 21,11\% aller Anfragen nicht erfolgreich beantwortet, stattdessen wurden sie mit dem HTTP-Code 500 beantwortet. Der Fehler-Code 500 steht für Internal Server Error \citep{mdnwebdocs:2021}. Die Ursache davon ist, dass der Ressource Server, also die Spring-Boot-Applikation, Open Policy Agent nicht erreichen konnte. 
 
 \begin{lstlisting}[frame=tb,caption={Fehlermeldung Spring-Boot},label=lst:FehlermeldungSpring-Boot]
   org.springframework.web.client.ResourceAccessException: I/O error on POST request for "HTTP://localhost:8181/v1/data/HTTP/authz/allow": Address already in use: connect; nested exception is java.net.BindException: Address already in use: connect
@@ -195,7 +195,7 @@ Bei dem Server ohne entkoppelter Zugriffskontrolle hingegen, fällt der Score de
 
 \section{Ressource Server und OPA in Kubernetes Cluster}
 
-In diesem Kapitel wird gesondert betrachtet, inwiefern sich ein Deployment von Ressource Server und OPA in einem Kubernetes Cluster auf die Performancewerte auswirkt. Hierbei befindet sich Ressource Server und OPA in demselben Pod. OPA wird also als Sidecar verwendet. 
+In diesem Kapitel wird gesondert betrachtet, inwiefern sich ein Deployment von Ressource Server und OPA in einem Kubernetes Cluster auf die Performancewerte auswirkt. Hierbei befindet sich Docker-Container von Ressource Server und OPA in demselben Pod. OPA wird also als Sidecar verwendet \citep{sidecar:2017}. 
 
 \begin{figure}[H]
   \centering
@@ -204,7 +204,7 @@ In diesem Kapitel wird gesondert betrachtet, inwiefern sich ein Deployment von R
   \label{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s}
 \end{figure}
 
-In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s} ist der Response Time von dem Lasttest abgebildet. Es ist zu sehen, dass hier die Response Times deutlich höher ausfallen im Vergleich zu \autoref{fig:chapter04:statistik-last-opa}. Auffallend ist außerdem, dass die Response Times kontinuierlich abnehmen, bis sie sich auf ca. 55 Millisekunden einpendeln. 
+In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s} ist der Response Time Graph von dem Lasttest abgebildet. Es ist zu sehen, dass hier die Response Times deutlich höher ausfallen im Vergleich zu dem System mit entkoppelter Zugriffskontrolle, das ohne Kubernetes ausgeführt wird, siehe \autoref{fig:chapter04:statistik-last-opa}. Auffallend ist außerdem, dass die Response Times kontinuierlich abnehmen, bis sie sich auf ca. 55 Millisekunden einpendeln. 
 
 \begin{figure}[H]
   \centering
@@ -213,7 +213,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s} ist der Respon
   \label{fig:chapter04:statistik-last-opa-k8s}
 \end{figure}
 
-In \autoref{fig:chapter04:statistik-last-opa-k8s} sind die Gesamtstatistiken des Lasttests zu sehen. Die durchschnittliche beträgt hier ca. 60 Millisekunden während sie bei dem System ohne Kubernetes lediglich durchschnittlich 27 Millisekunden betragen, siehe \autoref{fig:chapter04:statistik-last-opa}.\smallskip
+In \autoref{fig:chapter04:statistik-last-opa-k8s} sind die Gesamtstatistiken des Lasttests zu sehen. Die durchschnittliche Response Time beträgt hier ca. 60 Millisekunden während sie bei dem System ohne Kubernetes lediglich durchschnittlich 27 Millisekunden beträgt, siehe \autoref{fig:chapter04:statistik-last-opa}.\smallskip
 
 Bei dem Skalierbarkeitstest fielen die Response Times ebenfalls weitaus höher aus, diese werden hier allerdings nicht weiter diskutiert. Die Statistiken und Graphen können dem \autoref{Appendix} entnommen werden. Was allerdings erwähnenswert ist, ist das während des Skalierbarkeitstest OPA immer verfügbar war, was bei demselben Test in dem System ohne Kubernetes nicht der Fall gewesen ist. Dies ist durch die Nutzung der Replica zu begründen, denn hier wurde ein LoadBalancer verwendet der gleichmäßig die Anfragen auf die zwei Instanzen des Pods verteilt. 
 
@@ -235,7 +235,7 @@ Dadurch hat sich auch der Application Performance Index verbessert, wie es in \a
 
 In \autoref{fig:chapter04:APDEX (Application Performance Index)-skalierung-OPA} ist der Application Performance Index des Skalierbarkeitstest des Systems mit OPA aber ohne Kubernetes zu sehen. Hier fiel der Index mit 0.787 deutlich schlechter aus aufgrund der Nichtverfügbarkeit von OPA.\smallskip
 
-Der Stresstest fiel ebenfalls schlechter aus in allen Belangen, dieser wird hier allerdings nicht näher erläutert. Die entsprechenden Messergebnisse können allerdings dem \autoref{Appendix} entnommen werden. 
+Der Stresstest hingegen fiel in allen Belangen schlechter aus, dieser wird hier allerdings nicht näher erläutert. Die entsprechenden Messergebnisse können aber dem \autoref{Appendix} entnommen werden. 
 
 \section{Fazit}
 Es konnte gezeigt werden, dass eine entkoppelte Zugriffskontrolle mittels Open Policy Agent in einem OAuth2 System einen signifikanten negativen Einfluss auf die Performance hat. Bei leichter Last mit lediglich zehn gleichzeitigen Threads, fallen die Response Time durchschnittlich um ein dreifaches höher aus als bei dem Ressource Server, der die Zugriffskontrolle in der Spring-Boot Applikation implementiert hat.\smallskip
