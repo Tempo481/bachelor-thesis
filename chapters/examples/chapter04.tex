@@ -36,7 +36,7 @@ In \autoref{fig:chapter04:flotLatenciesOverTime} ist prinzipiell der gleiche Gra
 
 In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last} ist der Response Time Graph von dem Server dargestellt, der die Zugriffskontrolle mittels Open Policy Agent entkoppelt hat. Auch hier ist die Response Time anfangs höher, bis sie sich auf ein niedrigeres Level einpendelt. Aber das weitaus wichtigere ist, dass die Response Times hier durchschnittlich um ein Vielfaches höher ausfallen als bei dem Server mit interner Zugriffskontrolle. Die meiste Zeit über bewegen sich die Response Times hier zwischen 26 und 30 Millisekunden, während sie bei dem Server mit interner Zugriffskontrolle sich zwischen 6,4 und 7,2 Millisekunden bewegen.\smallskip
 
-Dies ist insofern überraschend, da die Kommunikation, die zwischen Ressource Server und Open Policy Agent auftritt, auf localhost zu localhost Basis verläuft. Das heißt der Ressource Server und Open Policy Agent laufen auf derselben Maschine und es war nicht vorhersehbar, dass durch die HTTP-Kommunikation zwischen diesen beide Komponente eine derart hohe zusätzliche Latenz entsteht. 
+Dies ist insofern überraschend, da die Kommunikation, die zwischen Ressource Server und Open Policy Agent auftritt, auf localhost zu localhost Basis verläuft. Das heißt der Ressource Server und Open Policy Agent laufen auf derselben Maschine und es war nicht vorhersehbar, dass durch die HTTP-Kommunikation zwischen diesen beide Komponenten eine derart hohe zusätzliche Latenz entsteht. 
 
 \begin{figure}[H]
   \centering
@@ -215,7 +215,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s} ist der Respon
 
 In \autoref{fig:chapter04:statistik-last-opa-k8s} sind die Gesamtstatistiken des Lasttests zu sehen. Die durchschnittliche beträgt hier ca. 60 Millisekunden während sie bei dem System ohne Kubernetes lediglich durchschnittlich 27 Millisekunden betragen, siehe \autoref{fig:chapter04:statistik-last-opa}.\smallskip
 
-Bei dem Skalierbarkeitstest fielen die Response Times ebenfalls weitaus höher aus, diese werden hier allerdings nicht weiter diskutiert. Die Statistiken und Graphen können dem \autoref{Appendix} entnommen werden. Was allerdings erwähnenswert ist, ist das während des Skalierbarkeitstest OPA immer verfügbar war, was bei dem selben Test in dem System ohne Kubernetes nicht der Fall gewesen ist. Dies ist durch die Nutzung der Replica zu begründen, denn hier wurde ein LoadBalancer verwendet der gleichmäßig die Anfragen auf die zwei Instanzen des Pods verteilt. 
+Bei dem Skalierbarkeitstest fielen die Response Times ebenfalls weitaus höher aus, diese werden hier allerdings nicht weiter diskutiert. Die Statistiken und Graphen können dem \autoref{Appendix} entnommen werden. Was allerdings erwähnenswert ist, ist das während des Skalierbarkeitstest OPA immer verfügbar war, was bei demselben Test in dem System ohne Kubernetes nicht der Fall gewesen ist. Dies ist durch die Nutzung der Replica zu begründen, denn hier wurde ein LoadBalancer verwendet der gleichmäßig die Anfragen auf die zwei Instanzen des Pods verteilt. 
 
 \begin{figure}[H]
   \centering
