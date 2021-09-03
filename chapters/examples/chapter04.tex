@@ -215,7 +215,7 @@ In \autoref{fig:chapter04:flotResponseTimesOverTime-opa-last-k8s} ist der Respon
 
 In \autoref{fig:chapter04:statistik-last-opa-k8s} sind die Gesamtstatistiken des Lasttests zu sehen. Die durchschnittliche Response Time beträgt hier ca. 60 Millisekunden während sie bei dem System ohne Kubernetes lediglich durchschnittlich 27 Millisekunden beträgt, siehe \autoref{fig:chapter04:statistik-last-opa}.\smallskip
 
-Bei dem Skalierbarkeitstest fielen die Response Times ebenfalls weitaus höher aus, diese werden hier allerdings nicht weiter diskutiert. Die Statistiken und Graphen können dem \autoref{Appendix} entnommen werden. Was allerdings erwähnenswert ist, ist das während des Skalierbarkeitstest OPA immer verfügbar war, was bei demselben Test in dem System ohne Kubernetes nicht der Fall gewesen ist. Dies ist durch die Nutzung der Replica zu begründen, denn hier wurde ein LoadBalancer verwendet der gleichmäßig die Anfragen auf die zwei Instanzen des Pods verteilt. 
+Bei dem Skalierbarkeitstest fielen die Response Times ebenfalls weitaus höher aus, diese werden hier allerdings nicht weiter diskutiert. Die Statistiken und Graphen können dem \autoref{Appendix} entnommen werden. Was allerdings erwähnenswert ist, ist das während des Skalierbarkeitstest OPA immer verfügbar war, was bei demselben Test in dem System ohne Kubernetes nicht der Fall gewesen ist. Dies ist durch die Nutzung der Replica zu begründen, denn hier wurde ein LoadBalancer verwendet, der gleichmäßig die Anfragen auf die zwei Instanzen des Pods verteilt. 
 
 \begin{figure}[H]
   \centering
