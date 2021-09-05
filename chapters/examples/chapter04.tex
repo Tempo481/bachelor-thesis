@@ -235,7 +235,7 @@ Dadurch hat sich auch der Application Performance Index verbessert, wie es in \a
 
 In \autoref{fig:chapter04:APDEX (Application Performance Index)-skalierung-OPA} ist der Application Performance Index des Skalierbarkeitstest des Systems mit OPA aber ohne Kubernetes zu sehen. Hier fiel der Index mit 0.787 deutlich schlechter aus aufgrund der Nichtverfügbarkeit von OPA.\smallskip
 
-Der Stresstest hingegen fiel in allen Belangen schlechter aus, dieser wird hier allerdings nicht näher erläutert. Die entsprechenden Messergebnisse können aber dem \autoref{Appendix} entnommen werden. 
+Der Stresstest fiel hinsichtlich der Response Time schlechter aus, dieser wird hier allerdings nicht näher erläutert. Die entsprechenden Messergebnisse können aber dem \autoref{Appendix} entnommen werden. 
 
 \section{Fazit}
 Es konnte gezeigt werden, dass eine entkoppelte Zugriffskontrolle mittels Open Policy Agent in einem OAuth2 System einen signifikanten negativen Einfluss auf die Performance hat. Bei leichter Last mit lediglich zehn gleichzeitigen Threads, fallen die Response Time durchschnittlich um ein dreifaches höher aus als bei dem Ressource Server, der die Zugriffskontrolle in der Spring-Boot Applikation implementiert hat.\smallskip
